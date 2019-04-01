@@ -1,0 +1,952 @@
+;citizen_L20XII
+;vivesti g cod 
+;NORIS PEREHOD MEZHDU JOBOM TAKARKI I FREZEROVKI S ODNIM INSTRUMENTOM
+;opciya vneshnie fajlu
+;L kod ozgedaniya privesti k obwemu znamenateluy ? nuzgen li
+;dlinnye detali produmat' algoritm
+
+@init_post
+    global string f_name T_f xnext_f ynext_f 
+    global logical program_start 
+    global integer trace_level 
+    global numeric    
+;-----spindle start feed unit
+    global numeric feedunit S_old 
+    global integer cut_off_sp_speed
+    global logical 
+    global string S_stop M18_48
+;------------position war    
+		global numeric X0 Y0 Z0 C0 B0 
+		global logical yz_reed 
+		global string X R
+;------------tolling
+    global numeric   
+    global integer T prev_tool t_grup cut_off_t
+    global logical T_8X T_9X T_change job_of_start
+    global string START_POS 
+;------------rauter
+		global integer synhro_t q q1 
+		global logical G650_log
+		global string  synhro_array_main<<10>> synhro_array_sub<<10>> 
+;------------long part G650 L
+    global integer CUT_OFF_Z e L
+		global logical L_P long_part 
+		global numeric L_PART<<10>>	
+;------------data transfer
+    global numeric t_num 
+    global integer t_int
+    global logical t_log
+    global string t_str
+
+		    
+     num_user_procs  = 1000
+     numeric_def_f   = '5.3'
+     integer_def_f   = '5.3(p)'
+     gcode_f         = '2.0(p)'
+     mcode_f         = '2.0(p)'
+     xpos_f          = '5.3(*2)'
+     xopos_f         = '5.3(*2)'
+     xhpos_f				 = '5.3(i)(*2)'
+     xmpos_f				 = '5.3(*2)'
+     ypos_f          = '5.3'
+     yopos_f         = '5.3'
+     zpos_f          = '5.3'
+     zopos_f         = '5.3'
+     xnext_f         = '5.3(*2)'
+     ynext_f         = '5.3'     
+     feed_f          = '4.3(p)'
+     blknum_f        = '5.0(p)'
+     T_f             = 'z2.0(p)'
+     program_start   = true
+     T_9X            = false
+     blknum_gen      = true
+     blknum_exist    = false
+     blknum          = 1
+     blknum_delta    = 1
+     blknum_max      = 10000000
+     gcode_space     = TRUE
+     q               = 1
+     q1              = 1
+     L               = 1
+     job_of_start		 = 0
+     CUT_OFF_Z       = 1
+     Input "Trace level : 0-None ; 5-All", trace_level
+     trace "all":trace_level
+  endp
+;-------------------
+@start_of_file
+;-------------------------main-------------------------
+{nl,'!!open file='program_number'.PRG!!'}
+endp
+;----------------------------------------------------
+;---------------------------------------
+@start_program
+{nl, 'O'program_number, ' (', g_file_name, ')'nb,'('date,')'nl, '$1'}
+{nl, '#501='target_z'(PART LENGTH)'}
+{nl, '#502=#814+#815(POS POINT)'}
+if ANGLED_PART_OFF ne 0
+	{nl,'#504='ANGLED_PART_OFF' (ANGL)'}
+	{nl,'#505=270.(C)'}
+endif
+{nl, 'IF[#599EQ1]GOTO998'}
+{nl,'M52 M6'}
+{nl, 'G4 X0.5'}
+{nl,'G18 G97 G40 G113' }
+{nl,'M89 M94 M96 M124' }
+{nl,'G0 G99 X#502 W-1.0'}
+{nl,'M51(PART OFF PROBE)'}
+{nl,'M1'}
+;---------------------------sub------------------------
+{nl,'!!open file='(program_number+1)'.PRG!!'}
+{nl '',nl '$2'}
+{nl,'(----------------SUB------------)'}
+{nl,'M88'}
+{nl,'M1'}
+endp
+;--------------------------------------
+@end_program
+if last_tool eq 1 and groove_type_cut_off ne 1 and used_in_transform_4x ne 1 	
+		{nl,S_stop ,' T0',nl,'M1'}
+endif
+	call@axes_pattern
+endp
+;-------------------------------------
+
+@end_of_file
+	
+;----------------------MAIN-----------------------
+{nl,'!!open file='program_number'.PRG!!'}
+
+;	local integer i
+;	i=1
+;	while i le asize(synhro_array_main)
+;			{nl,synhro_array_main <<i>> ' ---',synhro_array_sub<<i>>}
+	
+;		i=i+1
+;	endw
+
+{nl,'G600 (machining pattern cancel)'}
+{nl,'M8(BAR FEEDER START)'}
+{nl,'/M98P666666'}
+{nl,'M9(BAR FEEDER END)'}
+{nl,'(RETURN TO ST.POS)'}
+{nl,'M5 M25'}
+{nl,'M7(MAIN OPEN)'}
+{nl,'G4 U0.8'}
+{nl,'G0 G53 G98 Z[#26152+#[25060+#816]-#818] T0'}
+{nl,'G50 Z0'}
+{nl,'(LAST PART)'}
+{nl,'G999 (Executing the Last Program)'}
+{nl,'G630 (Front/back parallel machining)'}
+{nl,'N999'}
+{nb, 'M2'}
+{nl, 'M99'}
+
+;-------------------------SUB--------------------
+{nl}
+{nl,'!!open file='(program_number+1)'.PRG!!'}
+{nl,nl,'G600 (Free patternmachining pattern cancel)'}
+{nl,'G999 (Executing the Last Program)'}
+{nl,'G630 (Front/back parallel machining)'}
+{nl, 'N999'}
+{nl,'M25'}
+{nb, 'M2'}
+{nl, 'M99'}
+{nl}
+{nl}
+{nl,'$0'}
+{nl, 'A2-LE-2-20-12-C-M'}
+;--------------------
+{nl, '#814='((stock_x_plus*2)*1):'z10.0(p)'};*1000
+;----------------------
+if TOOL_POS_POINT eq 0
+	TOOL_POS_POINT=1.
+endif
+{nl, '#815='(TOOL_POS_POINT*1):'z10.0(p)'}
+;----------------------
+;cut_off_tool
+if cut_off_t eq 0
+	cut_off_t=1
+endif
+{nl, '#816='cut_off_t}
+;----------------------
+;cut_off_sp_speed
+if cut_off_sp_speed eq 0
+	cut_off_sp_speed=3000
+endif
+{nl, '#817='(cut_off_sp_speed*1):'z10.0(p)'}
+;--------------------
+;END CUT OFF
+{nl, '#824=-000001000'}
+;--------------------
+;MACHINE LENGTH
+{nl, '#818='(MACHINE_LENGTH*1):'z10.0(p)'}
+;--------------------
+;KOLICHESTVO DETALEY ZA USTANOVKU
+{nl, '#819=0000001000'}
+;--------------------
+{nb,'#918='(BACK_CHUCK_E_L*1):'z10.0(p)'}
+;--------------------
+{nl, '#821='(BACK_WORK_E_L*1):'z10.0(p)'}
+;--------------------
+{nl, '#921=0000000000'}
+;--------------------
+if GBL eq true
+	{nl, '#919=0000001000'}
+else
+	{nl, '#919=0000000000'}
+endif
+;--------------------
+{nb,'#922=0000000000'}
+{nb,'#990=0004007000'}
+{nb,'#991=0000055000'}
+{nb,'#992=0000067000'}
+{nb,'#893=0000000000'}
+{nb,'#25974=0004050000'}
+;------t08 rx-------------
+ 
+if T_8X eq true
+	{nb,'#25975=0004061000'}
+else
+	{nb,'#25975=0004058000'}
+endif
+;------t09 rx-----------------
+if T_9X eq true
+	{nb,'#25976=0004061000'}
+else
+	{nb,'#25976=0004058000'}
+endif
+
+{nb,'#25977=0000000000'}
+{nb,'#25977=0000000000'}
+{nb,'#25979=0000000000'}
+{nb,'#25980=0000000000'nl''}
+{nl, '%'}
+
+{nl,'!!open file='program_number'.PRG!!'}
+{nl,'!!copy file='(program_number+1)'.PRG!!'}
+{nl,'!!delete file='(program_number+1)'.PRG!!'}
+endp
+;-------------------------------------
+@GENERAL_PROCESS
+ENDP
+;-------------------------------------
+@setup
+if submachine_ID eq 1 and MACHINE_LENGTH EQ 0
+	MACHINE_LENGTH=fixture_z_min
+endif	
+if submachine_ID eq 3 and BACK_WORK_E_L EQ 0
+	BACK_WORK_E_L=setup_shift_from_MCS_z
+endif
+endp
+;-------------------------------------
+@war_reed
+yz_reed = 0
+if YZ_PLANE_TURNING eq 1 or YZ_PLANE_GROOVING eq 1 or YZ_PLANE_THREADING eq 1
+	yz_reed = 1
+endif
+
+if yz_reed eq 1
+	X='Y'
+	if Y_MINUS_TURNING eq 1 or Y_MINUS_GROOVING eq 1 or Y_MINUS_THREADING eq 1
+		X = 'Y-'
+	endif
+else
+	X='X'
+	if X_MINUS_TURNING eq 1 or X_MINUS_GROOVING eq 1 or X_MINUS_THREADING eq 1
+		X = 'X-'
+	endif
+endif
+;------------------------------------
+START_POS=''
+if START_TOOL_POS_TURNING NE '' 	
+	START_POS=START_TOOL
+endif
+
+;------------------------------------
+L_P=0
+if LONG_PART_TURNING ne 0 or LONG_PART_GROOVING ne 0 or LONG_PART_THREADING ne 0
+	L_P=1
+endif
+
+call@war_zero	
+endp
+;-------------------------------------
+@t_war_zero(string y)
+local integer i w
+local string q<<4>>  
+	q<<1>>='t_int'
+	q<<2>>='t_num'
+	q<<3>>='t_log'
+	q<<4>>='t_str'
+i=1
+w=0
+while i le asize(q) 
+	w=instr(q<<i>> , y)
+	if w ne 0 
+		break 
+	endif
+	i=i+1
+endw
+
+if i eq 1
+	t_int=0
+endif
+
+if i eq 2
+	t_num=0
+endif
+
+if i eq 3
+	t_log=0
+endif
+
+if i eq 4
+	t_str=''
+endif
+endp
+;-------------------------------------
+@war_zero
+feedunit = -666
+gcode = -666
+mcode = -666
+T_change = 0
+
+	
+
+YZ_PLANE_TURNING = 0
+YZ_PLANE_GROOVING =0
+YZ_PLANE_THREADING =0
+
+Y_MINUS_TURNING =0
+Y_MINUS_GROOVING =0
+Y_MINUS_THREADING =0
+
+X_MINUS_TURNING =0
+X_MINUS_GROOVING =0
+X_MINUS_THREADING =0
+
+START_TOOL_POS_TURNING='' 	
+START_TOOL_POS_GROOVING =''
+START_TOOL_POS_THREADING =''
+START_TOOL_POS = ''
+
+
+LONG_PART_TURNING = 0
+LONG_PART_GROOVING = 0
+LONG_PART_THREADING = 0
+
+endp
+;---------------------------------------
+@feed
+;------feed g98/99-----
+feedunit=98
+if feed_unit EQ mm_rev
+feedunit=99
+endif
+endp
+;---------------------------------------
+@tool_num
+T=tool_position_in_turret
+R='00'
+if tool_position_in_turret gt 79 and tool_position_in_turret lt 86
+	if tool_position_in_turret eq 80
+		T=8
+	endif
+	
+	if tool_position_in_turret eq 81
+		T=8
+		R='00 R1'
+	endif
+	
+	if tool_position_in_turret eq 82
+		T=8
+		R='00 R2'
+	endif
+	
+	if tool_position_in_turret eq 83
+		T=58
+	endif
+	
+	if tool_position_in_turret eq 84
+		T=58
+		R='00 R1'
+	endif
+	
+	if tool_position_in_turret eq 85
+		T=58
+		R='00 R2'
+	endif
+T_8X=1	
+endif
+
+if tool_position_in_turret gt 89 and tool_position_in_turret lt 96
+	if tool_position_in_turret eq 90
+		T=9
+	endif
+	
+	if tool_position_in_turret eq 91
+		T=9
+		R='00 R1'
+	endif
+	
+	if tool_position_in_turret eq 92
+		T=9
+		R='00 R2'
+	endif
+	
+	if tool_position_in_turret eq 93
+		T=59
+	endif
+	
+	if tool_position_in_turret eq 94
+		T=59
+		R='00 R1'
+	endif
+	
+	if tool_position_in_turret eq 95
+		T=59
+		R='00 R2'
+	endif
+T_9X=1
+endif
+endp
+;---------------------------------------
+@tool_grup
+local integer i w
+local string q <<9>> e <<5>> y
+
+;opredelenie synhro_t v stringe po poziciyam  
+e<<1>>='1 2 3 4 5 6 7 8 9 11 12 13 14 15 80 81 82 90 91 92'
+e<<2>>='1a 2a 3a 4a 5a 6a 7a 8a 9a 11a 12a 13a 14a 15a'
+e<<3>>='21 22 23 24 25 26'
+e<<4>>='51 52 53 54 83a 84a 85a 93a 94a 95a'
+e<<5>>='31 32 33 34 35 36 37 38'
+
+;opredelenie t_grup v stringe po poziciyam  
+q<<1>>='1 2 3 4 5 24 25 26'
+q<<2>>='7 8 9 11 12 13 14 51 52 53 54'
+q<<3>>='80 81 82 90 91 92'
+q<<4>>='83 84 85 93 94 95'
+q<<5>>='21 22 23'
+q<<6>>='31 32 33 34' 
+q<<7>>='35 36 37 38'
+
+
+y=tostr(tool_position_in_turret:INTEGER_DEF_F)
+
+;----------------------t_grup-------------
+i=1
+w=0
+while i le asize(q) 
+	w=instr(q<<i>> , y)
+	if w ne 0 
+		break 
+	endif
+	i=i+1
+endw
+
+t_grup=i
+;--------------synhro_t
+if submachine_ID eq 5
+	y=y+'a'
+endif
+
+i=1
+w=0
+while i le asize(e) 
+	w=instr(e<<i>> , y)
+	if w ne 0 
+		break 
+	endif
+	i=i+1
+endw
+synhro_t=i
+endp
+;-------------------------------------
+@machine_plane
+if job_machine_type eq turning
+	gcode = 18
+	IF yz_reed EQ 1 
+		gcode = 19
+	endif	
+else		
+	if machine_plane eq XY
+    gcode = 17
+	endif
+	if machine_plane eq YZ
+    gcode = 19
+	endif
+	if machine_plane eq ZX
+    gcode = 18
+	endif
+endif
+endp
+;-------------------------------------
+@copy_file (integer n, integer i ,integer l)
+	if n eq 1
+		{nl,'!!open file='program_number'.PRG!!'}
+		{nl}
+		if synhro_array_main <<i>> eq 'G610'
+			{nl,'G630'}
+		endif
+		{nl,synhro_array_main <<i>>}
+		{nl,'!!copy file='i'.PRG!!'}
+		{nl,'!!delete file='i'.PRG!!'}
+		{nl,'!!open file='(program_number+1)'.PRG!!'}
+		{nl}
+		if synhro_array_main <<i>> eq 'G610'
+			{nl,'G630'}
+			{nl,'T3000'}
+		endif
+		{nl,synhro_array_main <<i>>}
+	endif
+	
+	if n eq 2
+		{nl,'!!open file='(program_number+1)'.PRG!!'}
+		if synhro_array_sub <<i>> eq 'G600'
+			{nl,'G630'}
+			{nl,nl,'T3000'}
+		endif
+			
+		{nl,synhro_array_sub <<i>>}
+			
+		{nl,'!!copy file='(i+100)'.PRG!!'}
+		if synhro_array_sub<<i>> eq 'G600'
+			{nl,'L'l}
+			t_int=l+1
+		endif
+		{nl,'!!delete file='(i+100)'.PRG!!'}
+		{nl,'!!open file='program_number'.PRG!!'}		
+		if synhro_array_sub <<i>> eq 'G600'
+			{nl,'G630'}
+		endif
+		{nl,nl,synhro_array_sub <<i>>}
+		if synhro_array_sub <<i>> eq 'G600'		
+			{nl,'L'l}
+		endif
+		{nl}
+	endif	
+	
+	if n eq 3
+		{nl,'!!open file='program_number'.PRG!!'}
+		{nl,synhro_array_main <<i>>}
+		{nl,'!!copy file='i'.PRG!!'}
+		{nl,'!!delete file='i'.PRG!!'}
+		{nl,'!!open file='(program_number+1)'.PRG!!'}
+		{nl,synhro_array_sub <<i>>}
+		{nl,'!!copy file='(i+100)'.PRG!!'}
+		{nl,'!!delete file='(i+100)'.PRG!!'}
+	endif	
+	
+	if n eq 4
+		{nl,'!!open file='program_number'.PRG!!'}
+		{nl,'!!copy file='i'.PRG!!'}
+		{nl,'!!delete file='i'.PRG!!'}
+
+		{nl,'!!open file='(program_number+1)'.PRG!!'}
+		{nl,'!!copy file='(i+200)'.PRG!!'}
+		{nl,'!!delete file='(i+200)'.PRG!!'}		
+	endif
+endp	
+;-------------------------------------------
+@axes_pattern
+local integer i e l 
+	i=1
+	e=1
+	l=100
+	while i le asize(synhro_array_main)
+		if synhro_array_main <<i>> eq synhro_array_sub<<i>>
+			if synhro_array_main <<i>> eq '' and synhro_array_sub<<i>> eq ''
+
+			else
+				call@copy_file ((3)(i)(l))
+			endif
+		else
+			if synhro_array_main <<i>> eq 'G610' or synhro_array_main <<i>> eq 'G630'
+				call@copy_file ((1)(i)(l))
+			endif
+			if synhro_array_sub <<i>> eq 'G630'
+				call@copy_file ((2)(i)(l))				
+			endif
+
+			if synhro_array_sub <<i>> eq 'G600'
+				l=l+1
+				call@copy_file ((2)(i)(l))
+				l=t_int
+				call@t_war_zero(('t_int'))	
+			endif	
+
+			if synhro_array_main <<i>> eq 'G650'
+				call@copy_file ((4)(i)(l))
+			endif				
+		endif	
+		i=i+1
+endw
+endp
+;-------------------------------------
+@rauter
+{nl}
+if change(synhro_t)
+		if synhro_t eq 1 ;T1-T14 for main sp (G630)
+			synhro_array_main<<q>>='G630'
+		endif
+
+		if synhro_t eq 2	;T1-T15 for sub sp	(G650)
+			synhro_array_main<<q>>='G650'
+			t_int=q
+			G650_log=1
+		endif	
+		
+		if synhro_t eq 3 ;T21-T26 for main sp (G610)
+			synhro_array_main<<q>>='G610'
+		endif
+		
+		if synhro_t eq 4 ;T58 r.. ,T59 r.. T51-T54 for sub sp	G600
+			 synhro_array_sub<<q1>> ='G600'
+		endif		
+
+		if synhro_t eq 5 ;T31-T35 (G630)
+			synhro_array_sub<<q1>>='G630'
+		endif	
+	
+		if 	synhro_t le 3
+			{'!! open file =' q '.PRG!!' }
+			q=q+1
+		else
+			{'!! open file ='(q1+100) '.PRG!!' }
+			q1=q1+1
+		endif	
+endif	
+endp	
+;-------------------------------------
+@MILING_PROCESS
+ENDP
+;-------------------------------------
+@change_tool
+call@turn_change_tool
+endp
+;--------------------------------------------
+@TURNING_PROCESS
+ENDP
+;---------------------------------------------
+@turn_change_tool
+if program_start eq 1 OR (tool_position_in_turret ne next_tool_in_turret) 
+	T_change=1
+	;---------eng of job------
+	call@spin_stop
+endif
+
+prev_tool=tool_position_in_turret	
+program_start=0	
+endp
+;-----------------------------------------
+@OUTPUT
+ENDP
+;-------------------------------------
+@spin(integer s)
+if s eq 0
+	s=spin 
+endif
+local integer i
+local string cw <<5>> M5<<5>> y
+y=tostr(s:integer_def_f)
+
+if spin_direction eq 0 ;cw
+	cw <<1>> =' M3 S1='+ y
+	if G650_log eq 1
+		cw <<1>> =' M3 S1='+y+' M24 S2='+ y
+	endif		
+	cw <<2>> =' M23 S2='+ y
+	cw <<3>> =' M80 S3='+ y
+	cw <<4>> =' M83 S4='+ y
+	cw <<5>> =' M180 S5='+ y
+else
+	cw <<1>> =' M4 S1='+ y
+	if G650_log eq 1
+		cw <<1>> =' M4 S1='+y+' M23 S2='+ y
+	endif
+	cw <<2>> =' M24 S2='+ y
+	cw <<3>> =' M81 S3='+ y
+	cw <<4>> =' M84 S4='+ y
+	cw <<5>> =' M181 S5='+ y	
+endif
+
+M5 <<1>> ='M5'
+M5 <<2>> = 'M25'
+M5 <<3>> ='M82'	
+M5 <<4>> ='M85'
+M5 <<5>>='M182'
+
+
+if t_grup eq 1
+	{cw<<1>>}
+	i=1
+endif
+
+if t_grup eq 2
+	{cw<<3>>}
+	i=3
+endif
+
+if job_machine_type eq turning
+	if t_grup eq 3
+		{cw<<1>>}
+		i=1
+	endif
+	
+	if t_grup eq 4
+		{cw<<2>>}
+		i=2
+	endif	
+else
+	if t_grup eq 3 or t_grup eq 4
+		{cw<<3>>}
+		i=3
+	endif
+endif
+
+if t_grup eq 5
+	{cw<<4>>}
+	i=4
+endif	
+
+if t_grup eq 6
+	{cw<<5>>}
+	i=5
+endif
+
+if t_grup eq 7
+	{cw<<2>>}
+	i=2
+endif
+
+S_stop = M5 <<i>>
+S_old = spin_rate	
+endp
+
+;--------------------------------------------
+
+@spin_stop	
+	if program_start ne 1;and tool_position_in_turret ne prev_tool 
+		if t_log eq 1 and G650_log eq 0
+			call@t_war_zero(('t_log')) 
+		else 
+			{nl,S_stop ,' T0',nl,'M1'}
+		endif
+	endif
+endp
+
+;----------------------------------------------
+
+@start_of_job
+;---------start of job-------
+job_of_start=1
+t_log=1
+endp	
+;----------------------------------------------
+@feed_spin
+call@m_feed_spin
+endp
+;----------------------------------------------
+@m_feed_spin
+
+if T_change eq 1
+	call@war_reed
+	call@tool_grup
+	call@tool_num
+	call@rauter
+	call@feed
+	call@machine_plane
+	{nl,nl}	
+	if G650_log eq 1 ;cut off + perehvat dlinnux detalej
+		{nl,'G630'}
+		if L_P eq 1
+			long_part=1
+		endif	
+	endif	
+	;T0800 R1 X10. Y0. Z-5. (tool_message)
+	{nl,'T'T,R,START_POS}
+	if tool_message ne ''
+		{' ('tool_message')'}
+	endif
+	;G18 G99 T08 M3 S1=1000 M88
+	{nl,'G'gcode,' G'feedunit:'z2.0(p)'' T'T} 
+	
+	if G650_log eq 1 
+		if SPINDLE_STOP_PART_OFF eq 1 or ANGLED_PART_OFF ne 0 or long_part eq 1
+			call@spin((100))
+		else
+			call@spin((0))
+		endif
+	else
+		call@spin((0))	
+	endif
+	
+	{' M88'}
+
+endif
+;----------------KONEC VUZOVA------------
+
+if S_old eq spin
+else
+	{nl}
+	call@spin((0))
+endif
+gcode = -666
+if t_log eq 1
+	{nl,'(--------'original_job_name'--------)'}
+call@t_war_zero(('t_log'))
+endif
+endp
+;---------------------------
+@rapid_move
+if job_of_start ne 0
+	gcode=0
+	{nl}
+	if change(gcode)
+		{'G'gcode' '}
+	endif
+	if synhro_t eq 5 or synhro_t eq 4
+			zhpos=-1*zhpos
+	endif
+		{[X,xmpos' '],['Y'ypos' '],['Z'zhpos' ']}
+endif
+
+if G650_log eq 1 ;cut off + perehvat dlinnux detalej
+	call@G650
+endif
+endp
+;---------------------------
+@G650	
+local string L_sub<<10>> 
+local integer i
+i=L
+L_PART<<CUT_OFF_Z>> = zpos
+{nl,'G650'}
+{nl,'G114.1 H1 D-2 R',TRANSFER_C_PICK_OFF,'(Spindle synchronization control)'}
+if SPINDLE_STOP_PART_OFF eq 1 or ANGLED_PART_OFF ne 0 or long_part eq 1
+	{nl,'M77'}
+	{nl,'G4 X.5'}
+	{nl,'M3 S1=0'}
+	if ANGLED_PART_OFF ne 0
+		{nl,'M18 C#505'}
+	else
+		{nl,'M18 C0'}
+	endif
+	{nl,'!L'L}
+	L_sub<<L>>=tostr(L:integer_def_f)
+	L=L+1
+	{nl,'!L'L}
+	L_sub<<L>>=tostr(L:integer_def_f)	
+	L=L+1
+	{nl}
+	G650_log=0
+	if L_P eq 1
+	else
+		call@spin((0))
+	endif	
+else 
+	{nl,'!L'L}
+	L_sub<<L>>=tostr(L:integer_def_f)
+	L=L+1
+	G650_log=0
+endif	
+
+ 
+{nl,'!!open file='(t_int+200)'.PRG!!'}
+{nl,nl,'G630'}
+{nl,'T3000 (Pick-off-part)'}
+{nl,'G18 G98 M88 M16'}
+{nl,'G650'}
+if ANGLED_PART_OFF ne 0
+	{nl,'G0 X-[TAN[#504]*[#501-#821+1.]]*2 Z-1.0 M16'}
+else
+	{nl,'G0 Z-1.0 M16'}
+	if SPINDLE_STOP_PART_OFF eq 0 and long_part eq 0
+		{nl,'M77 (WAIT SP SYNCH)'}
+	else
+		{nl,'!L'L_sub<<i>>}
+		i=i+1
+	endif
+{nl,'(PICK OFF LENGTH)'}
+endif	
+{nl,'G1 Z['L_PART<<CUT_OFF_Z>>'-#821] F3000'}
+{nl,'G4 U0.3'}
+{nl,'M15 (SUB CLOSE)'}
+{nl,'!L'L_sub<<i>>}
+i=i+1
+
+CUT_OFF_Z=CUT_OFF_Z+1
+{nl,'!! open file =' (t_int) '.PRG!!' }
+call@t_war_zero(('t_int'))
+endp
+
+;---------------------------
+@move_4x
+if job_of_start ne 0
+		gcode=0
+	if change(gcode)
+		{nl,'G'gcode,[X,xpos],[' Y'ypos],[' Z'zpos]}
+	endif
+endif	
+endp
+;---------------------------
+@move_5x
+if job_of_start ne 0
+	gcode=0
+	if change(gcode)
+		if synhro_t eq 5 or synhro_t eq 4
+			zpos=-1*zpos
+			bpos=-1*bpos
+		endif	
+		{nl,'G'gcode,[X,xpos],[' Y'ypos],[' Z'zpos],[' C'apos],[' B'bpos]}
+	endif
+endif	
+endp
+;-------------------------------------
+@end_of_job
+job_of_start=0
+if groove_type_cut_off eq 1
+	{nl,'G113(Spindle synchronization control cancel)'}
+	{nl,'M3 S1=300 M25'} 
+	{nl,'G4 X.6'}
+	{nl,'M50'}
+	{nl,'M56(COUNT)'}
+	t_log=1
+	cut_off_sp_speed=spin_rate
+	cut_off_t=T
+endif
+
+call@war_zero
+endp	
+;-------------------------------------
+@fourth_axis
+;if last_tool eq 1 and fourth_axis_last eq 1
+;	{nl,S_stop ,' T0',nl,'M1'}
+;endif	
+;@transform_info
+endp
+;-------------------------------------
+@MACHINE_CONTROL_OPERATION
+endp
+;-------------------------------------
+@start_obj_act
+
+if	ActionName eq 'Part Catcher'
+	synhro_t=5
+	{nl,nl}
+	call@rauter
+	{nl,'N333 (EJECT)'}
+	{nl,'M88M25M31M79G98'}
+	{nl,'M33'}
+	{nl,'G53Z33.0 M72'}
+	{nl,'M16'}
+	{nl,'M10'}
+	{nl,'G4 X0.5'}
+	{nl,'G28 W0 M73 M11',nl,nl}
+	
+endif
+endp
+
+

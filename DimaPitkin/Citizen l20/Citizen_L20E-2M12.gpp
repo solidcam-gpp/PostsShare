@@ -1,0 +1,3007 @@
+;=> Top
+; ------------------------------------------------------------------------------------------------------------------------------------------------
+; status                : Under construction
+; ------------------------------------------------------------------------------------------------------------------------------------------------
+; customer              : Doppkon
+; machine               : Citizen Machinery / Citizen_L20E-2M12 
+; type                  : Swiss Type / mill & turn / XYZCB / Y-axis in subspindle
+; Path-1 axis           : X1 Y1 Z1 C1 B1 
+; Path-2 axis           : X2 Y2 Z2 C2 
+; controller            : Mitsubishi - Meldas M70
+; CAM version           : SolidCAM-2017 SP3 Build 92645                                 
+; ------------------------------------------------------------------------------------------------------------------------------------------------
+; revision : date         : name    : description
+; 1.0      : 26.06.2018   : MRI     : For customer Doppkon & SolidCAM GmbH 
+; 1.1      : 14.07.2018   : MRI     : Heavy modified to save space in outputed program
+; 1.2      : 24.07.2018   : MRI     : Remove VMID variable "nThreadFinishDepth" because SC-2017 SP3 uses "thread_finish_allowance" in trace
+;                                     Add flag for allways use diameter values for X/Y positions with B-Axis & G950 tilt command
+; 1.3      : 26.07.2018   : MRI     : Add flag for changing between IJK or R output in @arc
+; 1.4      : 30.07.2018   : MRI     : Changed output of G900/G950/G951/G901 & add flag for output of wear offset cancel after job
+;                                     Implement milling with T51 to T54 at back spindle (no G12.1)
+; 1.5      : 01.08.2018   : MRI     : Add mco_cycles for machining with T51-T54 on back spindle
+;                                     Implement milling with T51 to T54 at back spindle XY-plane and G12.1 face
+;                                     Add "@usr_CAxisReset" for reseting the C-axis before repositioning for time saving
+;                                     Add "@usr_OutputZeroFormat" handles output for zero value e.g. X0 before it was X0. or X-0.
+; 1.6      : 09.08.2018   : MRI     : Remove checking of feed change for wrap with cycle G12.1 & G16 because there it should be always original_feed
+;                                     Changed MCO cycles so customer must check all MCO's from earlier parts to avoid surprises
+; 1.7      : 14.08.2018   : MRI     : Add flag for tool call output for cross milling tools with tool data "T0707" or without tool data "T0700"
+;                                     This was necessary because of slitting with T0900 on guide bush at AMB-2018 part
+;                                     *** Maybe this is out of date if Tool-Table V2.0 arrived ***
+; 1.8      : 15.08.2018   : MRI     : Add mco cycle parameter for phase synchronization shifting and for toggle of "M77" output
+; ------------------------------------------------------------------------------------------------------------------------------------------------
+;=> Variables
+@init_post
+;logical Variables
+  global logical bFirstRapidMove<<2>>                                                ;"True" if movement is the first rapid move
+  global logical bOutputToolWearNumber<<2>>                                          ;"True" if output of ToolWearNumber in first rapid move
+  global logical bJobActive<<2>>                                                     ;"True" if operation is milling or turning
+  global logical bMCOActive<<2>>                                                     ;"True" if operation is MCO
+  global logical bFirstCompLine<<2>>                                                 ;"True" if line is the first line with compensation
+  global logical bMCONoOutput                                                        ;"True" if no NC-Code output schould be performed
+  global logical bCylindricalInterpolation<<2>>                                      ;"True" if G12.1 + G16 active
+  global logical bFaceInterpolation<<2>>                                             ;"True" if G12.1 active
+  global logical bFaceInterpolationUsed<<2>>                                         ;"True" if G12.1 was used
+  global logical bForceInterpolationFeedOutput<<2>>                                  ;"True" for feed output after G12.1
+  global logical bCaxisOn<<2>>                                                       ;"True" if C-axis is activated
+  global logical bBaxisAlwaysDiaG950                                                 ;"True" if #8162 "G176 diameter specification enable" = "1"
+  global logical bOutputNoRadius                                                     ;"True" if we want output with IJK instead of R in @arc
+  global logical bOutputCancelWear                                                   ;"True" if we want output of "T00" after each operation
+  global logical bOutputCrossWithToolData                                            ;"True" if we want output of tool data for cross milling tools with tool call e.g. T07[07]
+  global logical bG950Active<<2>>                                                    ;"True" if G950 is already active and there is no need to change
+  global logical bG900Active<<2>>                                                    ;"True" if G900 is already active and there is no need to change
+;numeric Variables                                                                   
+  global numeric nCutOffToolOffset                                                   ;Cut off tool offset 
+  global numeric nCutOffToolWidth                                                    ;Cut off tool width
+  global numeric nSaveSpin<<2>>                                                      ;Save the last spin
+  global numeric nSaveSpinLimit<<2>>                                                 ;Save the last spin limit
+  global numeric nSaveTappSpin<<2>>                                                  ;Save the spin for tapping 
+  global numeric nSaveMachineZOffset<<2>>                                            ;Save the machine Z offset from setup
+  global numeric nSaveLastFeedForRapid<<2>>                                          ;Save the last feed rate for rapid with G1
+  global numeric nSaveLast_hpos<<2,3>>                                               ;Save the last axis position |X|Y|Z|  
+  global numeric nSaveLast_apos<<2>>                                                 ;Save the last apos value
+  global numeric nSaveLast_bpos<<2>>                                                 ;Save the last bpos value
+  global numeric nCylindricalCartesianStartA<<2>>                                    ;Save the start value of apos for G12.1 + G16
+  global numeric nFaceCartesianStartA<<2>>                                           ;Save the start value of apos for G12.1
+  global numeric nCylindricalCartesianTempY<<2>>                                     ;Save the last cartesian Y value for G12.1 + G16
+  global numeric nCylindricalCartesianY<<2>>                                         ;Save the calculated cartesian Y value for output
+  global numeric nBAxisApproach_X                                                    ;B-Axis approach diameter after tool call or new bpos
+  global numeric nSaveLastFeedForWrap<<2>>                                           ;Save the last calculated feed rate for wrap
+  global numeric nSaveFirstanext<<2>>                                                ;Save the first anext position @start_of_job
+;integer Variables                                                                   
+  global integer iUsedSolidCAMVersion                                                ;SolidCAM version for GPP                   
+  global integer iSaveLastFeedUnit<<2>>                                              ;Save the last active feed unit
+  global integer iSaveJobFeedUnit<<2>>                                               ;Save the job feed unit
+  global integer iSaveSpinUnit<<2>>                                                  ;Save the last spin unit
+  global integer iSaveSpinDirection<<2>>                                             ;Save the last spin direction
+  global integer iSavePlane<<2>>                                                     ;Save the last plane (G17/G18/G19)
+  global integer iSaveToolCall<<2>>                                                  ;Save the last tool call
+  global integer iSaveToolNumber<<2>>                                                ;Save the last tool number
+  global integer iSaveToolWearNumber<<2>>                                            ;Save the last tool wear number
+  global integer iSaveSpindelNumber<<2>>                                             ;Save the last spindle number
+  global integer iSaveTurretNumber<<2>>                                              ;Used Turret from VMID  
+  global integer iSpinMCode<<2>>                                                     ;Spin M-Code
+  global integer iTrans4xCount<<2>>                                                  ;Counter for 4x transformation
+  global integer iProcSubProgram                                                     ;Counter for sub program output at job
+;string Variables 
+  global string  sSavePatternName<<2>>                                               ;Save the axes pattern name
+  global string  sSaveLastPatternName<<2>>                                           ;Save the last axes pattern name
+  global string  sSaveSpinSCode<<2>>                                                 ;Save the spin S-Code
+  global string  toolNumber_f                                                        ;Format style of tool call output
+  global string  wearNumber_f                                                        ;Format style of tool wear number output
+  global string  spin_f                                                              ;Format style of spin output
+  global string  radius_f                                                            ;Format style of radius output
+  global string  bpos_f                                                              ;Format style of B-Axis output
+  global string  dapos_f                                                             ;Format style of C-Axis incremental output
+  global string  xonext_f yonext_f zonext_f                                          ;Format style of onext coordinates
+  global string  xocenter_rel_f yocenter_rel_f zocenter_rel_f                        ;Format style of ocenter_rel
+  global string  xlcenter_rel_f ylcenter_rel_f zlcenter_rel_f                        ;Format style of lcenter_rel
+  global string  xhcenter_rel_f yhcenter_rel_f zhcenter_rel_f                        ;Format style of hcenter_rel
+  global string  ywcenter_rel_f zwcenter_rel_f                                       ;Format style of wcenter_rel
+  global string  shift_x_after_rot_f shift_y_after_rot_f shift_z_after_rot_f         ;Format style of shift_after_rot coordinates
+  global string  Drill_R_f                                                           ;Format style of G8x R-value
+  global string  Drill_Q_f                                                           ;Format style of G8x Q-value
+  global string  Drill_P_f                                                           ;Format style of G8x P-value
+  global string  QCommand_f                                                          ;Format style of Q-command at Tool call 
+  global string  ECommand_f                                                          ;Format style of E-command at Tool call
+  global string  sG140Setting<<2,4>>                                                 ;Contains the current G140 axis setting
+  global string  sUserToolType<<100,3,1>>                                            ;Contains the tool type description
+  global string  sFeedUnit<<2>>                                                      ;Contains the feed unit string
+  global string  sFeedForRapid<<2>>                                                  ;Contains the complete feed for rapid string                              
+  global string  sSaveFormat_xopos<<2>>                                              ;Save the format string for xopos
+  global string  sCompCode<<2>>                                                      ;Save the compensation G-code G40/G41/G42
+  
+  numeric_def_f        = '5.3'
+  integer_def_f        = '8.0(p)'  
+  toolNumber_f         = '<T>z4.0(p)< >'
+  wearNumber_f         = '<T>z2.0(p)< >'  
+  gcode_f              = '<G>3.1(p)< >'
+  mcode_f              = '<M>3.0(p)< >'  
+  xpos_f               = '<X>5.3< >'
+	zpos_f               = '<Z>5.3< >'
+	ypos_f               = '<Y>5.3< >' 
+  xopos_f              = '<X>5.3< >'
+  yopos_f              = '<Y>5.3< >'
+	zopos_f              = '<Z>5.3< >'
+  xhpos_f              = '<X>5.3< >'
+  yhpos_f              = '<Y>5.3< >'
+  zhpos_f              = '<Z>5.3< >'
+  xlpos_f              = '<X>5.3< >'
+  ylpos_f              = '<Y>5.3< >'
+  zlpos_f              = '<Z>5.3< >'
+  xonext_f             = '<X>5.3< >'
+  yonext_f             = '<Y>5.3< >'
+  zonext_f             = '<Z>5.3< >'
+  xocenter_rel_f       = '<I>5.3< >'
+  yocenter_rel_f       = '<J>5.3< >'
+  zocenter_rel_f       = '<K>5.3< >'
+  xlcenter_rel_f       = '<I>5.3< >'
+  ylcenter_rel_f       = '<J>5.3< >'
+  zlcenter_rel_f       = '<K>5.3< >'
+  xhcenter_rel_f       = '<I>5.3< >'
+  yhcenter_rel_f       = '<J>5.3< >'
+  zhcenter_rel_f       = '<K>5.3< >'
+  ywcenter_rel_f       = '<J>5.3< >'
+  zwcenter_rel_f       = '<K>5.3< >'
+  apos_f               = '<C>5.3< >'
+  dapos_f              = '<H>5.3< >'
+  bpos_f               = '<B>5.3< >'
+  spin_f               = '<S>5.0(n)< >'
+  feed_f               = '<F>4.3(p)< >'
+  radius_f             = '<R>5.4< >'
+  Drill_R_f            = '<R>5.4< >'
+  Drill_Q_f            = '<Q>5.4< >'                             
+  Drill_P_f            = '<P>5.4< >'
+  QCommand_f           = '<Q>8.0(p)< >'
+  ECommand_f           = '<E>5.3< >'
+                    
+  bBaxisAlwaysDiaG950  = True           ;"True" if parameter #8162 "G176 diameter specification enable" = "1"
+  bOutputNoRadius      = True           ;"True" if we want output with IJK instead of R in @arc
+  bOutputCrossWithToolData  = False     ;"True" if we want output of tool data for e.g. T07[07] Set to "False" for T07[00] tool call without tool data
+  bOutputCancelWear    = False          ;"True" if we want output of "T00" after each operation at "end_of_job"
+  nBAxisApproach_X     = 100.0          ;B-axis approach diameter
+  iUsedSolidCAMVersion = 91266          ;Minimum version of SolidCAM  
+  
+  blknum_letter = 'N' 
+  blknum_f = '5.0(p)'
+  blknum_gen = False
+  blknum_exist = True
+  blknum = 5                             
+  blknum_delta = 5
+  blknum_max = 99999
+  num_user_procs = 0  
+  
+  global integer iTraceMode iTraceCount
+  if iTraceCount eq 0
+     iTraceCount = iTraceCount + 1
+     input 'trace 0 = no ... trace 5 = all:' iTraceMode
+     trace"all": iTraceMode
+  endif
+endp                              
+
+;-------------------
+
+@sync_process
+  local string sPatternName
+  local string sWCommand
+  local numeric nAxisValueZ2  
+  
+  {nl}
+  nAxisValueZ2 = get_axis_value_in_lable(Sync_Data_Name,'Z2',sync_label)
+  sPatternName = get_axes_pattern_name(Sync_Data_Name,ChannelID,sync_label)
+  if sync_label gt 1
+    sSaveLastPatternName<<ChannelID>> = get_axes_pattern_name(Sync_Data_Name,ChannelID,sync_label-1)
+  endif
+  if Last_Sync ne 1  
+    if sPatternName ne sSavePatternName<<ChannelID>>
+      if ChannelID eq 2 
+        if sPatternName ne 'G600' and sPatternName ne 'G610' and sPatternName ne 'G630'
+          if nAxisValueZ2 gt 0.0
+            sWCommand = ' W0'       
+          endif
+        endif         
+      endif 
+      {nb,sPatternName,sWCommand}
+    else
+      if ChannelID eq 1 
+        {nb,'!2L',sync_label:'3.0(p)','(WARTEN AUF KANAL $2)'}
+      endif
+      if ChannelID eq 2 
+        {nb,'!1L',sync_label:'3.0(p)','(WARTEN AUF KANAL $1)'}
+      endif                
+    endif
+    sSavePatternName<<ChannelID>> = sPatternName
+  endif
+endp
+
+;-------------------
+
+@change_tool
+  call @usr_MCONoOutput
+  call @usr_ChangeTool
+endp
+
+;-------------------
+
+@turn_change_tool
+  call @usr_MCONoOutput
+  call @usr_ChangeTool
+endp
+
+;-------------------
+
+@usr_MCONewLine
+  if MCO_New_Line eq 0 
+    {' '}
+  else
+    {nb,''}
+  endif
+endp
+
+;-------------------
+
+@mco_message
+  local integer iCount iPos iRow iRows
+  local string sLines<<50>>
+  
+  if prev_command  ne '@start_obj_act'
+    call @usr_ErrorMessage((5))
+  endif
+  if instr(lower(message),'nocode') gt 0
+    bMCONoOutput = True
+  else
+    call @usr_ReplacedString(message) 
+    iCount = 0
+    iRow = 1
+    iRows = iRow
+    if strlen(message) ne 0
+      call @usr_MCONewLine
+      while iCount le strlen(message)
+        iCount = iCount + 1  
+        iPos = instr(message,'\n',iCount)
+        if iPos ne 0 
+          sLines<<iRow>> = substr(message,iCount,(iPos-iCount))
+          iRow = iRow + 1
+          iRows = iRow
+          iCount = iPos
+        else
+          sLines<<iRow>> = substr(message,iCount,(strlen(message)-iCount+1))
+          iCount = (strlen(message)+1)
+        endif                      
+      endw  
+      iRow = 1
+      while iRow le iRows 
+        {nb,'(',sLines<<iRow>>,')'}
+        iRow = iRow + 1
+      endw
+    endif
+  endif
+endp
+
+;-------------------
+
+@usr_MCONoOutput
+  if bMCONoOutput eq True
+    Exit
+  endif 
+endp
+
+;-------------------
+
+@end_obj_act
+  bMCONoOutput = False
+endp
+
+;-------------------
+
+@machine_stop
+  call @usr_MCONoOutput
+  if machine_stop eq 1 
+    call @usr_MCONewLine
+    {(0):mcode_f}  
+  endif
+endp
+
+;-------------------
+
+@machine_opt_stop
+  call @usr_MCONoOutput
+  if optional_stop eq 1 
+    call @usr_MCONewLine
+    {(1):mcode_f}
+  endif
+endp
+
+;-------------------
+
+@dwell
+  call @usr_MCONoOutput
+  if dwell_time gt 0.0 
+    call @usr_MCONewLine
+    {(4):gcode_f,'U',dwell_time:numeric_def_f}
+  endif
+endp
+
+;-------------------
+
+@active_air_through_spindle
+  call @usr_MCONoOutput
+  call @usr_MCONewLine
+  if air_blast_coolant eq 1
+    {(72):mcode_f,'(LUFT DURCH GEGENSPINDEL EIN)'}
+  else
+    {(73):mcode_f,'(LUFT DURCH GEGENSPINDEL AUS)'}
+  endif
+endp
+
+;-------------------
+
+@move_object
+  call @usr_MCONoOutput  
+  if is_rapid_move eq 1               
+    gcode = 0
+  else
+    gcode = 1     
+  endif
+  if MCO_CoordSysType eq 2 
+    {nb,gcode,[xh_move:xhpos_f],[yh_move:yhpos_f],[zh_move:zhpos_f],['F',feed_move:integer_def_f]}
+  else
+    {nb,(53):gcode_f,gcode}
+      {[move_axis_x:'<X>5.3< >']}
+      {[move_axis_y:'<Y>5.3< >']}
+      {[move_axis_z:'<Z>5.3< >']}
+      {['F',feed_move:integer_def_f]}
+  endif 
+endp
+
+;-------------------
+
+@unload_tool
+  if tool_number eq 30
+    call @usr_MCONewLine
+    {(33):mcode_f}
+  endif
+endp   
+
+;-------------------
+
+@spin
+  call @usr_MCONoOutput 
+  if spin_direction ne 3
+    spin = spin_rate
+    spin_direction = spin_direction - 1 
+    spin_unit = rpm
+    call @usr_feed_spin  
+  else
+    call @usr_MCONewLine 
+    {(5):mcode_f}
+  endif
+endp
+
+;-------------------
+
+@mco_cycle
+  if MCO_CycleName eq 'PartEject'
+    {nb,'M25(GS-DREHZAHL STOP)'} ;Back spindle stop
+    {nb,'M33(AUSWURFPOSITION)'} ;Move to the part eject position
+    if bAirTroughSpindle eq True
+      {nb,'M72(LUFT DURCH GEGENSPINDEL EIN)'} ;Back spindle air blow ON
+    endif
+    {nb,'G0 Z',nZPartEjectPosition:numeric_def_f}
+    {nb,'M16(GS-SPANNZANGE OEFFNEN)'} ;Back spindle chuck open
+    {nb,'G4 U',nPartEjectDwell:numeric_def_f}
+    {nb,'M10(AUSWERFER VOR)'}
+    {nb,'G4 U',nPartEjectDwell:numeric_def_f}
+    {nb,'M11(AUSWERFER ZURUECK)'} 
+    {nb,'G53 Z0'}
+    if bAirTroughSpindle eq True
+      {nb,'M73(LUFT DURCH GEGENSPINDEL AUS)'} ;Back spindle air blow OFF
+    endif
+    {nb,'M31'} ;Work conveyor ON                          
+  endif
+  if MCO_CycleName eq 'Z1_PositioningForCutOff'
+    {nb,'G97 M3 S1=',nZ1PosForCutOffSpin:integer_def_f}
+    {nb,(nZ1PosForCutOffToolNo * 100 + nZ1PosForCutOffToolNo):toolNumber_f,'Z#140'}
+    iSaveToolNumber<<1>> = (nZ1PosForCutOffToolNo * 100) ;e.g. T0100
+    iSaveToolCall<<1>> = (nZ1PosForCutOffToolNo * 100 + nZ1PosForCutOffToolNo) ;e.g. T0101
+    iSaveToolWearNumber<<1>> = nZ1PosForCutOffToolNo ;e.g. T01
+;    {nb,'G97 S1=',nZ1PosForCutOffSpin:integer_def_f,' M3',' S2=',nZ1PosForCutOffSpin:integer_def_f,' M24'}
+;    {nb,'G0 Z',(nZ1PosForCutOffZ * -1):numeric_def_f}
+;    {nb,'G114.1 H1 D-2 R0(SPINDELSYNCH.EIN)'} ;Spindle Synchronization Control ON
+;    {nb,'G0 Y0 Z#140'}
+  endif
+  if MCO_CycleName eq 'Z1_Positioning'
+    if nZ1PosSpin gt 0.0
+      {nb,'G97 S1=',nZ1PosSpin:integer_def_f,' M3'}
+    endif
+    {nb,(nZ1PosToolNo * 100):toolNumber_f}
+    iSaveToolNumber<<1>> = (nZ1PosToolNo * 100) ;e.g. T0100
+    iSaveToolCall<<1>> = (nZ1PosToolNo * 100) ;e.g. T0100
+    iSaveToolWearNumber<<1>> = 0 ;e.g. T00
+    {nb,(53):gcode_f,'Z[',nZ1PosZ:numeric_def_f,'-#141]'}  
+  endif
+  if MCO_CycleName eq 'Spindle_Synch_ON'
+    {nb,'G97 M3 S1=',nZ1PosForCutOffSpin:integer_def_f,' M24 S2=',nZ1PosForCutOffSpin:integer_def_f}
+    local string sTempShiftPhaseSynch
+    if bPhaseSynch eq True 
+      if nShiftPhaseSynch lt 0.0 or nShiftPhaseSynch gt 359.999
+        call @usr_ErrorMessage((19)) ;nShiftPhaseSynch out of range        
+      endif
+      call @usr_OutputZeroFormat((ToStr(nShiftPhaseSynch:'<R>5.3< >')),sTempShiftPhaseSynch)      
+    endif
+    {nb,'G114.1 H1 D-2 ',sTempShiftPhaseSynch,'(SPINDELSYNCH.EIN)'} ;Spindle Synchronization Control ON
+    if bPhaseSynch eq True
+      {nb,'M77(AUF DREHZAHLSYNCH.WARTEN)'} ;Wait until spindle synchronization is completed
+    endif
+  endif
+  if MCO_CycleName eq 'Z2_PositioningForPartCatch'
+    if sSavePatternName<<2>> ne 'G650'
+      call @usr_ErrorMessage((17))
+    endif                    
+    {nb,'M16(GS-SPANNZANGE OEFFNEN)'} ;Back spindle chuck open
+    if bAirTroughSpindle eq True
+      {nb,'M72(LUFT DURCH GEGENSPINDEL EIN)'} ;Back spindle air blow ON
+    endif
+    {nb,'G0 Z',(nZ2_PartCatchFirstPos * -1):numeric_def_f}
+    {nb,'G1 G98 Z',(nZ2_PartCatchClampPos * -1):numeric_def_f,' F',nZ2_PartCatchFeed:integer_def_f}
+    {nb,'G4 U0.3'}
+    if bAirTroughSpindle eq True
+      {nb,'M73(LUFT DURCH GEGENSPINDEL AUS)'} ;Back spindle air blow OFF
+    endif
+    if bPhaseSynch eq False
+      {nb,'M77(AUF DREHZAHLSYNCH.WARTEN)'} ;Wait until spindle synchronization is completed
+    endif
+    {nb,'M15(GS-SPANNZANGE SCHLIESSEN)'} ;Back spindle chuck close
+    {nb,'G4 U0.2'} 
+  endif
+  if MCO_CycleName eq 'Z2_PartReCatch'
+    if sSaveLastPatternName<<2>> ne 'G620'
+      call @usr_ErrorMessage((18))
+    endif                    
+    {nb,'M16(GS-SPANNZANGE OEFFNEN)'} ;Back spindle chuck open
+    if bAirTroughSpindle eq True
+      {nb,'M72(LUFT DURCH GEGENSPINDEL EIN)'} ;Back spindle air blow ON
+    endif
+    {nb,'G1 G98 Z',(nZ2_PartReCatchClampPos * -1):numeric_def_f,' F',nZ2_PartReCatchFeed:integer_def_f}
+    {nb,'G4 U0.3'}
+    if bAirTroughSpindle eq True
+      {nb,'M73(LUFT DURCH GEGENSPINDEL AUS)'} ;Back spindle air blow OFF
+    endif
+    {nb,'M15(GS-SPANNZANGE SCHLIESSEN)'} ;Back spindle chuck close
+    {nb,'G4 U0.2'} 
+  endif
+  if MCO_CycleName eq 'PrgEndWithBarChange'
+    {nb,'G113(SPINDELSYNCH.AUS)'} ;Spindle Synchronization Control OFF
+    {nb,'M25'} ;Back spindle stop
+    {nb,'M8'} ;Enable bar stock exchange program
+    {nb,'M8'}
+    {nb,'/M98 P1111'}
+    {nb,'M9'} ;Completed bar stock exchange program
+    {nb,'M5'}
+    {nb,'M7'} ;Main spindle chuck open
+    {nb,'G4 U0.5'}
+    {nb,'G0 ',nPrepCutOff_X:xpos_f,'T00'}
+    {nb,'G53 Z[205.0-#818]'}
+    {nb,'M56'} ;Counter 
+  endif
+  if MCO_CycleName eq 'B_Axis_Refpoint'
+    {nb,((itool_number + 10) * 100):toolNumber_f,(100):xpos_f}
+    iSaveToolNumber<<1>> = (itool_number + 10) * 100
+    iSaveToolCall<<1>> = (itool_number + 10) * 100
+    iSaveToolWearNumber<<1>> = 0  
+    {nb,(910):gcode_f,(90):bpos_f}
+    nSaveLast_bpos<<ChannelID>> = 90.0
+  endif
+  if MCO_CycleName eq 'T3000_BS_Washing'
+    {nb,'T3000'}
+    {nb,'MB1(SPINDELSPUELUNG EIN)'}
+    {nb,'G4 U',nDwell:numeric_def_f}
+    {nb,'MB11(SPINDELSPUELUNG AUS)'}
+    iSaveToolNumber<<2>> = 3000
+    iSaveToolCall<<2>> = 3000
+    iSaveToolWearNumber<<2>> = 0
+  endif
+  if MCO_CycleName eq 'T3000_Anwaehlen'
+    {nb,'T3000'}
+    iSaveToolNumber<<2>> = 3000
+    iSaveToolCall<<2>> = 3000
+    iSaveToolWearNumber<<2>> = 0
+  endif
+  if MCO_CycleName eq 'T5xxx_Voranwahl'                        
+    {nb,((iT5xxxToolNumber + 10) * 100):toolNumber_f,(100):xpos_f}
+    {nb,(910):gcode_f,(0):bpos_f}
+    iSaveToolNumber<<1>> = (iT5xxxToolNumber + 10) * 100
+    iSaveToolCall<<1>> = (iT5xxxToolNumber + 10) * 100
+    iSaveToolWearNumber<<1>> = 0     
+  endif
+  if MCO_CycleName eq 'BS-OptionalBlockSkip'
+    if bBSOptionalBlockSkip eq 1  
+      {nl}
+      {nb,(239):mcode_f,'(OPT.SATZSPRUNG)'}
+    endif
+    if bBSOptionalBlockSkip eq 0
+      {nl}
+      {nl,'N19999(ZIEL-OPT.SATZSPRUNG)'}
+      iSaveToolNumber<<2>> = 999999
+      iSaveToolCall<<2>> = 999999
+      iSaveToolWearNumber<<2>> = 999999
+    endif  
+  endif
+endp
+
+;-------------------
+
+@start_mach_ctrl
+  local string sTempString
+
+  bMCOActive = True
+  feed_unit = 0  
+  if iSpinMCode<<ChannelID>> ge 80                                
+    call @usr_CancelMillSpin
+  endif 
+  call @usr_SaveTurretNumber
+  call @usr_AxisDimensions
+  call @usr_ResetSaved
+  nSaveLast_apos<<ChannelID>> = 999999.0 ;|C|    
+  sTempString = upper(machine_control_name)
+  if instr(sTempString,'Z2-WEGFAHREN NACH ABSTECHEN') ne 0
+    ;Do nothing
+  elseif instr(sTempString,'OPTIONALER SATZSPRUNG') ne 0
+    ;Do nothing
+  elseif instr(sTempString,'Z1+Z2 SYNCHRON EIN') ne 0      
+    ;Do nothing  
+  elseif instr(sTempString,'Z1+Z2 SYNCHRON AUS') ne 0
+    ;Do nothing
+  elseif instr(sTempString,'S1+S2 SYNCHRON EIN') ne 0
+    ;Do nothing  
+  elseif instr(sTempString,'S1+S2 SYNCHRON AUS') ne 0
+    ;Do nothing
+  elseif instr(sTempString,'Z2 AUF REFERENZ') ne 0
+    ;Do nothing  
+  elseif instr(sTempString,'X2-Z2 VORPOSITIONIEREN') ne 0
+    ;Do nothing  
+  else
+    call @usr_JobDescription
+  endif     
+endp
+
+;-------------------
+
+@working_mode
+  job_machine_type = MCO_Working_Mode - 1   
+endp                        
+ 
+;-------------------
+
+@end_mach_ctrl
+  bMCOActive = False
+endp
+
+;-------------------
+
+@usr_JobDescription
+  if iTrans4xCount<<ChannelID>> le 1
+    {nl}                    
+    {nb,'(JOB-NR.',ToStr(index_job:integer_def_f),')'}
+    if bMCOActive eq True
+      call @usr_ReplacedString(machine_control_name)
+      {nb,'(MCO - 'machine_control_name')'}
+    else
+      call @usr_ReplacedString(original_job_name)
+      {nb,'('original_job_name')'}    
+    endif
+  endif
+endp
+
+;-------------------
+
+@setup
+  if submachine_ID eq 1
+    nSaveMachineZOffset<<1>> = machine_offset_z
+  endif
+  if submachine_ID eq 4
+    nSaveMachineZOffset<<2>> = machine_offset_z
+  endif
+endp 
+
+;-------------------
+
+@usr_SaveTurretNumber
+  iSaveTurretNumber<<ChannelID>> = get_turret_num(submachine_ID)  
+endp
+
+;-------------------
+
+@usr_BAxis(integer iMode)
+  local logical bInclined
+  local numeric nXApproach nYApproach nZApproach 
+  local string snXApproach snYApproach snZApproach sbnext
+  local string sshift_x_after_rot sshift_z_after_rot                                 
+  
+  if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+    bInclined = True
+    if X5_job eq True
+      if rot_axis_type eq axis4_radial or rot_axis_type eq axis4_face or rot_axis_type eq axis4_none
+        bInclined = False
+      endif 
+    else
+      if rot_axis_type eq axis4_radial or rot_axis_type eq axis4_face
+        if rot_axis_coord eq axis4_polar or rot_axis_coord eq axis4_cartesian
+          bInclined = False
+        endif    
+      endif
+    endif
+    nXApproach = xonext
+    nYApproach = yonext
+    nZApproach = zonext
+    if nSaveLast_bpos<<ChannelID>> eq 999999.0 
+      nXApproach = (xonext + 20.0)
+    else   
+      if bnext ne nSaveLast_bpos<<ChannelID>> and iTrans4xCount<<ChannelID>> le 1 
+        call @usr_OutputZeroFormat((ToStr((nBAxisApproach_X / 2):xonext_f)),snXApproach)
+        {nb,(0):gcode_f,snXApproach}
+      endif
+    endif
+    if iMode eq 1      
+      if bG900Active<<ChannelID>> eq False        
+        if iSavePlane<<ChannelID>> ne 18
+          {nb,(18):gcode_f}
+          iSavePlane<<ChannelID>> = 18
+        endif 
+        call @usr_OutputZeroFormat((ToStr(nXApproach:xonext_f)),snXApproach)
+        call @usr_OutputZeroFormat((ToStr(nZApproach:zonext_f)),snZApproach)
+        call @usr_OutputZeroFormat((ToStr(nYApproach:yonext_f)),snYApproach)  
+        {nb,(900):gcode_f}
+          {snXApproach}
+          {snZApproach}
+          {snYApproach}
+        if iSaveTurretNumber<<ChannelID>> eq 3
+          call @usr_OutputZeroFormat((ToStr(bnext:bpos_f)),sbnext)
+        endif
+        if iSaveTurretNumber<<ChannelID>> eq 4
+          call @usr_OutputZeroFormat((ToStr((-1 * bnext):bpos_f)),sbnext)
+        endif        
+        {sbnext}        
+        nSaveLast_bpos<<ChannelID>> = bnext       
+        bG900Active<<ChannelID>> = True
+      endif           
+      if bInclined eq True and bG950Active<<ChannelID>> eq False
+        if shift_y_after_rot ne 0.0
+          call @usr_ErrorMessage((7))
+        endif     
+        {nb,(950):gcode_f}
+          call @usr_OutputZeroFormat((ToStr(shift_x_after_rot:shift_x_after_rot_f)),sshift_x_after_rot)
+          call @usr_OutputZeroFormat((ToStr(shift_z_after_rot:shift_z_after_rot_f)),sshift_z_after_rot)
+          {sshift_x_after_rot}
+          {sshift_z_after_rot}       
+          ;{shift_y_after_rot:shift_y_after_rot_f} ;Y not needed because machine manual is wrong about G950 X.. Z.. Y..            
+        bG950Active<<ChannelID>> = True               
+      endif                     
+    endif
+    if iMode eq 0
+      if bInclined eq True and bG950Active<<ChannelID>> eq True
+        if used_in_transform_4x eq 0 or iTrans4xCount<<ChannelID>> eq 0
+          {nb,(951):gcode_f}  
+          bG950Active<<ChannelID>> = False         
+        endif
+      endif      
+      if used_in_transform_4x eq 0 or iTrans4xCount<<ChannelID>> eq 0 
+        if bG900Active<<ChannelID>> eq True           
+          {nb,(901):gcode_f}      
+          if iSaveTurretNumber<<ChannelID>> eq 4
+            {'B0 '}
+            nSaveLast_bpos<<ChannelID>> = 0.0
+          endif       
+          bG900Active<<ChannelID>> = False               
+        endif                             
+      endif      
+    endif
+  endif
+endp
+
+;-------------------
+
+@fourth_axis
+  local string sIndexAngle
+
+  if fourth_axis_last ne 1
+    gcode = 0
+    call @usr_OutputZeroFormat((ToStr((nSaveFirstanext<<ChannelID>> - angle):apos_f)),sIndexAngle)
+    call @usr_CAxisReset((nSaveFirstanext<<ChannelID>> - angle))
+    {nb,[gcode],sIndexAngle}
+    nSaveLast_apos<<ChannelID>> = nSaveFirstanext<<ChannelID>> - angle          
+  else
+    iTrans4xCount<<ChannelID>> = 0
+    call @usr_SubProgOutput((0)) ;Cancel output into sub program
+    call @usr_BAxis((0))
+    call @usr_CancelWearOffset
+    if next_job_machine_type ne job_machine_type        
+      call @usr_CancelMillSpin
+    endif
+  endif
+endp
+
+;-------------------
+                                        
+@turn_drill
+  call @usr_sFeedUnit
+  call @usr_OutputFeedUnit  
+  if drill_cycle_name eq 'G81'
+    {nb,(81):gcode_f}
+    {drill_lower_z:zopos_f}
+    {feed:feed_f}
+  endif  
+  if drill_cycle_name eq 'G83'
+    {nb,(83):gcode_f}
+    {drill_lower_z:zopos_f}
+    if down_step gt 0.0
+      {down_step:Drill_Q_f}
+    endif    
+    if nG83_P ne 0.0
+      {nG83_P:Drill_P_f}
+    endif
+    {feed:feed_f}
+  endif
+  if drill_cycle_name eq 'G84'
+    feed_f  = '<F>4.3(p)< >'
+    spin_f  = '<S>5.0(n)< >'
+    {nb,(84):gcode_f}
+    {drill_lower_z:zopos_f} 
+    {tool_drill_lead:feed_f}
+    if spin_direction eq cw
+      {'D' + ToStr(iSaveSpindelNumber<<ChannelID>>:integer_def_f) + ' '}
+    else
+      {'D-' + ToStr(iSaveSpindelNumber<<ChannelID>>:integer_def_f) + ' '}
+    endif
+    {nSaveTappSpin<<ChannelID>>:spin_f}
+    {',R1'}    
+  endif
+  call @end_drill   
+endp
+
+;-------------------
+
+@drill       
+  local numeric nDrillLowerZ nDrillClearance nDrillUpperZ nDrill_R
+  local string  sDrillLower_f
+ 
+  if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+    if rot_axis_type eq axis4_radial and rot_axis_coord eq axis4_polar
+      nDrillLowerZ    = drill_lower_zo
+      nDrillClearance = drill_clearance_zo
+      nDrillUpperZ    = drill_upper_zo
+      sDrillLower_f   = xopos_f
+    else 
+      nDrillLowerZ    = drill_lower_zl
+      nDrillClearance = drill_clearance_zl
+      nDrillUpperZ    = drill_upper_zl
+      sDrillLower_f   = zlpos_f
+    endif
+  else
+    nDrillLowerZ      = drill_lower_zo
+    nDrillClearance   = drill_clearance_zo
+    nDrillUpperZ      = drill_upper_zo                 
+    if abs(mounting_direction_x) eq 1.0
+      sDrillLower_f   = xopos_f 
+    endif
+    if abs(mounting_direction_z) eq 1.0
+      sDrillLower_f   = zopos_f
+    endif
+  endif
+  nDrill_R = nDrillClearance - nDrillUpperZ
+  if nDrill_R lt 0.0
+    call @usr_ErrorMessage((11))
+  endif 
+  call @rapid_move  
+  if drill_cycle_name eq 'G81'
+    if abs(mounting_direction_z) ne 1.0
+      call @usr_ErrorMessage((2))
+    endif
+    {nb,(81):gcode_f}
+    {nDrillLowerZ:sDrillLower_f}
+    if nDrill_R ne 0.0
+      {nDrill_R:Drill_R_f}
+    endif
+    {feed:feed_f}
+  endif
+  if drill_cycle_name eq 'G83/G87'    
+    if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+      if rot_axis_type eq axis4_radial and rot_axis_coord eq axis4_polar
+        {nb,(87):gcode_f}
+      else
+        {nb,(83):gcode_f}
+      endif
+    else
+      if abs(mounting_direction_x) eq 1.0
+        {nb,(87):gcode_f}
+      endif
+      if abs(mounting_direction_z) eq 1.0
+        {nb,(83):gcode_f}
+      endif
+    endif
+    {nDrillLowerZ:sDrillLower_f}
+    if down_step gt 0.0
+      {down_step:Drill_Q_f}
+    endif    
+    if nG83G87_P ne 0.0
+      {nG83G87_P:Drill_P_f}
+    endif
+    if nDrill_R ne 0.0
+      {nDrill_R:Drill_R_f}
+    endif
+    {feed:feed_f}
+  endif
+  if drill_cycle_name eq 'G84/G88'
+    if abs(mounting_direction_x) eq 1.0
+      {nb,(88):gcode_f}
+    endif
+    if abs(mounting_direction_z) eq 1.0
+      {nb,(84):gcode_f}
+    endif
+    feed_f  = '<F>4.3(p)< >'
+    spin_f  = '<S>5.0(n)< >' 
+    {nDrillLowerZ:sDrillLower_f}
+    if nDrill_R ne 0.0
+      {nDrill_R:Drill_R_f}
+    endif   
+    {tool_drill_lead:feed_f}
+    if spin_direction eq cw
+      {'D' + ToStr(iSaveSpindelNumber<<ChannelID>>:integer_def_f) + ' '}
+    else
+      {'D-' + ToStr(iSaveSpindelNumber<<ChannelID>>:integer_def_f) + ' '}
+    endif
+    {nSaveTappSpin<<ChannelID>>:spin_f}
+    {',R1'}    
+  endif
+endp
+
+;-------------------
+
+@drill_point
+  local string sDownstep
+  local string sxopos syopos szopos 
+  local string sxlpos sylpos
+  local string sapos
+  
+  if first_drill ne True
+    if down_step gt 0.0 
+      sDownstep = ToStr(down_step:Drill_Q_f)
+    endif  
+    if rot_axis_type eq axis4_radial and rot_axis_coord eq axis4_polar
+      call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+      call @usr_OutputZeroFormat((ToStr(apos:apos_f)),sapos)
+      Change(szopos) = Change(zopos)
+      Change(sapos) = Change(apos)
+      {nb,[szopos],[sapos],sDownstep}
+      nSaveLast_apos<<ChannelID>> = apos
+    else
+      if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+        call @usr_OutputZeroFormat((ToStr(xlpos:xlpos_f)),sxlpos)
+        call @usr_OutputZeroFormat((ToStr(ylpos:ylpos_f)),sylpos)
+        Change(sxlpos) = Change(xlpos)
+        Change(sylpos) = Change(ylpos)      
+        {nb,[sxlpos],[sylpos],sDownstep}
+      else
+        if iSavePlane<<ChannelID>> eq 17 
+          call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+          call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+          Change(sxopos) = Change(xopos)
+          Change(syopos) = Change(yopos)       
+          {nb,[sxopos],[syopos],sDownstep}
+        endif
+        if iSavePlane<<ChannelID>> eq 19
+          call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+          call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+          Change(syopos) = Change(yopos)
+          Change(szopos) = Change(zopos)
+          {nb,[syopos],[szopos],sDownstep}
+        endif           
+      endif
+    endif
+  endif
+endp
+
+;-------------------
+
+@end_drill
+  gcode = 80
+  {nb,gcode}
+  nSaveLastFeedForRapid<<ChannelID>> = 999999.0
+endp
+
+;-------------------
+
+@usr_MsgTool
+  if job_machine_type eq milling
+    if msg_mill_tool1 ne ''
+      call @usr_ReplacedString(msg_mill_tool1)
+      {nb,'(',msg_mill_tool1,')'}      
+    endif
+    if msg_mill_tool2 ne ''
+      call @usr_ReplacedString(msg_mill_tool2)
+      {nb,'(',msg_mill_tool2,')'}      
+    endif
+    if msg_mill_tool3 ne ''
+      call @usr_ReplacedString(msg_mill_tool3)
+      {nb,'(',msg_mill_tool3,')'}      
+    endif
+    if msg_mill_tool4 ne ''
+      call @usr_ReplacedString(msg_mill_tool4)
+      {nb,'(',msg_mill_tool4,')'}      
+    endif
+    if msg_mill_tool5 ne ''
+      call @usr_ReplacedString(msg_mill_tool5)
+      {nb,'(',msg_mill_tool5,')'}      
+    endif
+  else
+    if msg_turn_tool1 ne ''
+      call @usr_ReplacedString(msg_turn_tool1)
+      {nb,'(',msg_turn_tool1,')'}      
+    endif
+    if msg_turn_tool2 ne ''
+      call @usr_ReplacedString(msg_turn_tool2)
+      {nb,'(',msg_turn_tool2,')'}      
+    endif
+    if msg_turn_tool3 ne ''
+      call @usr_ReplacedString(msg_turn_tool3)
+      {nb,'(',msg_turn_tool3,')'}      
+    endif
+    if msg_turn_tool4 ne ''
+      call @usr_ReplacedString(msg_turn_tool4)
+      {nb,'(',msg_turn_tool4,')'}      
+    endif
+    if msg_turn_tool5 ne ''
+      call @usr_ReplacedString(msg_turn_tool5)
+      {nb,'(',msg_turn_tool5,')'}      
+    endif  
+  endif
+endp
+
+;-------------------
+
+@usr_msg
+  local integer iCount iPos iRow iRows
+  local string sLines<<50>>
+  
+  call @usr_ReplacedString(msg)
+  msg = replace(msg,'\n','') ;Replace line feed. We only need carriage return  
+  iCount = 0
+  iRow = 1
+  iRows = iRow
+  if strlen(msg) ne 0
+    while iCount le strlen(msg)
+      iCount = iCount + 1  
+      iPos = instr(msg,'\r',iCount)
+      if iPos ne 0 
+        sLines<<iRow>> = substr(msg,iCount,(iPos-iCount))
+        iRow = iRow + 1
+        iRows = iRow
+        iCount = iPos
+      else
+        sLines<<iRow>> = substr(msg,iCount,(strlen(msg)-iCount+1))
+        iCount = (strlen(msg)+1)
+      endif                      
+    endw  
+    iRow = 1
+    while iRow le iRows 
+      {nb,'(',sLines<<iRow>>,')'}
+      iRow = iRow + 1
+    endw
+  endif
+endp
+
+;-------------------
+; VMID-Turret numbers
+;                    
+; 1 = T1  - T5      MB5 or MB6 
+; 2 = T7  - T9      MB3 or MB4                          
+; 3 = T11 - T14     MB3 or MB4 
+; 4 = T51 - T54     MB3 or MB4 
+; 5 = T21 - T26     MB2 
+; 6 = T30           MB1 
+; 7 = T31 - T38     MB7 or MB8
+@usr_Coolant
+  if through_coolant eq 1
+    if iSaveTurretNumber<<ChannelID>> eq 5
+      {nb,'MB2'}
+    endif       
+    if iSaveTurretNumber<<ChannelID>> eq 6
+      {nb,'MB1'}
+    endif
+  elseif through_coolant eq 2
+    if iSaveTurretNumber<<ChannelID>> eq 5
+      {nb,'MB12'}
+    endif       
+    if iSaveTurretNumber<<ChannelID>> eq 6
+      {nb,'MB11'}
+    endif
+  endif
+  if through_ival_coolant eq 1
+    {nb,'MB',through_coolant_val:integer_def_f} 
+  elseif through_ival_coolant eq 2
+    {nb,'MB1',through_coolant_val:integer_def_f}
+  endif
+endp
+
+;-------------------
+
+@usr_OptionalStop
+  if bM1OutputMilling eq True or bM1OutputTurning eq True 
+    {nb,(1):mcode_f}
+    {nb,(52):mcode_f}
+  endif                                
+endp
+
+;-------------------
+
+@start_of_job
+  bJobActive = True 
+  bFirstRapidMove<<ChannelID>> = True
+  if used_in_transform_4x eq 1 
+    iTrans4xCount<<ChannelID>> = iTrans4xCount<<ChannelID>> + 1
+  endif
+  if iTrans4xCount<<ChannelID>> le 1
+    nSaveFirstanext<<ChannelID>> = anext     ;Save the first anext position
+  endif               
+  call @usr_SaveTurretNumber                 ;Save the current turret number from the current submachine_ID
+  call @usr_AxisDimensions                   ;Set output format
+  call @usr_JobDescription                   ;Output job description
+  call @usr_msg                              ;Output user message
+  call @usr_OptionalStop                     ;Output M01
+  call @usr_ChangeTool                       ;Output tool change  
+  call @usr_CAxisPositioning                 ;Output first C-axis position (anext) if necessary  
+  call @usr_BAxis((1))                       ;Output B-axis on if necessary
+  call @usr_MachinePlane                     ;Output machine plane
+  call @usr_Coolant                          ;Output coolant
+  call @usr_SubProgOutput((1))               ;Output into sub program 
+  if iSaveToolNumber<<ChannelID>> eq 100
+    if nose_point ne 4
+      call @usr_ErrorMessage((4))
+    endif
+  endif
+  if iSaveTurretNumber<<ChannelID>> eq 3
+    if rot_axis_type eq axis4_radial
+      if compensation ne False
+        call @usr_ErrorMessage((12)) ;no compensation allowed
+      endif
+    endif
+  endif
+endp
+
+;-------------------
+
+@usr_OpenFile(string sFile)
+  local integer iCount 
+  local string sTempString sTempChar sPath sFolder sSuffix
+
+  ;Determine path to G-code file
+  sTempString = full_g_file_name  
+  iCount = strlen(sTempString)
+  while iCount gt 0
+    sTempChar = substr(sTempString,iCount,1)
+    if sTempChar eq '.'  
+      sPath = left(sTempString,iCount-1)
+      Break
+    endif
+    iCount = iCount - 1
+  endw
+  ;Create folder
+  sFolder = replace(sPath,"/","\\\\",0)
+  {nl,'!!make dir = 'sFolder'!!'}
+  ;Open file 
+  sSuffix = 'PRG'
+  sPath = sPath + '\\' + sFile + '.' + sSuffix 
+  {nl,'!!open file = 'sPath'!!'}
+endp
+
+;-------------------
+
+@usr_SubProgOutput(integer iMode)
+  local integer iSubProgNumber
+
+  if bOutputToSubProgram eq True
+    if iMode eq 1 and iTrans4xCount<<ChannelID>> le 1
+      iProcSubProgram = iProcSubProgram + 1
+      iSubProgNumber = first_proc_number + iProcSubProgram
+      {nb,'M98 P',iSubProgNumber:'z4.0(p)',' ,D2'}
+      call @usr_OpenFile((ToSTr(iSubProgNumber:integer_def_f)))
+      {nl,'O',iSubProgNumber:'z4.0(p)','(JOB-NR.',ToStr(index_job:integer_def_f),')'}
+      call @usr_ReplacedString(original_job_name)
+      {nl,'(',original_job_name,')'}
+    endif
+    if iMode eq 0 and iTrans4xCount<<ChannelID>> eq 0
+      {nl,'M99'}
+      {nl,'%'}
+      {nl,'!!close file = ''!!'} 
+    endif
+  endif
+endp
+                                          
+;-------------------                                          
+
+@def_turn_tool
+  if tool_position_in_turret eq 1     ;Cut off tool position
+    nCutOffToolWidth = tool_G              
+    if table_tool_direction eq cw     ;work around for left/right cut off tool
+      nCutOffToolOffset = tool_tip_z
+    else
+      nCutOffToolOffset = tool_tip_z - tool_G
+    endif
+  endif
+  if tool_type eq 10
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Aussendrehstahl'
+  elseif tool_type eq 11
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Aussenstechstahl'
+  elseif tool_type eq 12
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Aussengewindestahl'
+  elseif tool_type eq 13
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Innendrehstahl'
+  elseif tool_type eq 14
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Innenstechstahl'
+  elseif  tool_type eq 15
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Innengewindestahl'
+  elseif  tool_type eq 18
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Zentrierbohrer'
+  elseif  tool_type eq 0
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Bohrer D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif  tool_type eq 21
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'NC-Anbohrer D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif  tool_type eq 16
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Reibahle D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif  tool_type eq 12
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Gewindebohrer D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif  tool_type eq 12
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Wendeplattenbohrer D' + ToStr((tool_offset * 2):numeric_def_f)     
+  elseif  tool_type eq 2
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Schaftfraeser D' + ToStr((tool_offset * 2):numeric_def_f)        
+  elseif  tool_type eq 15
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Kopierfraeser D' + ToStr((tool_offset * 2):numeric_def_f)        
+  else ;whatever
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Konturdrehstahl'   
+  endif   
+endp
+
+;-------------------
+
+@def_tool
+  if tool_type eq 1
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Torusfraeser D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif tool_type eq 2
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Schaftfraeser D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif tool_type eq 7
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Nutfraeser'
+  elseif tool_type eq 8
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Ballfraeser D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif tool_type eq 9
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Kegelfraeser'
+  elseif  tool_type eq 10
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Kegelsenker'
+  elseif  tool_type eq 11
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Schwalbenschwanzfraeser'
+  elseif  tool_type eq 12
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Gewindebohrer D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif  tool_type eq 13
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Gewindefraeser D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif  tool_type eq 14
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Kegelgewindefraeser'
+  elseif  tool_type eq 16
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Reibahle D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif  tool_type eq 17
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Wendeplattenbohrer D' + ToStr((tool_offset * 2):numeric_def_f)     
+  elseif  tool_type eq 18
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Zentrierbohrer'        
+  elseif  tool_type eq 19
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Stichel' 
+  elseif  tool_type eq 20
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Messerkopf D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif  tool_type eq 21
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'NC-Anbohrer D' + ToStr((tool_offset * 2):numeric_def_f)
+  elseif  tool_type eq 22
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Taster'
+  elseif  tool_type eq 23
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Stosswerkzeug'
+  elseif  tool_type eq 24
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Saege'
+  elseif  tool_type eq 25
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Konischer-Kugelfraeser'       
+  else ;whatever
+     sUserToolType<<tool_position_in_turret,tool_position,1>> = 'Fraeswerkzeug'   
+  endif
+endp
+
+;-------------------
+
+@usr_ToolDescription
+  local string sToolDescription
+
+  if iTrans4xCount<<ChannelID>> le 1
+    sToolDescription = sUserToolType<<tool_position_in_turret,tool_position,1>>
+    call @usr_ReplacedString(sToolDescription)
+    if sToolDescription ne '' and tool_message eq ''
+      {'(',sToolDescription,')'}
+    endif                                  
+  endif
+endp
+
+;-------------------
+
+@usr_ToolMessage
+  if iTrans4xCount<<ChannelID>> le 1
+    call @usr_ReplacedString(tool_message)
+    if tool_message ne ''
+      {'(',tool_message,')'}
+    endif                                  
+  endif
+endp
+
+;-------------------
+
+@usr_CancelWearOffset
+  local logical bJustDoIt
+  
+  if bOutputCrossWithToolData eq False and (iSaveToolNumber<<ChannelID>> ge 700 and iSaveToolNumber<<ChannelID>> le 900)
+    bJustDoIt = True
+  endif
+  if bOutputCancelWear eq True or bJustDoIt eq True
+    gcode = 0
+    if iSaveToolWearNumber<<ChannelID>> ne 0
+      {nb,[gcode],(0):wearNumber_f}                                
+      iSaveToolWearNumber<<ChannelID>> = 0
+    endif
+  endif
+  nSaveLastFeedForWrap<<ChannelID>> = 999999.0
+endp
+
+;-------------------
+
+@usr_CancelMillSpin
+  if nSaveSpin<<ChannelID>> ne 999999.0
+    mcode = iSpinMCode<<ChannelID>> + 2
+    {nb,mcode}
+    nSaveSpin<<ChannelID>> = 999999.0 
+    iSaveSpinUnit<<ChannelID>> = 999999 
+    iSaveSpinDirection<<ChannelID>> = 999999
+  endif
+endp
+
+;-------------------
+
+@end_of_job
+  bJobActive = False                 
+  bFirstRapidMove<<ChannelID>> = True  
+  if job_machine_type eq milling
+    if used_in_transform_4x eq 0      
+      call @usr_SubProgOutput((0)) ;Cancel output into sub program
+    endif
+    call @usr_BAxis((0))        
+    if used_in_transform_4x eq 0     
+      call @usr_CancelWearOffset
+      if next_job_machine_type ne job_machine_type                    
+        call @usr_CancelMillSpin
+      endif                        
+    endif
+  else
+    if bCutOffPiece eq True
+      ;Do nothing
+    else
+      call @usr_CancelWearOffset
+    endif
+    if iSaveSpinUnit<<ChannelID>> ne 0
+      if ChannelID eq 1
+        {nb,(97):gcode_f,(96):mcode_f}
+      else
+        {nb,(97):gcode_f,(94):mcode_f}
+      endif
+      iSaveSpinUnit<<ChannelID>> = 0
+    endif
+  endif
+  call @usr_G140((''))
+  call @usr_Coolant
+  call @usr_ResetLastAxisPosition
+  nSaveLastFeedForRapid<<ChannelID>> = 999999.0
+  bUsetarget_z = False
+endp
+
+;-------------------
+
+@usr_ChangeTool
+  local integer iToolNumber                                 ;-> T1100
+  local integer iWearNumber                                 ;-> T11
+  local integer iToolNumberCombined                         ;-> T1111
+  local string szonext
+  
+  if bJobActive eq True or bMCOActive eq True 
+    iToolNumber = tool_position_in_turret * 100
+    if user_tool_offset eq 0                             
+      iWearNumber = tool_position_in_turret
+    else
+      if job_machine_type eq turning
+        iWearNumber = tool_offset_number
+      else
+        iWearNumber = d_offset
+      endif
+    endif
+    if bMCOActive eq True
+      iWearNumber = 0
+      feed_unit = 0
+    endif
+    iToolNumberCombined = iToolNumber + iWearNumber   
+    if iToolNumberCombined ne iSaveToolCall<<ChannelID>> 
+      if iToolNumber ne iSaveToolNumber<<ChannelID>>
+        if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+          if iSaveTurretNumber<<ChannelID>> eq 4         
+            {nb,(910):gcode_f,(0):bpos_f}
+            nSaveLast_bpos<<ChannelID>> = 0.0
+            iSaveToolCall<<1>> = 999999           ;Reset tool on Channel-1
+            iSaveToolNumber<<1>> = 999999         ;Reset tool on Channel-1
+            iSaveToolWearNumber<<1>> = 0          ;Reset tool on Channel-1
+          endif
+          {nb,(iToolNumberCombined):toolNumber_f,(nBAxisApproach_X / 2):xonext_f}
+          iSaveToolWearNumber<<ChannelID>> = iWearNumber
+        else
+          if iToolNumber ge 700 and iToolNumber le 900
+            if abs(mounting_direction_x) eq 1.0 
+              if bOutputCrossWithToolData eq True
+                {nb,(iToolNumberCombined):toolNumber_f}              ;For e.g. T0707 tool call
+                iSaveToolWearNumber<<ChannelID>> = iWearNumber       
+              else       
+                {nb,(iToolNumber):toolNumber_f}                      ;For e.g. T0700 tool call
+                iSaveToolWearNumber<<ChannelID>> = 0                 
+              endif
+            else
+            
+                ; *** Insert code for front tools   15.08.2018
+                Print 'ACHTUNG: Frontalwerkzeuge am Linearschlitten sind noch nicht implementiert!'                 
+             
+            endif
+          else
+            {nb,(iToolNumberCombined):toolNumber_f}              ;For e.g. T0707 tool call
+            iSaveToolWearNumber<<ChannelID>> = iWearNumber
+          endif           
+          if iToolNumber ge 200 and iToolNumber le 900
+            if bMCOActive eq False
+              if abs(mounting_direction_x) eq 1.0
+                call @usr_OutputZeroFormat((ToStr(zonext:zopos_f)),szonext)
+                {szonext}              
+              endif
+            endif
+          endif
+        endif
+        iSaveToolNumber<<ChannelID>> = iToolNumber                          
+        if iSaveTurretNumber<<ChannelID>> eq 7
+          {(3):QCommand_f}
+        endif
+        if job_machine_type eq milling and bCaxisOn<<ChannelID>> eq False
+          {(0):ECommand_f}
+        endif
+        call @usr_ToolDescription
+        call @usr_ToolMessage
+        call @usr_MsgTool                                              
+        call @usr_ResetSaved
+        gcode = 999999
+      else
+        if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+          ;iToolNumberCombined for e.g.          = T1363
+          ;iToolNumber therefore is              = T1300
+          ;iSaveToolCall before for e.g. was     = T1313
+          ;iSaveToolWearNumber                   = T13
+          ;iWearNumber                           = T63
+          ;bOutputCancelWear                     = False
+          ;so therefore only wear offset changed in tool call and there is no cancelation of wear offset after each operation
+          ;and therefore we must output for e.g. "T63" in a single line for the B-axis tools
+          gcode = 0
+          {nb,[gcode],iWearNumber:wearNumber_f,'(*** STATION GLEICH / VERSCHLEISS-NR GEAENDERT ***)'}
+          iSaveToolWearNumber<<ChannelID>> = iWearNumber
+        endif
+      endif
+    else
+      if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4 
+        if iSaveToolWearNumber<<ChannelID>> eq 0
+          ;iToolNumberCombined for e.g.          = T1313
+          ;iToolNumber therefore is              = T1300
+          ;iSaveToolCall before for e.g. was     = T1313
+          ;iSaveToolWearNumber                   = T0
+          ;iWearNumber                           = T13
+          ;bOutputCancelWear                     = True
+          ;so therefore the wear offset in tool call will not be changed but there is cancelation of wear offset after each operation
+          ;and therefore we must output the wear number again in a single line for B-axis tools
+          gcode = 0
+          {nb,[gcode],iWearNumber:wearNumber_f,'(*** STATION GLEICH / VERSCHLEISS-NR NICHT GEAENDERT ABER GELEOSCHT ***)'}
+          iSaveToolWearNumber<<ChannelID>> = iWearNumber  
+        endif
+      endif
+    endif
+    if iWearNumber ne iSaveToolWearNumber<<ChannelID>>
+      bOutputToolWearNumber<<ChannelID>> = True
+    endif
+    iSaveToolWearNumber<<ChannelID>> = iWearNumber
+    iSaveToolCall<<ChannelID>> = iToolNumberCombined
+    if iSaveToolWearNumber<<ChannelID>> gt 80
+      call @usr_ErrorMessage((1)) ;Wear offset number out of range
+    endif                  
+    call @usr_G140((''))
+  endif
+endp
+
+;-------------------
+
+@usr_G140(string sG140Set)     
+  local integer iCount
+  local string sG140X sG140Y sG140Z sG140C
+  local string sOutput
+  
+  if strlen(sG140Set) ne 0
+    iCount = 1
+    while iCount le strlen(sG140Set)
+      if instr(sG140Set,'X',iCount) ne 0
+        sG140X = substr(sG140Set,iCount,2)      
+      endif
+      if instr(sG140Set,'Y',iCount) ne 0
+        sG140Y = substr(sG140Set,iCount,2)
+      endif
+      if instr(sG140Set,'Z',iCount) ne 0
+        sG140Z = substr(sG140Set,iCount,2)
+      endif                               
+      if instr(sG140Set,'C',iCount) ne 0
+        sG140C = substr(sG140Set,iCount,2)
+      endif    
+      iCount = iCount + 1
+    endw
+  else
+    sG140X = 'X' + ToStr(ChannelID:integer_def_f)
+    sG140Y = 'Y' + ToStr(ChannelID:integer_def_f)
+    sG140Z = 'Z' + ToStr(ChannelID:integer_def_f)
+    sG140C = 'C' + ToStr(ChannelID:integer_def_f)   
+  endif  
+  if sG140X ne '' and sG140X ne sG140Setting<<ChannelID,1>>
+    sOutput = sOutput + ' X=' + sG140X
+    sG140Setting<<ChannelID,1>> = sG140X
+  endif
+  if sG140Y ne '' and sG140Y ne sG140Setting<<ChannelID,2>>
+    sOutput = sOutput + ' Y=' + sG140Y
+    sG140Setting<<ChannelID,2>> = sG140Y
+  endif
+  if sG140Z ne '' and sG140Z ne sG140Setting<<ChannelID,3>>
+    sOutput = sOutput + ' Z=' + sG140Z
+    sG140Setting<<ChannelID,3>> = sG140Z
+  endif
+  if sG140C ne '' and sG140C ne sG140Setting<<ChannelID,4>>
+    sOutput = sOutput + ' C=' + sG140C
+    sG140Setting<<ChannelID,4>> = sG140C
+  endif
+  if sOutput ne ''
+    {nb,'G140',sOutput}
+  endif
+endp
+
+;-------------------
+
+@usr_ResetSaved
+  nSaveSpin<<ChannelID>> = 999999.0 
+  iSaveSpinUnit<<ChannelID>> = 999999 
+  iSaveSpinDirection<<ChannelID>> = 999999 
+  nSaveSpinLimit<<ChannelID>> = 999999.0  
+  iSaveLastFeedUnit<<ChannelID>> = 999999
+  iSavePlane<<ChannelID>> = 999999
+  nSaveLast_bpos<<ChannelID>> = 999999.0
+  nSaveLastFeedForRapid<<ChannelID>> = 999999.0
+  call @usr_ResetLastAxisPosition
+endp
+
+;-------------------
+
+@usr_ResetLastAxisPosition
+  nSaveLast_hpos<<ChannelID,1>> = 999999.0 ;|X| | |
+  nSaveLast_hpos<<ChannelID,2>> = 999999.0 ;| |Y| |
+  nSaveLast_hpos<<ChannelID,3>> = 999999.0 ;| | |Z|           
+endp                                                  
+
+;-------------------
+
+@usr_MachinePlane
+  local integer iPlane
+
+  if job_machine_type eq turning
+    iPlane = 18
+  else
+    if machine_plane eq XY
+      iPlane = 17
+    endif
+    if machine_plane eq ZX
+      iPlane = 18
+    endif  
+    if machine_plane eq YZ
+      iPlane = 19
+    endif
+  endif
+  if rot_axis_type eq axis4_radial 
+    if rot_axis_coord eq axis4_polar
+      iPlane = 18
+    endif
+  endif
+  if iPlane ne iSavePlane<<ChannelID>>
+    {nb,iPlane:gcode_f}
+    iSavePlane<<ChannelID>> = iPlane
+  endif
+endp
+
+;-------------------
+; VMID-Turret numbers
+;                    
+; 1 = T1  - T5       
+; 2 = T7  - T9       
+; 3 = T11 - T14      
+; 4 = T51 - T54      
+; 5 = T21 - T26      
+; 6 = T30            
+; 7 = T31 - T38
+
+@usr_AxisDimensions
+  if iSaveTurretNumber<<ChannelID>> eq 1 
+    xopos_f = '<X>5.3(*2)< >'
+    yopos_f = '<Y>5.3< >'
+    zopos_f = '<Z>5.3(i)< >'
+    xhpos_f = '<X>5.3(*2)< >'
+    yhpos_f = '<Y>5.3< >'
+    zhpos_f = '<Z>5.3(i)< >'
+    xocenter_rel_f = '<I>5.3< >'
+    yocenter_rel_f = '<J>5.3< >'
+    zocenter_rel_f = '<K>5.3(i)< >'
+  endif
+  if iSaveTurretNumber<<ChannelID>> eq 2
+    xopos_f = '<X>5.3(*2)< >'
+    yopos_f = '<Y>5.3(*2i)< >'
+    zopos_f = '<Z>5.3(i)< >'
+    xonext_f = '<X>5.3(*2)< >'
+    yonext_f = '<Y>5.3(*2)< >'    
+    zonext_f = '<Z>5.3(i)< >'
+    xwpos_f = '<X>5.3< >'
+    zwpos_f = '<Z>5.3(i)< >'
+    xocenter_rel_f = '<I>5.3< >'
+    yocenter_rel_f = '<J>5.3(i)< >'
+    zocenter_rel_f = '<K>5.3(i)< >'
+    ywcenter_rel_f = '<J>5.3(i)< >'
+    zwcenter_rel_f = '<K>5.3(i)< >'
+  endif
+  if iSaveTurretNumber<<ChannelID>> eq 3 
+    xonext_f = '<X>5.3(*2)< >'
+    yonext_f = '<Y>5.3(*2i)< >'    
+    zonext_f = '<Z>5.3(i)< >'
+    shift_x_after_rot_f = '<X>5.3(*2)< >'
+    shift_y_after_rot_f = '<Y>5.3(*2i)< >'     
+    shift_z_after_rot_f = '<Z>5.3(i)< >'
+    if X5_job eq True
+      xopos_f = '<X>5.3(*2)< >'
+      yopos_f = '<Y>5.3(*2i)< >'
+      zopos_f = '<Z>5.3(i)< >'
+    else    
+      xopos_f = '<X>5.3(*2)< >'
+      yopos_f = '<Y>5.3(*2i)< >'
+      zopos_f = '<Z>5.3(i)< >'
+      xocenter_rel_f = '<I>5.3< >'
+      yocenter_rel_f = '<J>5.3(i)< >'
+      zocenter_rel_f = '<K>5.3(i)< >'
+    endif
+    if bnext eq 0.0 or bBaxisAlwaysDiaG950 eq True
+      xlpos_f = '<X>5.3(*2)< >'
+      ylpos_f = '<Y>5.3(*2i)< >'
+      zlpos_f = '<Z>5.3(i)< >'
+      xlcenter_rel_f = '<I>5.3< >'
+      ylcenter_rel_f = '<J>5.3(i)< >'
+      zlcenter_rel_f = '<K>5.3(i)< >'      
+      if rot_axis_type eq axis4_face
+        xopos_f = '<X>5.3(*2)< >'
+        yopos_f = '<Y>5.3(*2i)< >'
+        zopos_f = '<Z>5.3(i)< >'
+        xhpos_f = '<X>5.3(i)< >'
+        yhpos_f = '<C>5.3< >'
+        zhpos_f = '<Z>5.3(i)< >'
+        xhcenter_rel_f = '<I>5.3(i)< >'
+        yhcenter_rel_f = '<J>5.3< >'
+        zhcenter_rel_f = '<K>5.3(i)< >'                
+      endif      
+    else
+      xlpos_f = '<X>5.3< >'
+      ylpos_f = '<Y>5.3(i)< >'    
+      zlpos_f = '<Z>5.3(i)< >'
+      xlcenter_rel_f = '<I>5.3< >'
+      ylcenter_rel_f = '<J>5.3(i)< >'
+      zlcenter_rel_f = '<K>5.3(i)< >'
+    endif
+  endif
+  if iSaveTurretNumber<<ChannelID>> eq 4
+    xonext_f = '<X>5.3(*2)< >'
+    yonext_f = '<Y>5.3(*2)< >'    
+    zonext_f = '<Z>5.3(i)< >'
+    shift_x_after_rot_f = '<X>5.3(*2)< >'
+    shift_y_after_rot_f = '<Y>5.3(*2)< >'     
+    shift_z_after_rot_f = '<Z>5.3(i)< >'
+    if X5_job eq True
+      xopos_f = '<X>5.3(*2)< >'
+      yopos_f = '<Y>5.3(*2)< >'
+      zopos_f = '<Z>5.3(i)< >'
+    else    
+      xopos_f = '<X>5.3(*2)< >'
+      yopos_f = '<Y>5.3(*2)< >'
+      zopos_f = '<Z>5.3(i)< >'
+      xocenter_rel_f = '<I>5.3< >'
+      yocenter_rel_f = '<J>5.3< >'
+      zocenter_rel_f = '<K>5.3(i)< >'
+    endif
+    if bnext eq 0.0 or bBaxisAlwaysDiaG950 eq True
+      xlpos_f = '<X>5.3(*2)< >'
+      ylpos_f = '<Y>5.3(*2)< >'
+      zlpos_f = '<Z>5.3(i)< >'
+      xlcenter_rel_f = '<I>5.3< >'
+      ylcenter_rel_f = '<J>5.3< >'
+      zlcenter_rel_f = '<K>5.3(i)< >'      
+      if rot_axis_type eq axis4_face
+        xopos_f = '<X>5.3(*2)< >'
+        yopos_f = '<Y>5.3(*2)< >'
+        zopos_f = '<Z>5.3(i)< >'
+        xhpos_f = '<X>5.3(i)< >'
+        yhpos_f = '<C>5.3< >'
+        zhpos_f = '<Z>5.3(i)< >'
+        xhcenter_rel_f = '<I>5.3(i)< >'
+        yhcenter_rel_f = '<J>5.3< >'
+        zhcenter_rel_f = '<K>5.3(i)< >'                
+      endif     
+    else
+      xlpos_f = '<X>5.3< >'
+      ylpos_f = '<Y>5.3< >'    
+      zlpos_f = '<Z>5.3(i)< >'
+      xlcenter_rel_f = '<I>5.3< >'
+      ylcenter_rel_f = '<J>5.3< >'
+      zlcenter_rel_f = '<K>5.3(i)< >'
+    endif
+  endif
+  if iSaveTurretNumber<<ChannelID>> eq 5
+    xopos_f = '<X>5.3(*2)< >'
+    yopos_f = '<Y>5.3(*2)< >'
+    zopos_f = '<Z>5.3(i)< >'
+    xocenter_rel_f = '<I>5.3< >'
+    yocenter_rel_f = '<J>5.3< >'
+    zocenter_rel_f = '<K>5.3(i)< >'
+    if rot_axis_type eq axis4_face
+      xopos_f = '<X>5.3(*2)< >'
+      yopos_f = '<Y>5.3(*2)< >'
+      zopos_f = '<Z>5.3(i)< >'
+      xhpos_f = '<X>5.3< >'
+      yhpos_f = '<C>5.3(i)< >'
+      zhpos_f = '<Z>5.3(i)< >'  
+      xhcenter_rel_f = '<I>5.3< >'
+      yhcenter_rel_f = '<J>5.3(i)< >'
+      zhcenter_rel_f = '<K>5.3(i)< >'
+    endif  
+  endif
+  if iSaveTurretNumber<<ChannelID>> eq 6
+    xhpos_f = '<X>5.3(*2)< >'
+    yhpos_f = '<Y>5.3< >'
+    zhpos_f = '<Z>5.3(i)< >'
+  endif
+  if iSaveTurretNumber<<ChannelID>> eq 7 
+    if submachine_ID eq 6 ;G12.1 X+  
+      xopos_f = '<X>5.3(*2)< >'
+      yopos_f = '<Y>5.3(*2i)< >'
+      zopos_f = '<Z>5.3(i)< >'
+      xocenter_rel_f = '<I>5.3< >'
+      yocenter_rel_f = '<J>5.3(i)< >'
+      zocenter_rel_f = '<K>5.3(i)< >'
+      if rot_axis_type eq axis4_face
+        xopos_f = '<X>5.3(*2)< >'
+        yopos_f = '<Y>5.3(*2i)< >'
+        zopos_f = '<Z>5.3(i)< >'
+        xhpos_f = '<X>5.3< >'
+        yhpos_f = '<C>5.3(i)< >'
+        zhpos_f = '<Z>5.3(i)< >'
+        xhcenter_rel_f = '<I>5.3< >'
+        yhcenter_rel_f = '<J>5.3(i)< >'
+        zhcenter_rel_f = '<K>5.3(i)< >'        
+      endif 
+    endif
+    if submachine_ID eq 8 ;G12.1 X-
+      if rot_axis_type ne axis4_face
+        call @usr_ErrorMessage((14))
+      else      
+        xopos_f = '<X>5.3(*2i)< >'
+        yopos_f = '<Y>5.3(*2i)< >'
+        zopos_f = '<Z>5.3(i)< >'
+        xhpos_f = '<X>5.3(i)< >'
+        yhpos_f = '<C>5.3< >'
+        zhpos_f = '<Z>5.3(i)< >'
+        xhcenter_rel_f = '<I>5.3(i)< >'
+        yhcenter_rel_f = '<J>5.3< >'
+        zhcenter_rel_f = '<K>5.3(i)< >'
+      endif
+    endif
+  endif
+endp
+
+;-------------------
+
+@compensation
+  local integer iCompCode
+  
+  if iSavePlane<<ChannelID>> eq 17 and side eq COMP_LEFT
+    iCompCode = 42
+    if iSaveTurretNumber<<ChannelID>> eq 5 and bFaceInterpolation<<ChannelID>> eq False
+      iCompCode = 41
+    endif
+    if iSaveTurretNumber<<ChannelID>> eq 4 and bFaceInterpolation<<ChannelID>> eq False
+      iCompCode = 41
+    endif
+  endif
+  if iSavePlane<<ChannelID>> eq 17 and side eq COMP_RIGHT
+    iCompCode = 41
+    if iSaveTurretNumber<<ChannelID>> eq 5 and bFaceInterpolation<<ChannelID>> eq False
+      iCompCode = 42
+    endif
+    if iSaveTurretNumber<<ChannelID>> eq 4 and bFaceInterpolation<<ChannelID>> eq False
+      iCompCode = 42
+    endif
+  endif
+  if iSavePlane<<ChannelID>> eq 18 and side eq COMP_LEFT
+    iCompCode = 42
+  endif
+  if iSavePlane<<ChannelID>> eq 18 and side eq COMP_RIGHT
+    iCompCode = 41
+  endif
+  if iSavePlane<<ChannelID>> eq 19 and side eq COMP_LEFT
+    iCompCode = 41
+  endif
+  if iSavePlane<<ChannelID>> eq 19 and side eq COMP_RIGHT
+    iCompCode = 42
+  endif
+  if side eq COMP_OFF
+    iCompCode = 40
+  endif
+  sCompCode<<ChannelID>> = ToStr(iCompCode:gcode_f)
+  bFirstCompLine<<ChannelID>> = True                      
+endp
+
+;-------------------
+
+@usr_ForceAxisForComp
+  if bFirstCompLine<<ChannelID>> eq True
+    if job_machine_type eq turning                               
+      Change(xopos) = True                                       
+      Change(zopos) = True                                       
+    else                                                         
+      if iSavePlane<<ChannelID>> eq 17                           
+        Change(xopos) = True                                     
+        Change(yopos) = True                                     
+        Change(xlpos) = True                                     
+        Change(ylpos) = True                                     
+      endif                                                      
+      if iSavePlane<<ChannelID>> eq 18
+        if rot_axis_type eq axis4_radial 
+          Change(zopos) = True
+          Change(dapos) = True
+        elseif rot_axis_type eq axis4_face          
+          Change(xopos) = True                                     
+          Change(yopos) = True
+        else
+          Change(xopos) = True                                     
+          Change(zopos) = True                                   
+        endif                                  
+      endif                                                      
+      if iSavePlane<<ChannelID>> eq 19                           
+        Change(yopos) = True                                     
+        Change(zopos) = True
+      endif
+    endif
+    bFirstCompLine<<ChannelID>> = False
+  endif
+endp
+
+;-------------------
+
+@usr_FeedFormat
+  if feed_unit eq 0
+    feed_f = '<F>5.0(n)< >'
+  else
+    feed_f = '<F>4.3(p)< >'
+  endif
+endp 
+
+;-------------------
+
+@usr_sFeedUnit
+  local integer iFeedForRapid 
+  
+  ;Set feed string for rapid move
+  if current_command eq '@rapid_move' or current_command eq '@drill' or current_command eq '@move_5x'
+    sFeedForRapid<<ChannelID>> = ''
+    if iFeedForRapidMoveMilling gt 0 or iFeedForRapidMoveTurning gt 0
+      gcode = 1
+      feed_unit = 0
+      call @usr_FeedFormat
+      if iFeedForRapidMoveMilling gt 0
+        iFeedForRapid = iFeedForRapidMoveMilling
+      else
+        iFeedForRapid = iFeedForRapidMoveTurning
+      endif  
+      if nSaveLastFeedForRapid<<ChannelID>> ne iFeedForRapid
+        sFeedForRapid<<ChannelID>> = ToStr(iFeedForRapid:feed_f)         
+        nSaveLastFeedForRapid<<ChannelID>> = iFeedForRapid
+      endif
+    endif
+    call @usr_FeedFormat
+  else
+    feed_unit = iSaveJobFeedUnit<<ChannelID>>
+    call @usr_FeedFormat
+    if nSaveLastFeedForRapid<<ChannelID>> ne 999999.0
+      Change(feed) = True     
+    endif
+    nSaveLastFeedForRapid<<ChannelID>> = 999999.0        
+  endif  
+  ;Set feed unit string   
+  sFeedUnit<<ChannelID>> = ''
+  if iSaveLastFeedUnit<<ChannelID>> ne feed_unit
+    if feed_unit eq 0
+      sFeedUnit<<ChannelID>> = ToStr((98):gcode_f)
+    else
+      sFeedUnit<<ChannelID>> = ToStr((99):gcode_f)
+    endif
+    iSaveLastFeedUnit<<ChannelID>> = feed_unit
+    Change(feed) = True
+  endif
+endp  
+                                       
+;------------------- 
+  
+@usr_OutputWearOffset
+  if bFirstRapidMove<<ChannelID>> eq True
+    if bOutputToolWearNumber<<ChannelID>> eq True
+      {iSaveToolWearNumber<<ChannelID>>:wearNumber_f}
+      bOutputToolWearNumber<<ChannelID>> = False
+    endif
+    bFirstRapidMove<<ChannelID>> = False
+  endif
+endp
+
+;-------------------
+
+@usr_CylindricalInterpolation(integer iMode)
+  if job_type ne 'drill'
+    if iMode eq 1 
+      if bCylindricalInterpolation<<ChannelID>> eq False
+        {nb,(12.1):gcode_f,'D0 E=C'}
+        {nb,(16):gcode_f,(radial_diameter / 2):apos_f}
+        nCylindricalCartesianStartA<<ChannelID>> = nSaveLast_apos<<ChannelID>> ;equal to Y0 in cartesian coordinate system at start of G12.1 + G16
+        nCylindricalCartesianTempY<<ChannelID>> = 999999.0
+        bCylindricalInterpolation<<ChannelID>> = True
+        bForceInterpolationFeedOutput<<ChannelID>> = True
+        if iSaveTurretNumber<<ChannelID>> eq 2
+          sSaveFormat_xopos<<ChannelID>> = xopos_f
+          xopos_f = '<X>5.3< >'
+        endif
+      endif
+    endif
+    if iMode eq 0
+      if bCylindricalInterpolation<<ChannelID>> eq True
+        {nb,(13.1):gcode_f}
+        bCylindricalInterpolation<<ChannelID>> = False
+        if iSaveTurretNumber<<ChannelID>> eq 2
+          xopos_f = sSaveFormat_xopos<<ChannelID>>
+        endif
+      endif
+    endif
+  endif
+endp
+
+;-------------------
+
+@usr_FaceInterpolation(integer iMode)
+  if iMode eq 1
+    if bFaceInterpolation<<ChannelID>> eq False
+      if face4x_tool_motion_vector_angle ne 0.0
+        call @usr_ErrorMessage((13)) ;face4x_tool_motion_vector_angle must be zero for G12.1
+      endif 
+      if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4     
+        {nb,'M212 Y1'}
+        {nb,'G50 X-#5001'} 
+      endif
+      {nb,(12.1):gcode_f,'D1 E=C'}
+      {nb,(17):gcode_f}
+      nFaceCartesianStartA<<ChannelID>> = nSaveLast_apos<<ChannelID>> ;equal to C0 in cartesian coordinate system at start of G12.1                         
+      bFaceInterpolation<<ChannelID>> = True
+      bForceInterpolationFeedOutput<<ChannelID>> = True      
+    endif
+  endif
+  if iMode eq 0
+    if bFaceInterpolation<<ChannelID>> eq True
+      {nb,(13.1):gcode_f}
+      bFaceInterpolation<<ChannelID>> = False
+      bFaceInterpolationUsed<<ChannelID>> = True
+      if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+        {nb,'M211 Y1'}
+        {nb,'G50 X-#5001'}
+      endif
+    endif
+  endif
+endp
+
+;-------------------
+
+@rapid_move
+  local numeric nZDifference
+  local string sZoposVariable
+  local string sxopos syopos szopos
+  local string sxlpos sylpos szlpos
+  
+  gcode = 0
+  call @usr_sFeedUnit         
+  if bFirstRapidMove<<ChannelID>> eq True
+    Change(xopos) = True
+    if job_machine_type eq turning
+      Change(yopos) = False
+    else
+      Change(yopos) = True      
+    endif
+    Change(zopos) = True
+    Change(xlpos) = True
+    Change(ylpos) = True
+    Change(zlpos) = True        
+  endif   
+  if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+    if rot_axis_type eq axis4_radial and rot_axis_coord eq axis4_polar   
+      call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+      call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+      call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+      Change(sxopos) = Change(xopos)
+      Change(syopos) = Change(yopos)
+      Change(szopos) = Change(zopos)
+      {nb,[gcode],sFeedUnit<<ChannelID>>,[sxopos],[syopos],[szopos],sFeedForRapid<<ChannelID>>}
+    else
+      call @usr_OutputZeroFormat((ToStr(xlpos:xlpos_f)),sxlpos)
+      call @usr_OutputZeroFormat((ToStr(ylpos:ylpos_f)),sylpos)
+      call @usr_OutputZeroFormat((ToStr(zlpos:zlpos_f)),szlpos)
+      Change(sxlpos) = Change(xlpos)
+      Change(sylpos) = Change(ylpos)
+      Change(szlpos) = Change(zlpos)
+      {nb,[gcode],sFeedUnit<<ChannelID>>,[sxlpos],[sylpos],[szlpos],sFeedForRapid<<ChannelID>>}
+    endif
+  else
+    if bUsetarget_z eq True
+      ;Use #140 (target_z) for zopos only with turning tools and mounting_direction_x = 1 milling tools from T7, T8 and T9
+      if ChannelID eq 2
+        call @usr_ErrorMessage((15))
+      endif
+      if abs(mounting_direction_x) ne 1.0
+        call @usr_ErrorMessage((16))
+      endif   
+      nZDifference = (-1 * target_z) - zopos
+      sZoposVariable = 'Z#140'
+      if nZDifference ne 0.0
+        sZoposVariable = 'Z[#140' + ToStr(nZDifference:'+5.3') + '] '
+      endif
+      Change(sZoposVariable) = Change(zopos)
+      Change(zopos) = False 
+    endif
+    call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+    call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+    call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+    Change(sxopos) = Change(xopos)
+    Change(syopos) = Change(yopos)
+    Change(szopos) = Change(zopos)      
+    {nb,[gcode],sFeedUnit<<ChannelID>>,[sxopos],[syopos],[szopos],[sZoposVariable],sFeedForRapid<<ChannelID>>}
+  endif
+  call @usr_OutputWearOffset ;bFirstRapidMove will be canceled inside       
+  nSaveLast_apos<<ChannelID>> = apos ;|C|
+endp 
+
+;-------------------
+
+@usr_OutputZeroFormat(string sInput, string sOutput)
+  local string sTempString sTempChar sTempValue
+  
+  sTempString = sInput
+  sTempChar = substr(sTempString,1,1)
+  sTempValue = substr(sTempString,2,(strlen(sTempString)-2))  
+  if round(ToNum(sTempValue),3) eq 0
+    sOutput = sTempChar + '0 '
+  else
+    sOutput = sInput
+  endif 
+endp
+
+;-------------------
+
+@move_5x
+  local string sxopos syopos szopos sapos sdapos
+  
+  gcode = 0                                                                
+  call @usr_sFeedUnit
+  call @usr_CylindricalInterpolation((0))
+  call @usr_FaceInterpolation((0))                 
+  if bFirstRapidMove<<ChannelID>> eq True
+    call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+    call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+    call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+    call @usr_OutputZeroFormat((ToStr(apos:apos_f)),sapos)
+    call @usr_CAxisReset((apos))
+    {nb,gcode,sFeedUnit<<ChannelID>>,sxopos,syopos,szopos,sapos,sFeedForRapid<<ChannelID>>}  
+  else
+    if bFaceInterpolationUsed<<ChannelID>> eq True
+      call @usr_Calculate_dapos ;Because original dapos is not accurate enough and @arc_5x have no dapos 
+      call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+      call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+      call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+      call @usr_OutputZeroFormat((ToStr(dapos:dapos_f)),sdapos)
+      Change(sxopos) = Change(xopos)
+      Change(syopos) = Change(yopos)
+      Change(szopos) = Change(zopos)
+      {nb,[gcode],sFeedUnit<<ChannelID>>,[sxopos],[syopos],[szopos],sdapos,sFeedForRapid<<ChannelID>>}
+      bFaceInterpolationUsed<<ChannelID>> = False     
+    else
+      call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+      call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+      call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+      call @usr_OutputZeroFormat((ToStr(apos:apos_f)),sapos)
+      Change(sxopos) = Change(xopos)
+      Change(syopos) = Change(yopos)
+      Change(szopos) = Change(zopos)
+      Change(sapos) = Change(apos)
+      if Change(apos) eq True and X5_job ne 1
+        call @usr_CAxisReset((apos))
+      endif
+      {nb,[gcode],sFeedUnit<<ChannelID>>,[sxopos],[syopos],[szopos],[sapos],sFeedForRapid<<ChannelID>>}
+    endif
+  endif
+  call @usr_OutputWearOffset ;bFirstRapidMove will be canceled inside
+  ;Save the last axis positions for feed calculation
+  nSaveLast_hpos<<ChannelID,1>> = xhpos ;|X| | |
+  nSaveLast_hpos<<ChannelID,2>> = yhpos ;| |Y| |
+  nSaveLast_hpos<<ChannelID,3>> = zhpos ;| | |Z|
+  nSaveLast_apos<<ChannelID>> = apos ;|C|    
+endp
+
+;-------------------
+
+@line
+  local numeric nZDifference
+  local string sZoposVariable
+  local string sxopos syopos szopos
+  local string sxlpos sylpos szlpos
+  
+  gcode = 1           
+  call @usr_sFeedUnit     
+  call @usr_ForceAxisForComp   
+  if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4    
+    call @usr_OutputZeroFormat((ToStr(xlpos:xlpos_f)),sxlpos)
+    call @usr_OutputZeroFormat((ToStr(ylpos:ylpos_f)),sylpos)
+    call @usr_OutputZeroFormat((ToStr(zlpos:zlpos_f)),szlpos)
+    Change(sxlpos) = Change(xlpos)
+    Change(sylpos) = Change(ylpos)
+    Change(szlpos) = Change(zlpos)
+    {nb,[gcode],sCompCode<<ChannelID>>,sFeedUnit<<ChannelID>>,[sxlpos],[sylpos],[szlpos],[feed]}
+  else  
+    if next_command eq '@end_of_job' and bCutOffPiece eq True
+      {nb,'G231 X-0.8 F0.03 A-0.7'}
+    else
+      if bUsetarget_z eq True
+        ;Use #140 (target_z) for zopos only with turning tools and mounting_direction_x = 1 milling tools from T7, T8 and T9
+        if ChannelID eq 2
+          call @usr_ErrorMessage((15))
+        endif
+        if abs(mounting_direction_x) ne 1.0
+          call @usr_ErrorMessage((16))
+        endif   
+        nZDifference = (-1 * target_z) - zopos
+        sZoposVariable = 'Z#140'
+        if nZDifference ne 0.0
+          sZoposVariable = 'Z[#140' + ToStr(nZDifference:'+5.3') + ']'
+        endif
+        Change(sZoposVariable) = Change(zopos)
+        Change(zopos) = False      
+      endif
+      call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+      call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+      call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+      Change(sxopos) = Change(xopos)
+      Change(syopos) = Change(yopos)
+      Change(szopos) = Change(zopos)
+      {nb,[gcode],sCompCode<<ChannelID>>,sFeedUnit<<ChannelID>>,[sxopos],[syopos],[szopos],[sZoposVariable],[feed]}
+    endif
+  endif
+  if sCompCode<<ChannelID>> ne ''
+    sCompCode<<ChannelID>> = ''
+  endif 
+endp
+
+;-------------------
+
+@usr_Calculate_dapos
+  dapos = apos - nSaveLast_apos<<ChannelID>> ;|C|
+  if dapos eq 0.0
+    Change(dapos) = False
+  else
+    Change(dapos) = True
+  endif
+endp
+
+;-------------------
+
+@line_5x
+  local numeric nX1 nY1 nZ1 nC1 nX2 nY2 nZ2 nC2 n3DLength nCdistance nFcomb nFeed
+  local numeric nX_Face nY_Face
+  local logical bWrapFunction  
+  local string sxopos syopos szopos 
+  local string sapos sdapos sCylindricalypos
+  local string snX_Face snY_Face szhpos
+  
+  gcode = 1  
+  if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+    if rot_axis_type eq axis4_none or rot_axis_type eq axis4_radial
+      bWrapFunction = False
+    endif
+    if rot_axis_type eq axis4_face
+      bWrapFunction = True
+    endif 
+  else
+    if rot_axis_type eq axis4_none
+      bWrapFunction = False
+    else
+      bWrapFunction = True
+    endif
+    if job_type eq 'drill'
+      bWrapFunction = False
+    endif
+  endif  
+  if bWrapFunction eq False
+    ;Calculation of combined axis feed rate
+    ;Save the last and actual positions
+    nX1 = nSaveLast_hpos<<ChannelID,1>> ;|X| | |
+    nY1 = nSaveLast_hpos<<ChannelID,2>> ;| |Y| |
+    nZ1 = nSaveLast_hpos<<ChannelID,3>> ;| | |Z|
+    nC1 = nSaveLast_apos<<ChannelID>> ;|C|     
+    nX2 = xhpos
+    nY2 = yhpos
+    nZ2 = zhpos
+    nC2 = apos
+    ;Calculate 3D distance between the positions
+    n3DLength = sqrt(pow(abs(nX2-nX1),2)+pow(abs(nY2-nY1),2)+pow(abs(nZ2-nZ1),2)) 
+    ;Calculate C-axis distance between the positions     
+    nCdistance = abs(nC1 - nC2)
+    ;Calculate combined axis feed rate
+    if rot_axis_type eq axis4_radial
+      nFeed = original_feed
+    endif                  
+    if rot_axis_type eq axis4_none
+      nFeed = feed
+    endif
+    nFcomb = nFeed * sqrt((pow(n3DLength,2)+pow(nCdistance,2))/(pow(n3DLength,2)+pow(nCdistance,2)*pow((xopos*pi/360),2)))
+    if round(nFcomb,3) ne nSaveLastFeedForWrap<<ChannelID>>
+      feed = round(nFcomb,3)
+      nSaveLastFeedForWrap<<ChannelID>> = feed
+      Change(feed) = True
+    else
+      Change(feed) = False
+    endif
+    ;Normal procedure stuff
+    call @usr_sFeedUnit
+    call @usr_Calculate_dapos ;Because original dapos is not accurate enough and @arc_5x have no dapos
+    if bFirstRapidMove<<ChannelID>> eq True  
+      call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+      call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+      call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+      call @usr_OutputZeroFormat((ToStr(apos:apos_f)),sapos)
+      call @usr_CAxisReset((apos))
+      {nb,(0):gcode_f,sapos}
+      {nb,gcode,sCompCode<<ChannelID>>,sFeedUnit<<ChannelID>>,sxopos,syopos,szopos,feed}
+      call @usr_OutputWearOffset ;bFirstRapidMove will be canceled inside
+    else  
+      call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+      call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+      call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+      call @usr_OutputZeroFormat((ToStr(dapos:dapos_f)),sdapos)
+      Change(sxopos) = Change(xopos)
+      Change(syopos) = Change(yopos)
+      Change(szopos) = Change(zopos)
+      Change(sdapos) = Change(dapos)
+      {nb,[gcode],sCompCode<<ChannelID>>,sFeedUnit<<ChannelID>>,[sxopos],[syopos],[szopos],[sdapos],[feed]}          
+    endif       
+    nSaveLast_hpos<<ChannelID,1>> = xhpos ;|X| | |
+    nSaveLast_hpos<<ChannelID,2>> = yhpos ;| |Y| |
+    nSaveLast_hpos<<ChannelID,3>> = zhpos ;| | |Z|                               
+    nSaveLast_apos<<ChannelID>> = apos ;|C|  
+  else
+    if rot_axis_type eq axis4_radial
+      call @usr_sFeedUnit
+      call @usr_CylindricalInterpolation((1))
+      call @usr_ForceAxisForComp 
+
+;Commented out 07.08.2018 because milling with cross milling tools wrap is always cycle G12.1 & G16
+;     
+;      if round(feed,0) ne round(original_feed,0) or nSaveLastFeedForWrap<<ChannelID>> eq 999999.0
+;        feed = round(original_feed,0)
+;        if feed ne nSaveLastFeedForWrap<<ChannelID>>
+;          nSaveLastFeedForWrap<<ChannelID>> = feed
+;          Change(feed) = True                       
+;        else
+;          Change(feed) = False
+;        endif       
+;      endif
+
+      feed = round(original_feed,0)
+      Change(feed) = Change(original_feed)      
+      call @usr_Calculate_CylindricalCartesianY
+      call @usr_ForceInterpolationFeedOutput       
+      call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+      call @usr_OutputZeroFormat((ToStr(nCylindricalCartesianY<<ChannelID>>:'<Y>5.3< >')),sCylindricalypos)
+      call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+      Change(sxopos) = Change(xopos)
+      Change(sCylindricalypos) = Change(nCylindricalCartesianY<<ChannelID>>)
+      Change(szopos) = Change(zopos)
+      {nb,[gcode],sCompCode<<ChannelID>>,sFeedUnit<<ChannelID>>,[sxopos],[sCylindricalypos],[szopos],[feed]}
+    endif
+    if rot_axis_type eq axis4_face   
+      call @usr_sFeedUnit
+      call @usr_FaceInterpolation((1))
+      call @usr_ForceAxisForComp
+      ;Calculate new X and Y coordinates for G12.1            
+      nX_Face = xhpos * cos(nFaceCartesianStartA<<ChannelID>>) - yhpos * sin(nFaceCartesianStartA<<ChannelID>>)
+      nY_Face = yhpos * cos(nFaceCartesianStartA<<ChannelID>>) + xhpos * sin(nFaceCartesianStartA<<ChannelID>>)
+      ;Output with new X and Y coordinates for G12.1
+      call @usr_ForceInterpolationFeedOutput                                                               
+      call @usr_OutputZeroFormat((ToStr(nX_Face:xhpos_f)),snX_Face)
+      call @usr_OutputZeroFormat((ToStr(nY_Face:yhpos_f)),snY_Face)
+      call @usr_OutputZeroFormat((ToStr(zhpos:zhpos_f)),szhpos)
+      Change(szhpos) = Change(zhpos)
+      {nb,[gcode],sCompCode<<ChannelID>>,sFeedUnit<<ChannelID>>,snX_Face,snY_Face,[szhpos],[feed]}           
+    endif
+    nSaveLast_hpos<<ChannelID,1>> = xhpos ;|X| | |
+    nSaveLast_hpos<<ChannelID,2>> = yhpos ;| |Y| |
+    nSaveLast_hpos<<ChannelID,3>> = zhpos ;| | |Z|                               
+    nSaveLast_apos<<ChannelID>> = apos ;|C|
+  endif
+  if sCompCode<<ChannelID>> ne ''
+    sCompCode<<ChannelID>> = ''
+  endif   
+endp 
+
+;-------------------
+
+@usr_Calculate_CylindricalCartesianY
+  nCylindricalCartesianY<<ChannelID>> = pi * radial_diameter / 360.0 * (apos - nCylindricalCartesianStartA<<ChannelID>>)      
+  if nCylindricalCartesianY<<ChannelID>> ne nCylindricalCartesianTempY<<ChannelID>>
+    nCylindricalCartesianTempY<<ChannelID>> = nCylindricalCartesianY<<ChannelID>>
+    Change(nCylindricalCartesianY<<ChannelID>>) = True
+  else
+    Change(nCylindricalCartesianY<<ChannelID>>) = False
+  endif
+endp
+
+;-------------------
+
+@usr_ForceInterpolationFeedOutput
+  if bForceInterpolationFeedOutput<<ChannelID>> eq True
+    Change(feed) = True
+    bForceInterpolationFeedOutput<<ChannelID>> = False
+  endif 
+endp
+
+;-------------------
+
+@arc
+  local string sxopos syopos szopos sxocenter_rel syocenter_rel szocenter_rel
+  local string sxlpos sylpos szlpos sxlcenter_rel sylcenter_rel szlcenter_rel 
+  local string sradius
+  local string sZoposVariable
+  local numeric nZDifference
+  
+  call @usr_sFeedUnit
+  Change(xocenter_rel) = False
+  Change(yocenter_rel) = False
+  Change(zocenter_rel) = False
+  Change(xlcenter_rel) = False
+  Change(ylcenter_rel) = False
+  Change(zlcenter_rel) = False
+  Change(radius) = True
+  if iSavePlane<<ChannelID>> eq 17
+    if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+      Change(xlpos) = True
+      Change(ylpos) = True
+      if Change(zlpos) eq True or bOutputNoRadius eq True
+        Change(xlcenter_rel) = True
+        Change(ylcenter_rel) = True
+        Change(radius) = False
+      endif
+    else
+      Change(xopos) = True
+      Change(yopos) = True
+      if Change(zopos) eq True or bOutputNoRadius eq True
+        Change(xocenter_rel) = True
+        Change(yocenter_rel) = True
+        Change(radius) = False
+      endif    
+    endif
+  endif
+  if iSavePlane<<ChannelID>> eq 18
+    Change(xopos) = True
+    Change(zopos) = True
+    if Change(yopos) eq True or bOutputNoRadius eq True
+      Change(xocenter_rel) = True
+      Change(zocenter_rel) = True
+      Change(radius) = False
+    endif      
+  endif
+  if iSavePlane<<ChannelID>> eq 19
+    Change(yopos) = True
+    Change(zopos) = True
+    if Change(xopos) eq True or bOutputNoRadius eq True
+      Change(yocenter_rel) = True
+      Change(zocenter_rel) = True
+      Change(radius) = False
+    endif
+  endif
+  if iSavePlane<<ChannelID>> eq 17
+    if arc_direction eq 0
+      if iSaveTurretNumber<<ChannelID>> ne 4 and iSaveTurretNumber<<ChannelID>> ne 5    
+        gcode = 3 
+      endif
+      if iSaveTurretNumber<<ChannelID>> eq 4 or iSaveTurretNumber<<ChannelID>> eq 5
+        gcode = 2
+      endif
+    else
+      if iSaveTurretNumber<<ChannelID>> ne 4 and iSaveTurretNumber<<ChannelID>> ne 5
+        gcode = 2
+      endif
+      if iSaveTurretNumber<<ChannelID>> eq 4 or iSaveTurretNumber<<ChannelID>> eq 5
+        gcode = 3
+      endif
+    endif
+  endif
+  if iSavePlane<<ChannelID>> eq 18
+    if arc_direction eq 0
+      gcode = 3
+    else
+      gcode = 2
+    endif  
+  endif
+  if iSavePlane<<ChannelID>> eq 19
+    if arc_direction eq 0
+      gcode = 2
+    else
+      gcode = 3
+    endif    
+  endif
+  if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4 
+    call @usr_OutputZeroFormat((ToStr(xlpos:xlpos_f)),sxlpos)
+    call @usr_OutputZeroFormat((ToStr(ylpos:ylpos_f)),sylpos)
+    call @usr_OutputZeroFormat((ToStr(zlpos:zlpos_f)),szlpos)
+    call @usr_OutputZeroFormat((ToStr(xlcenter_rel:xlcenter_rel_f)),sxlcenter_rel)
+    call @usr_OutputZeroFormat((ToStr(ylcenter_rel:ylcenter_rel_f)),sylcenter_rel)
+    call @usr_OutputZeroFormat((ToStr(zlcenter_rel:zlcenter_rel_f)),szlcenter_rel)
+    call @usr_OutputZeroFormat((ToStr(radius:radius_f)),sradius)
+    Change(sxlpos) = Change(xlpos)
+    Change(sylpos) = Change(ylpos)
+    Change(szlpos) = Change(zlpos)
+    Change(sxlcenter_rel) = Change(xlcenter_rel)
+    Change(sylcenter_rel) = Change(ylcenter_rel)
+    Change(szlcenter_rel) = Change(zlcenter_rel)
+    Change(sradius) = Change(radius)  
+    {nb,[gcode],sFeedUnit<<ChannelID>>,[sxlpos],[sylpos],[szlpos],[sxlcenter_rel],[sylcenter_rel],[szlcenter_rel],[sradius],[feed]}  
+  else
+    if bUsetarget_z eq True
+      ;Use #140 (target_z) for zopos only with turning tools and mounting_direction_x = 1 milling tools from T7, T8 and T9
+      if ChannelID eq 2
+        call @usr_ErrorMessage((15))
+      endif
+      if abs(mounting_direction_x) ne 1.0
+        call @usr_ErrorMessage((16))
+      endif   
+      nZDifference = (-1 * target_z) - zopos
+      sZoposVariable = 'Z#140'
+      if nZDifference ne 0.0
+        sZoposVariable = 'Z[#140' + ToStr(nZDifference:'+5.3') + ']'
+      endif
+      Change(sZoposVariable) = Change(zopos)
+      Change(zopos) = False 
+    endif  
+    call @usr_OutputZeroFormat((ToStr(xopos:xopos_f)),sxopos)
+    call @usr_OutputZeroFormat((ToStr(yopos:yopos_f)),syopos)
+    call @usr_OutputZeroFormat((ToStr(zopos:zopos_f)),szopos)
+    call @usr_OutputZeroFormat((ToStr(xocenter_rel:xocenter_rel_f)),sxocenter_rel)
+    call @usr_OutputZeroFormat((ToStr(yocenter_rel:yocenter_rel_f)),syocenter_rel)
+    call @usr_OutputZeroFormat((ToStr(zocenter_rel:zocenter_rel_f)),szocenter_rel)
+    call @usr_OutputZeroFormat((ToStr(radius:radius_f)),sradius)  
+    Change(sxopos) = Change(xopos)
+    Change(syopos) = Change(yopos)
+    Change(szopos) = Change(zopos)
+    Change(sxocenter_rel) = Change(xocenter_rel)
+    Change(syocenter_rel) = Change(yocenter_rel)
+    Change(szocenter_rel) = Change(zocenter_rel)
+    Change(sradius) = Change(radius)   
+    {nb,[gcode],sFeedUnit<<ChannelID>>,[sxopos],[syopos],[szopos],[sZoposVariable],[sxocenter_rel],[syocenter_rel],[szocenter_rel],[sradius],[feed]}
+  endif  
+endp
+
+;-------------------
+
+@arc_5x
+  local numeric nX_Face nY_Face nX_Start nY_Start nX_Center nY_Center nX_CenterRel nY_CenterRel
+  local string snX_Face snY_Face szhpos snX_CenterRel snY_CenterRel
+
+  if arc_direction eq 0
+    gcode = 3
+  else
+    gcode = 2
+  endif
+  call @usr_sFeedUnit
+  if rot_axis_type eq axis4_radial     
+    call @usr_ErrorMessage((8)) ;No arc_5x output allowed with axis4_radial because of bug with arc output
+    if iSaveTurretNumber<<ChannelID>> eq 3 or iSaveTurretNumber<<ChannelID>> eq 4
+      call @usr_ErrorMessage((8)) ;No arc_5x output allowed with B-axis
+    endif                                        
+    call @usr_CylindricalInterpolation((1))
+    call @usr_Calculate_CylindricalCartesianY    
+    ;Here output should be
+  endif  
+  if rot_axis_type eq axis4_face
+    call @usr_sFeedUnit
+    call @usr_FaceInterpolation((1))      
+    ;Calculate new X and Y coordinates for G12.1       
+    nX_Face = xhpos * cos(nFaceCartesianStartA<<ChannelID>>) - yhpos * sin(nFaceCartesianStartA<<ChannelID>>)
+    nY_Face = yhpos * cos(nFaceCartesianStartA<<ChannelID>>) + xhpos * sin(nFaceCartesianStartA<<ChannelID>>)    
+    nX_Start = (xhcenter - xhcenter_rel) * cos(nFaceCartesianStartA<<ChannelID>>) - (yhcenter - yhcenter_rel) * sin(nFaceCartesianStartA<<ChannelID>>)
+    nY_Start = (yhcenter - yhcenter_rel) * cos(nFaceCartesianStartA<<ChannelID>>) + (xhcenter - xhcenter_rel) * sin(nFaceCartesianStartA<<ChannelID>>)
+    nX_Center = xhcenter * cos(nFaceCartesianStartA<<ChannelID>>) - yhcenter * sin(nFaceCartesianStartA<<ChannelID>>)
+    nY_Center = yhcenter * cos(nFaceCartesianStartA<<ChannelID>>) + xhcenter * sin(nFaceCartesianStartA<<ChannelID>>)                                               
+    nX_CenterRel = nX_Center - nX_Start
+    nY_CenterRel = nY_Center - nY_Start
+    ;Output with new X and Y coordinates for G12.1 
+    call @usr_ForceInterpolationFeedOutput 
+    call @usr_OutputZeroFormat((ToStr(nX_Face:xhpos_f)),snX_Face)
+    call @usr_OutputZeroFormat((ToStr(nY_Face:yhpos_f)),snY_Face)
+    call @usr_OutputZeroFormat((ToStr(zhpos:zhpos_f)),szhpos)
+    call @usr_OutputZeroFormat((ToStr(nX_CenterRel:xhcenter_rel_f)),snX_CenterRel)
+    call @usr_OutputZeroFormat((ToStr(nY_CenterRel:yhcenter_rel_f)),snY_CenterRel)
+    Change(szhpos) = Change(zhpos)
+    {nb,[gcode],sFeedUnit<<ChannelID>>,snX_Face,snY_Face,[szhpos],snX_CenterRel,snY_CenterRel,[feed]}            
+  endif    
+  nSaveLast_hpos<<ChannelID,1>> = xhpos ;|X| | |
+  nSaveLast_hpos<<ChannelID,2>> = yhpos ;| |Y| |
+  nSaveLast_hpos<<ChannelID,3>> = zhpos ;| | |Z|                               
+  nSaveLast_apos<<ChannelID>> = apos ;|C|
+endp
+
+;-------------------
+
+@rotary_info
+  if bJobActive eq True
+    if rot_axis_type eq axis4_radial or rot_axis_type eq axis4_face 
+      if rot_axis_coord eq axis4_cartesian  
+        call @usr_ErrorMessage((6))
+      endif
+    endif
+  endif
+endp
+
+;-------------------
+; VMID-Turret numbers
+;                    
+; 1 = T1  - T5       
+; 2 = T7  - T9       
+; 3 = T11 - T14      
+; 4 = T51 - T54      
+; 5 = T21 - T26      
+; 6 = T30            
+; 7 = T31 - T38      
+@usr_SpinFormat
+  local string sEqual sSpindle                                   
+                                                            
+  if job_machine_type eq turning                                                                                
+    if iSaveTurretNumber<<ChannelID>> eq 1                                   
+      sSpindle = '1'
+      iSpinMCode<<ChannelID>> = 3
+    endif
+    if iSaveTurretNumber<<ChannelID>> eq 5                                   
+      sSpindle = '1'
+      iSpinMCode<<ChannelID>> = 3
+    endif
+    if iSaveTurretNumber<<ChannelID>> eq 7                                   
+      sSpindle = '2'
+      iSpinMCode<<ChannelID>> = 23
+    endif
+    iSaveSpindelNumber<<ChannelID>> = int(ToNum(sSpindle))
+    if spin_unit eq css                                     
+      sSpindle = ''
+    endif
+  else
+    if iSaveTurretNumber<<ChannelID>> eq 2                                     
+      sSpindle = '3'
+      iSpinMCode<<ChannelID>> = 80
+    endif
+    if iSaveTurretNumber<<ChannelID>> eq 3                                     
+      sSpindle = '3'
+      iSpinMCode<<ChannelID>> = 80
+    endif
+    if iSaveTurretNumber<<ChannelID>> eq 4                                     
+      sSpindle = '3'
+      iSpinMCode<<ChannelID>> = 80
+    endif
+    if iSaveTurretNumber<<ChannelID>> eq 5                                     
+      sSpindle = '4'
+      iSpinMCode<<ChannelID>> = 83
+    endif
+    if iSaveTurretNumber<<ChannelID>> eq 7
+      sSpindle = '5'
+      iSpinMCode<<ChannelID>> = 180
+    endif
+    iSaveSpindelNumber<<ChannelID>> = int(ToNum(sSpindle))
+  endif
+  if sSpindle ne ''
+    sEqual = '='
+  endif
+  spin_f = '<S' + sSpindle + sEqual + '>5.0(n)< >' 
+endp
+
+;-------------------
+
+@usr_feed_spin
+  iSaveJobFeedUnit<<ChannelID>> = feed_unit 
+  call @usr_SpinFormat
+  if job_machine_type eq milling 
+    spin_unit = rpm
+  endif
+  if tool_type eq tap_mill  
+    nSaveTappSpin<<ChannelID>> = round(spin,0)
+    if job_type ne 'thread'
+      spin = 0 
+    endif
+  endif  
+  if round(spin,0) ne nSaveSpin<<ChannelID>> or spin_direction ne iSaveSpinDirection<<ChannelID>> or spin_unit ne iSaveSpinUnit<<ChannelID>>
+    if spin_unit eq css    
+      if spin_limit ne nSaveSpinLimit<<ChannelID>>
+        {nb,(50):gcode_f,spin_limit:spin_f} 
+        nSaveSpinLimit<<ChannelID>> = spin_limit       
+      endif
+      {nb,(96):gcode_f}
+    endif
+    if spin_unit eq rpm
+      {nb} ;Because of milling spin S... output should be in a extra line and not with plane G-Code
+      if job_machine_type eq turning or bMCOActive eq True
+        {(97):gcode_f}             
+      endif
+    endif
+    {(iSpinMCode<<ChannelID>> + spin_direction):mcode_f,(round(spin,0)):spin_f}    
+    if spin_unit eq css
+      if ChannelID eq 1
+        {nb,(97):mcode_f}
+      else
+        {nb,(95):mcode_f}
+      endif
+    endif   
+    nSaveSpin<<ChannelID>> = round(spin,0)
+    iSaveSpinUnit<<ChannelID>> = spin_unit     
+    iSaveSpinDirection<<ChannelID>> = spin_direction
+    if job_machine_type eq turning
+      bCaxisOn<<ChannelID>> = False
+    endif 
+  endif
+endp
+
+;-------------------
+
+@feed_spin
+  call @usr_feed_spin
+endp
+
+;-------------------
+
+@m_feed_spin
+  call @usr_feed_spin
+endp
+
+;-------------------
+
+@usr_OutputFeedUnit
+  if sFeedUnit<<ChannelID>> ne ''
+    {nb,sFeedUnit<<ChannelID>>}
+  endif
+endp
+
+;-------------------
+
+@usr_CAxisReset(numeric nValue)
+  if bCaxisOn<<ChannelID>> eq True 
+    if round(nValue,2) ne round(nSaveLast_apos<<ChannelID>>,2)
+      if ChannelID eq 1
+        {nb,(20):mcode_f}
+      else
+        {nb,(79):mcode_f}
+      endif
+    endif
+  endif
+endp
+
+;-------------------
+
+@usr_CAxisPositioning
+  local string sanext
+
+  if job_machine_type eq milling and bFirstRapidMove<<ChannelID>> eq True
+    if iTrans4xCount<<ChannelID>> le 1      
+      gcode = 0       
+      call @usr_OutputZeroFormat((ToStr(anext:apos_f)),sanext)
+      call @usr_CAxisReset((anext))
+      {nb,[gcode],sanext}
+      nSaveLast_apos<<ChannelID>> = anext
+      bCaxisOn<<ChannelID>> = True
+    endif  
+  endif  
+endp
+
+;-------------------
+                                                                                    
+@thread                                                                             
+  local string sG76LineOne sG76LineTwo sG92
+  local numeric nXStart nXEnde nXCut nXAllowance
+  local integer iCount iMulti iSpring
+  local logical bXEnde bXAllowance
+  
+  if turning_mode eq 1 and process_type eq 0 ;Outer diameter thread
+    nXStart = min_diameter + (2 * depth)
+    nXAllowance = min_diameter + (2 * thread_finish_allowance)
+    down_step = (down_step * -1)    
+  endif                   
+  if turning_mode eq 0 and process_type eq 0 ;Inner diameter thread
+    nXStart = min_diameter - (2 * depth)
+    nXAllowance = min_diameter - (2 * thread_finish_allowance)
+  endif                   
+  nXEnde = min_diameter
+  if turning_mode eq 1 and process_type eq 1 ;Front face thread
+    call @usr_ErrorMessage((9))
+  endif
+  if turning_mode eq 0 and process_type eq 1 ;Back face thread
+    call @usr_ErrorMessage((10))
+  endif  
+  call @usr_sFeedUnit
+  call @usr_OutputFeedUnit
+  feed_f  = '<F>5.3< >'                                  
+  if work_type eq multiple
+    if minimum_step_down gt 0.0
+      ;First Line of G76
+      gcode = 76
+      sG76LineOne = sG76LineOne + ToSTr(gcode:gcode_f)
+      sG76LineOne = sG76LineOne + 'P' + ToStr(iThreadSpringPasses:'z2.0(p)')
+      sG76LineOne = sG76LineOne + ToStr((nThreadEscapeLength * 10):'z2.0(p)')
+      sG76LineOne = sG76LineOne + ToStr(tool_ALFA:'2.0(p)') + ' '
+      sG76LineOne = sG76LineOne + 'Q' + ToStr(minimum_step_down:numeric_def_f) + ' '
+      sG76LineOne = sG76LineOne + 'R' + ToStr(thread_finish_allowance:numeric_def_f)
+      ;Second Line of G76  
+      sG76LineTwo = sG76LineTwo + ToStr(gcode:gcode_f)
+      sG76LineTwo = sG76LineTwo + ToStr(first_pos_x:xopos_f)
+      sG76LineTwo = sG76LineTwo + ToStr(last_pos_z:zopos_f)
+      if number_of_starts gt 1 and type_starts eq 0
+        sG76LineTwo = sG76LineTwo + 'I' + ToStr((first_pos_x - last_pos_x):numeric_def_f) + ' '
+        sG76LineTwo = sG76LineTwo + 'K' + ToStr(depth:numeric_def_f) + ' '
+        sG76LineTwo = sG76LineTwo + 'D' + ToStr(down_step:numeric_def_f) + ' '
+      else
+        if (first_pos_x - last_pos_x) ne 0.0
+          sG76LineTwo = sG76LineTwo + 'R' + ToStr((first_pos_x - last_pos_x):numeric_def_f) + ' '
+        endif          
+        sG76LineTwo = sG76LineTwo + 'P' + ToStr(depth:numeric_def_f) + ' '
+        sG76LineTwo = sG76LineTwo + 'Q' + ToStr(abs(down_step):numeric_def_f) + ' '
+      endif
+      sG76LineTwo = sG76LineTwo + ToSTr(lead:feed_f)
+      if number_of_starts gt 1 and type_starts eq 0
+        sG76LineTwo = sG76LineTwo + 'A' + ToStr(tool_ALFA:numeric_def_f) + ' '
+        iMulti = 0
+        while iMulti le number_of_starts - 1
+          {nb,sG76LineTwo}  
+          {'Q',(iMulti * (360.0 / number_of_starts)):numeric_def_f}
+          iMulti = iMulti + 1
+        endw
+      else
+        {nb,sG76LineOne}
+        {nb,sG76LineTwo}
+      endif
+    else
+      ;G92 Multiple cut 
+      gcode = 92
+      iMulti = 0
+      if number_of_starts gt 1 and type_starts eq 1
+        iMulti = number_of_starts - 1
+      endif
+      while iMulti le number_of_starts -1     
+        iCount = 1
+        bXEnde = False
+        bXAllowance = False
+        while bXEnde ne True  
+          nXCut = nXStart + (down_step * 2 * iCount)
+          if down_step lt 0.0
+            if nXCut lt nXEnde
+              if bXAllowance eq False
+                nXCut = nXAllowance
+                bXAllowance = True
+              else
+                nXCut = nXEnde
+              endif          
+            endif
+          else
+            if nXCut gt nXEnde
+              if bXAllowance eq False
+                nXCut = nXAllowance
+                bXAllowance = True
+              else              
+                nXCut = nXEnde
+              endif
+            endif
+          endif 
+          sG92 = ''
+          if iCount eq 1
+            sG92 = sG92 + ToStr(gcode:gcode_f)
+          endif
+          sG92 = sG92 + ToStr((nXCut / 2):xopos_f)
+          if iCount eq 1
+            sG92 = sG92 + ToStr(last_pos_z:zopos_f)
+          endif
+          if (first_pos_x - last_pos_x) ne 0.0 and iCount eq 1
+            sG92 = sG92 + 'R' + ToStr((first_pos_x - last_pos_x):numeric_def_f) + ' '
+          endif
+          if iCount eq 1
+            sG92 = sG92 + ToSTr(lead:feed_f)
+          endif                             
+          {nb,sG92}
+          if iCount eq 1
+            if number_of_starts gt 1 and type_starts eq 0
+              {'Q',(iMulti * (360.0 / number_of_starts)):numeric_def_f}
+            endif
+          endif                       
+          if nXCut eq nXEnde   
+            iSpring = 1
+            while iSpring le iThreadSpringPasses
+              {nb,sG92}
+              iSpring = iSpring + 1
+            endw
+            bXEnde = True      
+          endif
+          iCount = iCount + 1
+        endw
+        iMulti = iMulti + 1
+      endw 
+    endif
+  else
+    ;G92 Single cut
+    gcode = 92
+    sG92 = sG92 + ToStr(gcode:gcode_f)
+    sG92 = sG92 + ToStr(first_pos_x:xopos_f)
+    sG92 = sG92 + ToStr(last_pos_z:zopos_f)
+    if (first_pos_x - last_pos_x) ne 0.0
+      sG92 = sG92 + 'R' + ToStr((first_pos_x - last_pos_x):numeric_def_f) + ' '
+    endif
+    sG92 = sG92 + ToSTr(lead:feed_f)
+    if number_of_starts gt 1 and type_starts eq 0
+      iMulti = 0
+      while iMulti le number_of_starts - 1
+        {nb,sG92}  
+        {'Q',(iMulti * (360.0 / number_of_starts)):numeric_def_f}
+        iMulti = iMulti + 1
+      endw  
+    else
+      {nb,sG92}
+    endif
+  endif
+endp
+
+;-------------------
+
+@turn_thread_line
+  call @usr_sFeedUnit
+  call @usr_OutputFeedUnit
+  gcode = 33
+  {nb,gcode,[xopos],[yopos],[zopos],[feed:'<F>5.3< >']}
+endp
+
+;-------------------
+
+@start_of_file
+  local string sName
+  
+  sName = part_name
+  call @usr_ReplacedString(sName)
+  if strlen(sName) gt 18
+    sName = substr(sName,1,18)
+  endif
+	{'O',program_number:'z4.0(p)','(',sName,')'}                                         
+  if build_revision lt iUsedSolidCAMVersion
+    call @usr_ErrorMessage((100)) ;SolidCAM version is too old
+  endif  
+endp
+
+;-------------------
+
+@start_program
+	if ChannelID eq 1
+    {nl,'$',ChannelID}
+    call @usr_ReplacedString(part_name)
+    {nl,'(PROGRAMM-NR.: DCL20-',part_name,')'}
+    {nl,'(ART.NR      : X-XXX-XXXX)'}
+    {nl,'(BEN.        : MAT-R XXXXXXX)'}
+    {nl,'(ZGN.NR      : XXXXXXX)'}
+    {nl,'(INDEX.      : 0)'}
+    {nl,'(ERSTELLT.   : XXX)'}
+    {nl,'(DATUM.      : ',date')'}
+  	{nl,'(LAUFZEIT    : XXX)'}
+    {nl}
+    {nl,'(#140=TEILELAENGE)'}
+    {nl,'(#141=RECHTER ABST=0)'}
+    {nl,'(#141=LINKER ABST=10)'} 
+    {nl}            
+		{nb,'#140=',target_z,'(TEILELAENGE)'}
+    {nb,'#141=',nCutOffToolOffset,'(VERSATZ ABSTECHER)'}
+    {nb,'IF[#5022EQ205-#818]GOTO98765'}
+    {nb,'#3000=1(Z1-STARTPOS.NICHT-ANGEFAHREN)'}
+    {nb,'N98765'}
+    {nb,(50):gcode_f,'Z[#141-',stock_z_plus:numeric_def_f,']'}    ;<- Normal style with face allowance
+;    {nb,(50):gcode_f,'Z#141'}                                      ;<- Only for customer Doppkon without face allowance
+    {nb,(52):mcode_f,'(KUEHLMITTEL AN)'}
+    {nb,(6):mcode_f,'(HS-SPANNZANGE SCHLIESSEN)'}
+    {nb,(9):mcode_f,'(ENDE STANGENWECHSELPRG.)'}
+    {nb,(0):gcode_f,'X[#814+#815] Z-1.0'}
+    {nb,(51):mcode_f,'(ABSTECHBRUCHKONTROLLE)'}
+	endif
+  if ChannelID eq 2
+    {nl}
+    {nl,'$',ChannelID}
+    {nl,'M88'}
+    {nl,'G44'}
+  endif
+  ;standard axis setting 
+  sG140Setting<<1,1>> = 'X1'
+  sG140Setting<<1,2>> = 'Y1'
+  sG140Setting<<1,3>> = 'Z1'
+  sG140Setting<<1,4>> = 'C1'
+  sG140Setting<<2,1>> = 'X2'
+  sG140Setting<<2,2>> = 'Y2'
+  sG140Setting<<2,3>> = 'Z2'
+  sG140Setting<<2,4>> = 'C2'   
+endp
+
+;-------------------
+
+@end_program
+  {nl}
+	{nb,(2):mcode_f}
+endp
+
+;-------------------                   
+
+@end_of_file
+  {nl}
+	{nl,'$0'}	                  
+  {nl,'A2-LE-2-20-12-P-M'}                                     ;for Citizen Cincom L20E-2M12
+  {nl,'#814=',(bound_x_external * 2):'z7.3z(n)'}               ;Material Diameter
+  {nl,'#815=',(nPrepSafetyDistance):'z7.3z(n)'}                ;Safety Distance
+  {nl,'#816=',(iPrepCutOffToolNumber):'z7.3z(n)'}              ;CutOff Tool Number
+  {nl,'#817=',(iPrepCutOffSpin):'z7.3z(n)'}                    ;CutOff Spindle Speed
+  {nl,'#822=',(nPrepCutOffFeed):'z7.3z(n)'}                    ;CutOff Feed
+  if nPrepCutOff_X lt 0.0
+    {nl,'#824=',(nPrepCutOff_X):'z6.3z(n)'}                    ;CutOff X-Endposition negative value
+  else  
+    {nl,'#824=',(nPrepCutOff_X):'z7.3z(n)'}                    ;CutOff X-Endposition positive or zero value    
+  endif
+  {nl,'#818=',(nSaveMachineZOffset<<1>>):'z7.3z(n)'}           ;Z1-Axis Stroke
+  {nl,'#819=',(iPrepPartsNumber):'z7.3z(n)'}                   ;Parts per Stroke                                     
+  {nl,'#918=0000000000'}
+  {nl,'#821=',(nSaveMachineZOffset<<2>>):'z7.3z(n)'}           ;Part Projection Length from Sub Collet Face
+  {nl,'#921=0000000000'}
+  {nl,'#919=0000000000'}
+  {nl,'#922=0000000000'}
+  {nl,'#990=0004007000'}
+  {nl,'#991=0000055000'}
+  {nl,'#992=0000067000'}
+  {nl,'#893=0000000000'}
+  {nl,'#25974=0004050000'}
+  {nl,'#25975=0004058000'}
+  {nl,'#25976=0004058000'}
+  {nl,'#25977=0000000000'}
+  {nl,'#25978=0000000000'}
+  {nl,'#25979=0000000000'}
+  {nl,'#25980=0000000000'}
+  {nl,'%'}
+endp
+                                                           
+;-------------------
+
+@usr_ErrorMessage(integer iNumber)
+  local string sJob sAusgabe sAbbruch
+  local string sMessage<<100>>
+  
+  sAbbruch = ' | NC-Code Ausgabe wird abgebrochen!'
+  sJob = ' in Job Nr.' + ToStr(index_job:integer_def_f) + ' - "' + original_job_name + '" '
+  
+  ;Verschleisskorrekturnummer ausserhalb Bereich
+  sMessage<<1>> = 'Die Verschleisskorrekturnummer "' + ToStr(iSaveToolWearNumber<<ChannelID>>:integer_def_f) + '"' + sJob 
+  sMessage<<1>> = sMessage<<1>> + 'ist ausserhalb des gueltigen Bereichs > 80 !'
+  ;Gewaehlter Bohrzyklus nicht gueltig
+  sMessage<<2>> = 'Der gewaehlte Bohrzyklus' + sJob + 'ist nicht gueltig!'
+  ;Interer Fehler bei G50 W...
+  sMessage<<3>> = 'Interner Fehler beim zurueck setzen der G50 W... Nullpunktverschiebung!'
+  ;Gewaehlte Schneidenlage fuer Abstechen nicht korrekt
+  sMessage<<4>> = 'Die gewaehlte Schneidenlage "' + ToStr(nose_point:integer_def_f) + '"' + sJob
+  sMessage<<4>> = sMessage<<4>> + 'ist fuer das Abstechen nicht korrekt. Bitte "4" waehlen.' 
+  ;MCO-Kommentar ist nicht an erster Stelle
+  sMessage<<5>> = 'MCO-Kommentar ist nicht an erster Stelle' + sJob
+  ;Gewaehlter Koordinatentyp kartesisch wird nicht unterstuetzt
+  sMessage<<6>> = 'Der gewaehlte Koordinatentyp "Kartesisch"' + sJob + 'wird nicht unterstuetzt!'
+  ;Y-Ursprung des Nullpuntes liegt nicht bei Y0
+  sMessage<<7>> = 'Der Y-Ursprung des Nullpuntes' + sJob + 'liegt nicht bei Y0!'
+  ;Keine Kreisbogenausgabe erlaubt
+  sMessage<<8>> = 'Keine Kreisbogenausgabe' + sJob + 'erlaubt! Bitte Boegen durch Linien annaehern im Job aktivieren.'
+  ;Prozessart Plan Vorne wird nicht unterstuetzt
+  sMessage<<9>> = 'Prozessart "Plan Vorne"' + sJob + 'wird nicht unterstuetzt!'
+  ;Prozessart Plan Hinten wird nicht unterstuetzt
+  sMessage<<10>> = 'Prozessart "Plan Hinten"' + sJob + 'wird nicht unterstuetzt!'
+  ;Ungueltiger R-Wert bei Bohrzyklus
+  sMessage<<11>> = 'Ungueltiger R-Wert bei Bohrzyklus' + sJob + '- Bitte Ebenen und Sicherheitsabstand im Job ueberpruefen.'
+  ;Kompensation wird nicht unterstuetzt
+  sMessage<<12>> = 'Kompensation' + sJob + 'wird nicht unterstuetzt!'
+  ;Anstellwinkel der 4.-Achse muss "0" sein
+  sMessage<<13>> = 'Anstellwinkel der 4.-Achse' + sJob + 'muss "0" betragen!'
+  ;Nur 4.-Achse Plan moeglich mit T31-T38 & G12.1 + X negativer Ausgabe
+  sMessage<<14>> = 'Ausgabe nur mit 4.-Achse Plan' + sJob
+  ;Z-Wert mit Variable #140 nur in Kanal-1 moeglich
+  sMessage<<15>> = 'Verwenden der Teilelaengen-Variable' + sJob + 'wird in Kanal-2 nicht unterstuetzt!'
+  ;Z-Wert mit Variable #140 nur mit mounting_direction_x = 1 moeglich
+  sMessage<<16>> = 'Verwenden der Teilelaengen-Variable' + sJob + 'mit dieser Werkzeugausrichtung nicht moeglich!'
+  ;Axes Pattern "G650" ist fuer das Abgreifen nicht gewaehlt 
+  sMessage<<17>> = 'Falsches Bearbeitungsmuster' + sJob + 'gewaehlt. Bitte Bearbeitungsmuster "G650" waehlen!'
+  ;Axes Pattern "G620" ist fuer das Neu-Greifen nicht gewaehlt
+  sMessage<<18>> = 'Falsches Bearbeitungsmuster' + sJob + 'aktiv. Bitte Bearbeitungsmuster "G620" aktivieren!'
+  ;Phase shift value out of range
+  sMessage<<19>> = 'Winkelverschiebewert fuer Phasensynchronitaet' + sJob + 'liegt ausserhalb des gueltigen Bereiches (0-359.999)!' 
+  ;SolidCAM Versionscheck
+  sMessage<<100>> = 'NC-Code Ausgabe nur mit SolidCAM Version Build:' + ToStr(iUsedSolidCAMVersion:integer_def_f) + ' oder hoeher moeglich!' 
+  ;Fehlerausgabe
+  Print sMessage<<iNumber>> + sAbbruch                
+  {nb,'(***FEHLER***)'}
+  {nb,'(',sMessage<<iNumber>> + sAbbruch,')'}
+  {nb,'(***FEHLER***)'}
+  Abort
+endp
+
+;-------------------
+
+@usr_ReplacedString(string sString)
+  sString = replace(sString,'\xc4','Ae',0)         ;Ä
+  sString = replace(sString,'\xe4','ae',0)         ;ä
+  sString = replace(sString,'\xd6','Oe',0)         ;Ö
+  sString = replace(sString,'\xf6','oe',0)         ;ö
+  sString = replace(sString,'\xdc','Ue',0)         ;Ü
+  sString = replace(sString,'\xfc','ue',0)         ;ü
+  sString = replace(sString,'\xdf','ss',0)         ;ß
+  sString = replace(sString,'\xc9','E',0)          ;É
+  sString = replace(sString,'\xe9','e',0)          ;é
+  sString = replace(sString,'\xc8','E',0)          ;È
+  sString = replace(sString,'\xe8','e',0)          ;è
+  sString = replace(sString,'\xc1','A',0)          ;Á
+  sString = replace(sString,'\xe1','a',0)          ;á   
+  sString = replace(sString,'\xc0','A',0)          ;À
+  sString = replace(sString,'\xe0','a',0)          ;à
+  sString = replace(sString,'\xc2','A',0)          ;Â
+  sString = replace(sString,'\xe2','a',0)          ;â
+  sString = replace(sString,'\xca','E',0)          ;Ê
+  sString = replace(sString,'\xea','e',0)          ;ê
+  sString = replace(sString,'\x80','-Euro',0)      ;€
+  sString = replace(sString,'\xf8','D',0)          ;Ø
+  sString = replace(sString,'\x7b','_',0)          ;{
+  sString = replace(sString,'\x7d','_',0)          ;}
+  sString = replace(sString,'\x24','-Dollar',0)    ;$
+  sString = replace(sString,'\x25','-Prozent',0)   ;%
+  sString = replace(sString,'\xb0','-Grad',0)      ;°
+  sString = replace(sString,'\x7e','-',0)          ;~
+  sString = replace(sString,'\x2f','-',0)          ;/
+  sString = replace(sString,'\x5c','_',0)          ;\
+  sString = replace(sString,'\x5c','_',0)          ;\
+  sString = replace(sString,'\x7c','I',0)          ;|
+  sString = replace(sString,'\xb4','_',0)          ;´
+  sString = replace(sString,'\x22','_',0)          ;"
+  sString = replace(sString,'\x22','_',0)          ;"                                                     
+  sString = replace(sString,'\xb2','2',0)          ;²
+  sString = replace(sString,'\xb3','3',0)          ;³
+  sString = replace(sString,'\x5f','-',0)          ;_
+  sString = upper(sString)         
+endp

@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<machine_definition>
+    <machine_data name="SL20 MachSim" version="1.8" units="metric" controller="">
+        <view_transform initialvalue="0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,-1.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+    </machine_data>
+    <geometry name="BackToolPost" geo="sint - u155b-1.stl" clrr="0.56078434" clrg="0.73725492" clrb="0.56078434" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <axis id="C1" type="rotation" x="0.00000000" y="0.00000000" z="-1.00000000" minvalue="-100000.000000" maxvalue="100000.000000" valuetype="cont" initial_value="0.000000" rzx="0.00000000" rzy="0.00000000" rzz="0.00000000">
+        <geometry name="SINT - 16C-Round-Collet-2" geo="sint - 16c-round-collet-2.stl" clrr="1.00000000" clrg="0.84313726" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <axis id="Z1" type="translation" x="0.00000000" y="0.00000000" z="-1.00000000" minvalue="0.000000" maxvalue="301.500000" valuetype="cont" initial_value="0.000000">
+            <geometry name="Main Spindle_fixture" geo="main spindle_fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="SINT - Z axis slide-1" geo="sint - z axis slide-1.stl" clrr="0.91372550" clrg="0.58823532" clrb="0.47843137" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <transform id="fixture_transform1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <transform id="fixture_adaptor1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+            </transform>
+            <transform id="workpiece_transform1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <transform id="wcs1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+                <transform id="workpiece_adaptor1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+            </transform>
+        </axis>
+        <transform id="fixture_transform3" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="fixture_adaptor3" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+        </transform>
+        <transform id="workpiece_transform3" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="wcs3" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+            <transform id="workpiece_adaptor3" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+        </transform>
+    </axis>
+    <geometry name="SliderHousing" geo="sint - g-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <axis id="Y1" type="translation" x="0.00000000" y="1.00000000" z="0.00000000" minvalue="-1.000000" maxvalue="362.500000" valuetype="cont" initial_value="0.000000">
+        <axis id="X1" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-127.500000" maxvalue="1.000000" valuetype="cont" initial_value="0.000000">
+            <axis id="B1" type="rotation" x="-1.00000000" y="0.00000000" z="0.00000000" minvalue="-45.000000" maxvalue="91.000000" valuetype="cont" initial_value="90.000000" rzx="178.50000000" rzy="-327.50000000" rzz="-15.00000000">
+                <geometry name="SINT - B-1" geo="sint - b-1.stl" clrr="0.00000000" clrg="0.74901962" clrb="1.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <transform id="turret_transform6" initialvalue="1.00000000,0.00000000,0.00000000,178.50000000,0.00000000,1.00000000,0.00000000,-327.50000000,0.00000000,0.00000000,1.00000000,-15.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="station_transform6111" initialvalue="1.00000000,0.00000000,0.00000000,-78.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-20.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform6111" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor6111" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform6A11" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool6A11" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform6112" initialvalue="1.00000000,0.00000000,0.00000000,-108.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-20.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform6112" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor6112" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform6A12" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool6A12" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform6113" initialvalue="1.00000000,0.00000000,0.00000000,-138.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-20.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform6113" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor6113" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform6A13" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool6A13" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform6114" initialvalue="1.00000000,0.00000000,0.00000000,-168.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-20.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform6114" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor6114" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform6A14" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool6A14" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform6151" initialvalue="1.00000000,0.00000000,0.00000000,-78.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-108.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform6151" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor6151" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform6A51" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool6A51" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform6152" initialvalue="1.00000000,0.00000000,0.00000000,-108.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-108.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform6152" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor6152" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform6A52" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool6A52" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform6153" initialvalue="1.00000000,0.00000000,0.00000000,-138.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-108.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform6153" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor6153" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform6A53" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool6A53" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform6154" initialvalue="1.00000000,0.00000000,0.00000000,-168.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-108.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform6154" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor6154" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform6A54" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool6A54" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                </transform>
+            </axis>
+            <geometry name="SINT - X1Y1B1-1" geo="sint - x1y1b1-1.stl" clrr="0.25490198" clrg="0.41176471" clrb="0.88235295" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <transform id="turret_transform2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <transform id="station_transform2101" initialvalue="1.00000000,0.00000000,0.00000000,126.50000000,0.00000000,1.00000000,0.00000000,-15.50000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="adaptor_transform2101" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2101" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2A01" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2A01" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                </transform>
+                <transform id="station_transform2102" initialvalue="1.00000000,0.00000000,0.00000000,126.50000000,0.00000000,1.00000000,0.00000000,-43.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="adaptor_transform2102" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2102" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2A02" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2A02" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                </transform>
+                <transform id="station_transform2103" initialvalue="1.00000000,0.00000000,0.00000000,126.50000000,0.00000000,1.00000000,0.00000000,-67.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="adaptor_transform2103" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2103" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2A03" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2A03" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                </transform>
+                <transform id="station_transform2104" initialvalue="1.00000000,0.00000000,0.00000000,126.50000000,0.00000000,1.00000000,0.00000000,-91.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="adaptor_transform2104" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2104" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2A04" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2A04" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                </transform>
+                <transform id="station_transform2105" initialvalue="1.00000000,0.00000000,0.00000000,126.50000000,0.00000000,1.00000000,0.00000000,-115.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="adaptor_transform2105" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2105" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2A05" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2A05" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                </transform>
+                <transform id="station_transform2107" initialvalue="1.00000000,0.00000000,0.00000000,178.50000000,0.00000000,1.00000000,0.00000000,-159.00000000,0.00000000,0.00000000,1.00000000,-15.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="adaptor_transform2107" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2107" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2A07" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2A07" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2207" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2207" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2B07" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2B07" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2307" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2307" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2C07" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2C07" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2407" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2407" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2D07" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2D07" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2507" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2507" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2E07" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2E07" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2607" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2607" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2F07" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2F07" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2707" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2707" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2G07" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2G07" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                </transform>
+                <transform id="station_transform2108" initialvalue="1.00000000,0.00000000,0.00000000,178.50000000,0.00000000,1.00000000,0.00000000,-196.00000000,0.00000000,0.00000000,1.00000000,-15.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="adaptor_transform2108" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2108" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2A08" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2A08" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2208" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2208" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2B08" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2B08" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2308" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2308" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2C08" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2C08" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2408" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2408" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2D08" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2D08" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2508" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2508" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2E08" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2E08" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2608" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2608" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2F08" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2F08" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2708" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2708" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2G08" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2G08" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                </transform>
+                <transform id="station_transform2109" initialvalue="1.00000000,0.00000000,0.00000000,178.50000000,0.00000000,1.00000000,0.00000000,-233.00000000,0.00000000,0.00000000,1.00000000,-15.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="adaptor_transform2109" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2109" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2A09" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2A09" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2209" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2209" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2B09" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2B09" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2309" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2309" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2C09" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2C09" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2409" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2409" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2D09" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2D09" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2509" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2509" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2E09" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2E09" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2609" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2609" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2F09" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2F09" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                    <transform id="adaptor_transform2709" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="TH_adaptor2709" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                        <transform id="holder_transform2G09" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="tool2G09" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                        </transform>
+                    </transform>
+                </transform>
+            </transform>
+        </axis>
+    </axis>
+    <axis id="Y2" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-1.000000" maxvalue="61.000000" valuetype="cont" initial_value="0.000000">
+        <axis id="X2" type="translation" x="0.00000000" y="-1.00000000" z="0.00000000" minvalue="-317.000000" maxvalue="317.000000" valuetype="cont" initial_value="0.000000">
+            <axis id="Z2" type="translation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-1.000000" maxvalue="206.000000" valuetype="cont" initial_value="0.000000">
+                <axis id="C2" type="rotation" x="0.00000000" y="0.00000000" z="-1.00000000" minvalue="-100000.000000" maxvalue="100000.000000" valuetype="cont" initial_value="0.000000" rzx="0.00000000" rzy="0.00000000" rzz="0.00000000">
+                    <geometry name="Back Spindle_fixture" geo="back spindle_fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                    <geometry name="SINT - 16C-Round-Collet-1" geo="sint - 16c-round-collet-1.stl" clrr="1.00000000" clrg="0.84313726" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                    <transform id="fixture_transform2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-215.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="fixture_adaptor2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+                    </transform>
+                    <transform id="workpiece_transform2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-215.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="wcs2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+                        <transform id="workpiece_adaptor2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+                    </transform>
+                </axis>
+                <geometry name="SINT - SUB SP-1" geo="sint - sub sp-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <transform id="turret_transform1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="station_transform1121" initialvalue="0.00000000,1.00000000,0.00000000,-15.50000000,-1.00000000,0.00000000,0.00000000,-63.00000000,0.00000000,0.00000000,1.00000000,-311.50000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform1121" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor1121" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform1A21" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool1A21" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform1122" initialvalue="0.00000000,1.00000000,0.00000000,-15.50000000,-1.00000000,0.00000000,0.00000000,-92.00000000,0.00000000,0.00000000,1.00000000,-311.50000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform1122" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor1122" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform1A22" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool1A22" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform1123" initialvalue="0.00000000,1.00000000,0.00000000,-15.50000000,-1.00000000,0.00000000,0.00000000,-121.00000000,0.00000000,0.00000000,1.00000000,-311.50000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform1123" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor1123" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform1A23" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool1A23" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform1124" initialvalue="0.00000000,1.00000000,0.00000000,-60.00000000,-1.00000000,0.00000000,0.00000000,-63.00000000,0.00000000,0.00000000,1.00000000,-311.50000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform1124" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor1124" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform1A24" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool1A24" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform1125" initialvalue="0.00000000,1.00000000,0.00000000,-60.00000000,-1.00000000,0.00000000,0.00000000,-92.00000000,0.00000000,0.00000000,1.00000000,-311.50000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform1125" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor1125" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform1A25" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool1A25" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform1126" initialvalue="0.00000000,1.00000000,0.00000000,-60.00000000,-1.00000000,0.00000000,0.00000000,-121.00000000,0.00000000,0.00000000,1.00000000,-311.50000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform1126" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor1126" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform1A26" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool1A26" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                    <transform id="station_transform1130" initialvalue="0.00000000,1.00000000,0.00000000,0.00000000,-1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-215.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="adaptor_transform1130" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="TH_adaptor1130" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                            <transform id="holder_transform1A30" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <geometry name="tool1A30" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                            </transform>
+                        </transform>
+                    </transform>
+                </transform>
+            </axis>
+        </axis>
+    </axis>
+    <transform id="turret_transform8" initialvalue="1.00000000,0.00000000,0.00000000,45.00000000,0.00000000,1.00000000,0.00000000,182.00000000,0.00000000,0.00000000,1.00000000,-102.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+        <transform id="station_transform8131" initialvalue="0.00000000,1.00000000,0.00000000,0.00000000,-1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="adaptor_transform8131" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="TH_adaptor8131" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                <transform id="holder_transform8A31" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool8A31" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                </transform>
+            </transform>
+        </transform>
+        <transform id="station_transform8132" initialvalue="0.00000000,1.00000000,0.00000000,0.00000000,-1.00000000,0.00000000,0.00000000,31.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="adaptor_transform8132" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="TH_adaptor8132" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                <transform id="holder_transform8A32" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool8A32" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                </transform>
+            </transform>
+        </transform>
+        <transform id="station_transform8133" initialvalue="0.00000000,1.00000000,0.00000000,0.00000000,-1.00000000,0.00000000,0.00000000,62.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="adaptor_transform8133" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="TH_adaptor8133" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                <transform id="holder_transform8A33" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool8A33" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                </transform>
+            </transform>
+        </transform>
+        <transform id="station_transform8134" initialvalue="0.00000000,1.00000000,0.00000000,0.00000000,-1.00000000,0.00000000,0.00000000,93.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="adaptor_transform8134" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="TH_adaptor8134" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                <transform id="holder_transform8A34" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool8A34" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                </transform>
+            </transform>
+        </transform>
+        <transform id="station_transform8135" initialvalue="0.00000000,1.00000000,0.00000000,-45.00000000,-1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="adaptor_transform8135" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="TH_adaptor8135" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                <transform id="holder_transform8A35" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool8A35" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                </transform>
+            </transform>
+        </transform>
+        <transform id="station_transform8136" initialvalue="0.00000000,1.00000000,0.00000000,-45.00000000,-1.00000000,0.00000000,0.00000000,31.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="adaptor_transform8136" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="TH_adaptor8136" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                <transform id="holder_transform8A36" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool8A36" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                </transform>
+            </transform>
+        </transform>
+        <transform id="station_transform8137" initialvalue="0.00000000,1.00000000,0.00000000,-45.00000000,-1.00000000,0.00000000,0.00000000,62.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="adaptor_transform8137" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="TH_adaptor8137" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                <transform id="holder_transform8A37" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool8A37" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                </transform>
+            </transform>
+        </transform>
+        <transform id="station_transform8138" initialvalue="0.00000000,1.00000000,0.00000000,-45.00000000,-1.00000000,0.00000000,0.00000000,93.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="adaptor_transform8138" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="TH_adaptor8138" geo="th_adaptor.stl" clrr="0.00000000" clrg="0.23921569" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+                <transform id="holder_transform8A38" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool8A38" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="1.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="1.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.50196081" holderb="0.15294118" />
+                </transform>
+            </transform>
+        </transform>
+    </transform>
+    <magazine>
+        <head name="TH_FX1">
+            <geometry name="TH_adaptor1" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX10">
+            <geometry name="TH_adaptor10" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX11">
+            <geometry name="TH_adaptor11" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX12">
+            <geometry name="TH_adaptor12" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX13">
+            <geometry name="TH_adaptor13" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX14">
+            <geometry name="TH_adaptor14" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX15">
+            <geometry name="TH_adaptor15" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX16">
+            <geometry name="TH_adaptor16" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX17">
+            <geometry name="TH_adaptor17" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX18">
+            <geometry name="TH_adaptor18" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX19">
+            <geometry name="TH_adaptor19" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX2">
+            <geometry name="TH_adaptor2" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX20">
+            <geometry name="TH_adaptor20" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX21">
+            <geometry name="TH_adaptor21" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX22">
+            <geometry name="TH_adaptor22" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX23">
+            <geometry name="TH_adaptor23" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX24">
+            <geometry name="TH_adaptor24" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX25">
+            <geometry name="TH_adaptor25" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX3">
+            <geometry name="TH_adaptor3" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX4">
+            <geometry name="TH_adaptor4" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX5">
+            <geometry name="TH_adaptor5" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX6">
+            <geometry name="TH_adaptor6" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX7">
+            <geometry name="TH_adaptor7" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX8">
+            <geometry name="TH_adaptor8" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX9">
+            <geometry name="TH_adaptor9" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="Target_Stock1">
+            <geometry name="workpiece1" geo="workpiece1.stl" clrr="0.65098041" clrg="0.79215688" clrb="0.94117647" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock1" geo="stock1.stl" clrr="0.50196081" clrg="0.32156864" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath" geo="toolpath.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock1" geo="stock1.stl" clrr="0.43137255" clrg="0.65882355" clrb="1.00000000" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="Target_Stock2">
+            <geometry name="workpiece2" geo="workpiece2.stl" clrr="0.65098041" clrg="0.79215688" clrb="0.94117647" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock2" geo="stock2.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath2" geo="toolpath2.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock2" geo="stock2.stl" clrr="0.43137255" clrg="0.65882355" clrb="1.00000000" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="Target_Stock3">
+            <geometry name="workpiece3" geo="workpiece2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock3" geo="stock2.stl" clrr="0.54509807" clrg="0.00000000" clrb="0.54509807" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath3" geo="toolpath2.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock3" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="Target_Stock4">
+            <geometry name="workpiece4" geo="workpiece2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock4" geo="stock2.stl" clrr="0.87058824" clrg="0.72156864" clrb="0.52941179" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath4" geo="toolpath2.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock4" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="Target_Stock5">
+            <geometry name="workpiece5" geo="workpiece2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock5" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath5" geo="toolpath2.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock5" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="Target_Stock6">
+            <geometry name="workpiece6" geo="workpiece2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock6" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath6" geo="toolpath2.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock6" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="fxt1">
+            <geometry name="fixture1" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt2">
+            <geometry name="fixture2" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt3">
+            <geometry name="fixture3" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt4">
+            <geometry name="fixture4" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+    </magazine>
+</machine_definition>
