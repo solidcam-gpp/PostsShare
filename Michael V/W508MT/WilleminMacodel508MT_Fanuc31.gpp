@@ -13,17 +13,19 @@
 ;Rev1.1 Herv� Philibien: Modified usage of Hpos according to G843 (Didn't worked on machine) or Opos according to G841 + added variable to switch 
 ;Rev1.1 Herv� Philibien: Modified bpos_f = '< B>5.3(p)' (cancel *-1) for 5x sim case on Back spindle horizontal and reversed XY coordinate xopos_f = '< X>5.3(ip)'yopos_f = '< Y>5.3(ip)'
 ;Rev1.1 Mickael Lemoine: Modified bpos_f = inverse coordinate X et Y for submachine 4 , case on Back spindle horizontal
+;20/04/2019
+;Converting to 2019sp2
 
 @init_post
 	global string program_number_f bpos_f spin_f StrMachineType StrDeviceType StrSpinDevice
 	global integer IntMachineMode IntHeadPosition IntHomeNumber IntBrakeStatus<<6>>
 	global numeric NumHeadAngle NumJpos IntTraceLevel NumUpos
-	global string move_axis_x_f move_axis_y_f move_axis_z_f move_axis_a_f move_axis_b_f xh_move_f yh_move_f zh_move_f ah_move_f bh_move_f StrDirectory
+	global string move_axis_x_f move_axis_y_f move_axis_z_f move_axis_a_f move_axis_b_f xh_move_f yh_move_f zh_move_f ah_move_f bh_move_f
 	global string move_extr_axis_L1_f move_extr_axis_L2_f move_extr_axis_L3_f move_extr_axis_R1_f move_extr_axis_R2_f move_extr_axis_R3_f
 	global logical LogInMCO LogInFaceCartesian LogInRadialPolar LogIn4xTransform
 	global integer IntFileCounter IntHomeIndex IntHomeIndexSh 
-	global string StrOpenFile StrDirectory ArIntFileList<<10>> ArStrAxesNames<<16>>
-	global numeric NumIncB1 ArNumMacPosition<<6,3>> ArNumAxesMove<<16>>
+	global string ArStrAxesNames<<16>>
+	global numeric NumIncB1 ArNumAxesMove<<16>>
 	global logical LogExistHome LogDrillRadial LogInTorqueCheck LogInsynh LogDrillRadial LogBarFeederFlag LogForCimcoOutput ArLogAxesBits<<16>> LogUsePartCoordinate
 	global integer IntToolChangeMode IntCurrentTool ArIntAxis<<8>>
 	global integer iTrace_level iTraceCounter 	
@@ -42,23 +44,19 @@
 
 	IntBrakeStatus<<2>> = True ;MV
 	IntBrakeStatus<<1>> = True ;MV
-   global integer iTrace_level iTraceCounter
-	;if user_account eq 'phili' or user_account eq 'Xavier Ginard' or user_account eq 'bague' or user_account eq 'SolidCAM France' or user_account eq 'SolidCAMFRDellM6800' or user_account eq 'SolidCAM HPZ440' or user_account eq 'SOLIDCAM STAGIAIRE' ;insert you computer name
-		if iTraceCounter eq 0
-		    iTraceCounter = 1
-		    Input "Trace level : 0-None  5-All", iTrace_level
-		   trace "all":iTrace_level
+	global integer IntITrace_level IntITraceCounter
+	if IntITraceCounter eq 0
+		IntITraceCounter = 1
+		Input "Trace level : 0-None  5-All", IntITrace_level
+		trace "all":IntITrace_level
 		endif
-	;endif
+	
 	LogUsePartCoordinate = true ; IF yes part coordinate (G841) with OPOS set will be generate, if no Table coordinate (G843) with HPOS
-     StrDirectory = 'C:\\W508MT_g_code_temp\\'
 endp
 
 @start_of_file
-	call @UdrOpen(('Header'))
 	call @UdrGeneralFormats((''))
 	{nb,'%'}
-
 	{nl, program_number}
 	if index_split_file eq 1
 		{'(',upper(part_name),')'}
@@ -69,7 +67,6 @@ endp
 endp
 
 @start_program
-	call @UdrOpen(('Gcode'))
 	call @UdrAxesHoming(('_Z_YXBU'))
 	{nb,'M370'}
 	{nb,'G54'}
@@ -86,18 +83,6 @@ endp
 
 @end_of_file
 	{nl,'%'}
-	call @UdrPrintHomes
-	local string filename
-	if index_split_file eq 1
-		filename = tostr(program_number) + '(' + upper(part_name) + ')'
-	else
-		filename = tostr(program_number) + '(' + upper(split_name) + ')'
-	endif
-	call @UdrOpenForever((filename))
-	call @UdrCopy(('Header'))
-	call @UdrCopy(('Homes'))
-	call @UdrCopy(('Gcode'))
-	call @UdrDeleteAll
 endp
 
 @def_tool
@@ -108,7 +93,7 @@ endp
 	call @UdrHomeSet
 endp
 
-@ud_turn_change_tool
+@UdrTurn_change_tool
 	if LogInMCO eq true
 		call @UdrMCOTurnChangeTool
 	else
@@ -205,7 +190,6 @@ endp
 				{xnext:xpos_f,ynext:ypos_f,znext:zpos_f}
 			endif
 		else
-			;{xlnext:xlpos_f,ylnext:ylpos_f,zlnext:zlpos_f}
 			if LogUsePartCoordinate eq TRUE
 				{xonext:xopos_f,yonext:yopos_f,zonext:zopos_f}
 			else
@@ -301,15 +285,9 @@ endp
 	if LogForCimcoOutput eq true
 		{nb,'G69'}
 	endif
-
 	bpos_f = '< B>5.3(p)'
 	xopos_f = '< X>5.3(p)'
 	yopos_f = '< Y>5.3(p)'
-
-endp
-
-@turn_chng_offset
-	;TBD
 endp
 
 @line
@@ -394,7 +372,6 @@ endp
 	endif
 endp
 
-;MCO
 @start_mach_ctrl
 	LogInMCO = true
 	NumIncB1 = 0
@@ -428,7 +405,6 @@ endp
 	ArNumAxesMove<<15>> = move_axis_y
 	ArNumAxesMove<<16>> = move_axis_z
 endp
-
 
 @move_object
 	local integer i axv axu axj axf
@@ -619,7 +595,6 @@ endp
 		;{nb,'M86'}
 		LogInsynh = True
 	else
-		;?
 	endif
 endp 
 
@@ -654,57 +629,26 @@ endp
 	endif
 endp
 
-@setup
-	call @UdrOpen(('Gcode'))
-endp
-
 @message
 	{nb,'(',message,')'} 
 endp
 
 @change_ref_point
 	if LogInMCO eq true
-		call @UdrHomeSet
+		
 	else
 		{nb,'G92 X'xhome' Y',yhome,' Z'zhome}
 	endif
 endp
 
-@UdrHomeSet
+@plane_data
 	local integer i
 	i = 1
-	;search if home is exist
-	if RTP_before_MCO eq false
-		LogExistHome = false
 		While i le IntHomeIndex
-			if shift_Mac_m_x eq ArNumMacPosition<<i,1>> and shift_Mac_m_y eq ArNumMacPosition<<i,2>> and shift_Mac_m_z eq ArNumMacPosition<<i,3>>
-				IntHomeNumber = i
-				LogExistHome = true
-			endif
-			i = i + 1
-		endw
-		;save new home
-		if LogExistHome eq false
-			IntHomeIndex = IntHomeIndex + 1
-			ArNumMacPosition<<IntHomeIndex,1>> = shift_Mac_m_x
-			ArNumMacPosition<<IntHomeIndex,2>> = shift_Mac_m_y
-			ArNumMacPosition<<IntHomeIndex,3>> = shift_Mac_m_z
-			IntHomeNumber = IntHomeIndex
-		endif
-	endif
-endp
-
-@UdrPrintHomes
-	local integer i
-	i = 1
-	call @UdrOpen(('Homes'))
-	While i le IntHomeIndex
-		{nb,'G10 L2 P'i' X',ArNumMacPosition<<i,1>>,' Y',ArNumMacPosition<<i,2>>,' Z'ArNumMacPosition<<i,3>>}
 		{' A0 B0 U0'}
 		{' (G',(53+i),')'}
 		i = i + 1
 	endw	
-	call @UdrOpen(('Gcode'))
 endp
 
 @machine_stop
@@ -713,10 +657,6 @@ endp
 
 @machine_opt_stop
 	{nb,'M1'} 
-endp
-
-@door
-	;TBD
 endp
 
 @mco_message
@@ -731,15 +671,7 @@ endp
 	{nb,'M6 T0'}
 endp
 
-;service routines
 @UdrBrake(logical a logical b integer ID logical fa logical fb);1on/2mill/0off,  force, machine type, spindle)
-;call @UdrBrake((0),(1),StrMachineType,StrSpinDevice)
-;;;M70 B-axis still unlocked
-;;;M71 B-axis unlocked if movement
-;;;M72 A-axis still unlocked (turning spindle)
-;;;M73 A-axis unlocked if movement (turning spindle)
-;;;M74 C-axis still unlocked (counter headstock)
-;;;M75 C-axis unlocked if movement (counter headstock)
 	if ID eq 3 or ID eq 4 or ID eq 6
 		if IntBrakeStatus<<2>> ne a or fa eq true
 			if a eq 1
@@ -764,7 +696,6 @@ endp
 		if b eq 1
 			{nb,'M71'}
 		elseif b eq 2
-			;{nb,'close brake SP for mill'}
 		elseif b eq 0
 			{nb,'M70'}
 		endif
@@ -960,28 +891,6 @@ endp
 	if StrDeviceType eq 'Custom angle'
 		call @udrB1CustomAngle(NumHeadAngle)
 	endif
-;;;G8x6 ? Displacement from machining end position to tool change position
-;;;Tool changing
-;;;Displacement from tool change position to machining start position
-;;;G8x0 ? Displacement from tool change position to machining start position
-;;;G8x1 ? Displacement from machining end position to tool change position
-;;;G8x2 ? Displacement between two machining positions (B-axis / IJK offset / G5x / �)
-;;;G803 ? Displacement from machining end position to a determined point
-;;;(Used only for tool breakage D?tector)
-;;;G81x ? Machining on the counter headstock in VERTICAL position
-;;;G81x codes are the equivalent of the G80x codes of the main spindle.
-;;;The principal differences are:
-;;;? Argument used to designate the counter headstock axis is C
-;;;? It is the counter headstock which is controlled according to programmed speed.
-;;;? Inclined plane is programmed according to a vertical counter headstock.
-;;;G82x ? Machining on the counter headstock in HORIZONTAL position
-;;;G82x codes are the equivalent of the G80x codes of the main spindle. The machining program
-;;;is identical to the programming on main spindle. Automatically, the macro inverse X, Y, B axes
-;;;and index turning tools for 180�
-;;;The principal differences are:
-;;;? Argument used to designate the counter headstock axis is C
-;;;? It is the counter headstock which is controlled according to programmed speed.
-;;;? Inclined plane is programmed according to a horizontal counter headstock.
 	if ID eq 1;ms
 		StrMachineType = 'Turning'
 		StrSpinDevice = 'MS'
@@ -1182,76 +1091,7 @@ endp
 		endif
 	endif
 endp
-;file working routines
-@UdrDeleteAll
-	local string file
-	local integer i 
-	while i lt IntFileCounter
-		i=i+1
-		file = StrDirectory + ArIntFileList<<i>>
-		{nl,'!!delete file='file'.TMP!!'}
-	endw
-endp
 
-@UdrClose
-	local string b
-	if StrOpenFile ne ''
-		b = StrDirectory+StrOpenFile
-		{nl,'!!close file=',b,'.TMP!!'}
-		StrOpenFile = ''
-	endif
-endp
-
-@UdrOpen(string a)
-	local string b
-	if StrOpenFile ne a
-		call @UdrClose
-		b = StrDirectory+a
-		{nl,'!!open file=',b,'.TMP!!'}
-		StrOpenFile = a
-		call @UdrFileMatrix(a)
-	endif
-endp
-
-@UdrOpenForever(string a)
-	local string b
-	if StrOpenFile ne a
-		call @UdrClose
-		b = StrDirectory+a
-		{nl,'!!open file=',b,'!!'}
-		StrOpenFile = a
-	endif
-endp
-
-@UdrCopy(string a)
-	local string b
-	b = StrDirectory+a
-	{nl,'!!copy file=',b,'.TMP!!'}
-endp	
-
-@UdrDelete(string a)
-	local string b
-	b = StrDirectory+a
-	{nl,'!!delete file=',b,'.TMP!!'}
-endp
-
-@UdrFileMatrix(string a)
-	local integer i file_num
-	IntFileCounter = IntFileCounter + 1
-	file_num = 0
-	while i lt IntFileCounter
-		i= i+1
-		if ArIntFileList<<i>> eq a
-			file_num = i
-		endif
-	endw
-	if file_num eq 0
-		ArIntFileList<<IntFileCounter>>  = a
-	else
-		IntFileCounter = IntFileCounter - 1
-	endif
-endp
-;5x
 @line_5x
 	gcode = 1
 	if X5_job eq true
@@ -1314,15 +1154,12 @@ endp
 				gcode = 87
 		endif
 		if drill_type eq Tapping 
-			;{nb,'M329'}
 			skipline = false
 			gcode = 88
 		endif
 		if drill_type eq Boring
 			gcode = 89
 		endif
-		; {nb,'G98 'gcode,drill_lower_zo:xopos_f,' R',((drill_upper_zo)*2)}
-		; {nb,'G99 'gcode,drill_lower_zo:xopos_f,' R',((drill_upper_zo+safety)*2)}
 		{nb,gcode,drill_lower_zo:xopos_f,' R',((drill_upper_zo+safety)*2)}
 	endif
 	if rot_axis_type eq axis4_none and X5_job eq false
@@ -1334,16 +1171,12 @@ endp
 		endif
 		if drill_type eq Tapping 
 			gcode = 84
-			;{nb,'M329',spin}
 		endif
 		if drill_type eq Boring
 			gcode = 85
 		endif	
-		; {nb,'G98 'gcode,' Z',drill_lower_z,' R',(drill_upper_z)}
-		; {nb,'G99 'gcode,' Z',drill_lower_z,' R',(drill_upper_z+safety)}
 		{nb,gcode,' Z',drill_lower_z,' R',(drill_upper_z+safety)}
 	endif
-
 	if X5_job eq true
 		if drill_type eq Drilling
 			gcode = 81
@@ -1353,18 +1186,14 @@ endp
 		endif
 		if drill_type eq Tapping 
 			gcode = 84
-			;{nb,'M329',spin}
 		endif
 		if drill_type eq Boring
 			gcode = 85
 		endif
-		; {nb,'G98 'gcode,' Z',drill_lower_zl,' R',(drill_upper_zl)}
-		; {nb,'G99 'gcode,' Z',drill_lower_zl,' R',(drill_upper_zl+safety)}
 		{nb,gcode,' Z',drill_lower_zl,' R',(drill_upper_zl+safety)}
 	endif
 	if drill_type eq Peck
 		if down_step gt 0
-			; {' P'down_step:'5.0(*1000p)',' Q0'}
 			{' Q'down_step}
 		endif
 	endif
@@ -1449,26 +1278,4 @@ endp
 endp
 
 
-;;;Machining from bar � M60 X.. S..
-;;;In order to avoid collisions at bar-feeding, tool will be automatically cleared from spindle if length is not between
-;;;40 and 42mm. (default value in macro)
-;;;Arguments list able to be programmed with M60 function for automatic bar-feeding:
-;;;Default values:
-;;;X X axis approach position with respect to OP Obligatory
-;;;S Material allowance with respect to OP Obligatory
-;;;A * A axis angle with respect to OP None
-;;;C * Torque limit on X axis to backward bar in collet (in Kg) None (#2 = backward value = 3mm.)
-;;;E * Security distance 20mm. (#29 in macro)
-;;;F * Bar output feedrate 1'000mm/min. (#16 in macro)
-;;;H * Tool offset Active tool offset
-;;;Y * Y position on bar-stop Y bar-stop center (#12 in macro)
-;;;Z * Z position on bar-stop Z bar-stop center (#14 in macro)
-;;;T * Tool to be prepared None
-;;;D * Destination N� in program after bar change None (alarm: Restart program)
-;;;I * A axis position for bar change Equal to argument A
-;;;R * Material allowance after bar change Equal to argument S
-;;;M * M function to be executed None
-;;;Arguments X and S obligatory
-;;;Arguments A, C, E, F, H, Y, Z, T, D, I, R and M, followed by an asterisk ( * ), not obligatory
-;;;OP = Part Origin
-;;;OM = Machine Origin
+
