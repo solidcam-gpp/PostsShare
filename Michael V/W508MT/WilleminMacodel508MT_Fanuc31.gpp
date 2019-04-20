@@ -17,18 +17,43 @@
 ;Converting to 2019sp2
 
 @init_post
-	global string program_number_f bpos_f spin_f StrMachineType StrDeviceType StrSpinDevice
-	global integer IntMachineMode IntHeadPosition IntHomeNumber IntBrakeStatus<<6>>
-	global numeric NumHeadAngle NumJpos IntTraceLevel NumUpos
-	global string move_axis_x_f move_axis_y_f move_axis_z_f move_axis_a_f move_axis_b_f xh_move_f yh_move_f zh_move_f ah_move_f bh_move_f
-	global string move_extr_axis_L1_f move_extr_axis_L2_f move_extr_axis_L3_f move_extr_axis_R1_f move_extr_axis_R2_f move_extr_axis_R3_f
-	global logical LogInMCO LogInFaceCartesian LogInRadialPolar LogIn4xTransform
-	global integer IntFileCounter IntHomeIndex IntHomeIndexSh 
+	global string move_axis_x_f move_axis_y_f move_axis_z_f move_axis_a_f move_axis_b_f xh_move_f yh_move_f zh_move_f ah_move_f bh_move_f bpos_f spin_f 
+	global string move_extr_axis_L1_f move_extr_axis_L2_f move_extr_axis_L3_f move_extr_axis_R1_f move_extr_axis_R2_f move_extr_axis_R3_f program_number_f 
+	global string StrMachineType
+	global string StrDeviceType
+	global string StrSpinDevice
+	global integer IntMachineMode 
+	global integer IntHeadPosition 
+	global integer IntHomeNumber 
+	global integer IntBrakeStatus<<6>>
+	global numeric NumHeadAngle 
+	global numeric NumJpos 
+	global numeric IntTraceLevel 
+	global numeric NumUpos
+	global logical LogInMCO
+	global logical LogInFaceCartesian
+	global logical LogInRadialPolar
+	global logical LogIn4xTransform
+	global integer IntFileCounter
+	global integer IntHomeIndex
+	global integer IntHomeIndexSh 
 	global string ArStrAxesNames<<16>>
-	global numeric NumIncB1 ArNumAxesMove<<16>>
-	global logical LogExistHome LogDrillRadial LogInTorqueCheck LogInsynh LogDrillRadial LogBarFeederFlag LogForCimcoOutput ArLogAxesBits<<16>> LogUsePartCoordinate
-	global integer IntToolChangeMode IntCurrentTool ArIntAxis<<8>>
-	global integer iTrace_level iTraceCounter 	
+	global integer NumIncB1
+	global integer ArNumAxesMove<<16>>
+	global logical LogExistHome
+	global logical LogDrillRadial
+	global logical LogInTorqueCheck
+	global logical LogInsynh
+	global logical LogDrillRadial
+	global logical LogBarFeederFlag
+	global logical LogForCimcoOutput
+	global logical ArLogAxesBits<<16>>
+	global logical LogUsePartCoordinate
+	global integer IntToolChangeMode
+	global integer IntCurrentTool
+	global integer ArIntAxis<<8>>
+	global integer iTrace_level
+	global integer iTraceCounter 	
 	;change bit vars
 
 	program_number_f = '<O>z4.0(p)' 
@@ -49,8 +74,7 @@
 		IntITraceCounter = 1
 		Input "Trace level : 0-None  5-All", IntITrace_level
 		trace "all":IntITrace_level
-		endif
-	
+	endif
 	LogUsePartCoordinate = true ; IF yes part coordinate (G841) with OPOS set will be generate, if no Table coordinate (G843) with HPOS
 endp
 
@@ -89,11 +113,7 @@ endp
 	{nl, '(OUTIL 'tool_number, ' - 'tool_message')'}
 endp
 
-@rotate_to_plane
-	call @UdrHomeSet
-endp
-
-@UdrTurn_change_tool
+@Ud_Turn_change_tool
 	if LogInMCO eq true
 		call @UdrMCOTurnChangeTool
 	else
