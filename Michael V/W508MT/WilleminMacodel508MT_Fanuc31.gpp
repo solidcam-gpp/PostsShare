@@ -1,20 +1,7 @@
 ;W508MT - Fanuc 31i-A5
-;SolidCAM 2014 SP3
-;27/09/2014
-;michael.vinetsky@solidcam.com
-;Rev1.1 Herv� Philibien: Modified VMID: Deleted channel + set Drilling cycle as Peck
-;Rev1.1 Herv� Philibien: Added handle of split name in Gcode
-;---------------------Settings for 5x sim---------------------
-; From Willemin Macodel: 
-; For 5axis sim, approach is done in tilted plane G826, then tilted plane G826 is canceled with R0
-; RTCP is then activated and axis are in Machine configuration.
-; G841C0 or le G841C90 are the activation of RTCPC for BS in Horizontal or Vertical mode.
-;Rev1.1 Herv� Philibien: Added C0 and C90 on line of G841/843 fo 5x sim case on Backspindle Horizontal or VERTICAL
-;Rev1.1 Herv� Philibien: Modified usage of Hpos according to G843 (Didn't worked on machine) or Opos according to G841 + added variable to switch 
-;Rev1.1 Herv� Philibien: Modified bpos_f = '< B>5.3(p)' (cancel *-1) for 5x sim case on Back spindle horizontal and reversed XY coordinate xopos_f = '< X>5.3(ip)'yopos_f = '< Y>5.3(ip)'
-;Rev1.1 Mickael Lemoine: Modified bpos_f = inverse coordinate X et Y for submachine 4 , case on Back spindle horizontal
+;SolidCAM 2019 SP2 HF1
 ;20/04/2019
-;Converting to 2019sp2
+;michael.vinetsky@solidcam.com
 
 @init_post
 	global string move_axis_x_f move_axis_y_f move_axis_z_f move_axis_a_f move_axis_b_f xh_move_f yh_move_f zh_move_f ah_move_f bh_move_f bpos_f spin_f 
@@ -22,59 +9,57 @@
 	global string StrMachineType
 	global string StrDeviceType
 	global string StrSpinDevice
+	global string ArStrAxesNames<<16>>
+
+	global integer IntHomeIndex
+	global integer IntHomeIndexSh 
 	global integer IntMachineMode 
 	global integer IntHeadPosition 
 	global integer IntHomeNumber 
 	global integer IntBrakeStatus<<6>>
+	global integer IntToolChangeMode
+	global integer IntCurrentTool
+	global integer ArIntAxis<<8>>	
+	global integer IntITrace_level
+	global integer IntITraceCounter
+	global integer NumIncB1
+	global integer ArNumAxesMove<<16>>
+
 	global numeric NumHeadAngle 
 	global numeric NumJpos 
-	global numeric IntTraceLevel 
 	global numeric NumUpos
+
 	global logical LogInMCO
 	global logical LogInFaceCartesian
 	global logical LogInRadialPolar
 	global logical LogIn4xTransform
-	global integer IntFileCounter
-	global integer IntHomeIndex
-	global integer IntHomeIndexSh 
-	global string ArStrAxesNames<<16>>
-	global integer NumIncB1
-	global integer ArNumAxesMove<<16>>
-	global logical LogExistHome
 	global logical LogDrillRadial
 	global logical LogInTorqueCheck
 	global logical LogInsynh
 	global logical LogDrillRadial
 	global logical LogBarFeederFlag
-	global logical LogForCimcoOutput
 	global logical ArLogAxesBits<<16>>
 	global logical LogUsePartCoordinate
-	global integer IntToolChangeMode
-	global integer IntCurrentTool
-	global integer ArIntAxis<<8>>
-	global integer iTrace_level
-	global integer iTraceCounter 	
-	;change bit vars
 
-	program_number_f = '<O>z4.0(p)' 
-	numeric_def_f   = '5.3'
-	integer_def_f   = '5.0(p)'
-	gcode_f         = '<G>3.1(p)'
-	mcode_f         = '<M>3.1(p)'
-	feed_f          = '< F>4.3(p)'
-	spin_f			= '4.3(p)'
-	blknum_gen      = FALSE
-	blknum_max	= 99999999	
-	LogForCimcoOutput = false
+	program_number_f 	= '<O>z4.0(p)' 
+	numeric_def_f   	= '5.3'
+	integer_def_f  	 	= '5.0(p)'
+	gcode_f         	= '<G>3.1(p)'
+	mcode_f         	= '<M>3.1(p)'
+	feed_f          	= '< F>4.3(p)'
+	spin_f				= '4.3(p)'
+	blknum_gen      	= FALSE
+	blknum_max			= 99999999	
 
 	IntBrakeStatus<<2>> = True ;MV
 	IntBrakeStatus<<1>> = True ;MV
-	global integer IntITrace_level IntITraceCounter
+
 	if IntITraceCounter eq 0
 		IntITraceCounter = 1
 		Input "Trace level : 0-None  5-All", IntITrace_level
 		trace "all":IntITrace_level
 	endif
+
 	LogUsePartCoordinate = true ; IF yes part coordinate (G841) with OPOS set will be generate, if no Table coordinate (G843) with HPOS
 endp
 
@@ -120,59 +105,53 @@ endp
 		call @UdrGeneralFormats(('turning'))
 		call @UdrToolChangeStrategy
 	{nb,nb,'(TOOL ',tool_number,')'}
-	if LogForCimcoOutput eq false
-		{nb,IntToolChangeMode:gcode_f,' '}
-		skipline = false
-		call @UdrHomeNumber((1))
-		{tool_number:'< T>2.0(p)'}
-		 if tool_offset_number eq tool_number  
-	  	tool_offset_number = 11
-	  endif  
-		{' H',tool_offset_number,machine_b_value:bpos_f,xnext:xpos_f,ynext:ypos_f,znext:zpos_f}
-		if StrDeviceType ne 'Tail stock'
-			{' U'NumUpos}
-		endif
-		spin = spin * (spin_direction * 2 - 1) * -1
-			if spin_unit eq css
-				{' V'spin}
-				{' S',spin_limit}
-			else
-				{' S',spin}
-			endif
-			{' R5',' P',next_tool_number,' M8'}
-		endif
-		call @UdrHomeNumber((1))
+	{nb,IntToolChangeMode:gcode_f,' '}
+	skipline = false
+	call @UdrHomeNumber((1))
+	{tool_number:'< T>2.0(p)'}
+		if tool_offset_number eq tool_number  
+	tool_offset_number = 11
+	endif  
+	{' H',tool_offset_number,machine_b_value:bpos_f,xnext:xpos_f,ynext:ypos_f,znext:zpos_f}
+	if StrDeviceType ne 'Tail stock'
+		{' U'NumUpos}
 	endif
+	spin = spin * (spin_direction * 2 - 1) * -1
+		if spin_unit eq css
+			{' V'spin}
+			{' S',spin_limit}
+		else
+			{' S',spin}
+		endif
+		{' R5',' P',next_tool_number,' M8'}
+	endif
+	call @UdrHomeNumber((1))
 endp
 
 @UdrMCOTurnChangeTool
 	call @UdrGeneralFormats(('turning'))
 	call @UdrToolChangeStrategy
 	{nb,nb,'(TOOL ',tool_number,')'}
-	if LogForCimcoOutput eq false
-		{nb,IntToolChangeMode:gcode_f,' '}
-		skipline = false
-		call @UdrHomeNumber((1))
-		{tool_number:'< T>2.0(p)'}
-		 if tool_offset_number eq tool_number  
-	  	tool_offset_number = 11
-	  endif   
-		{' H',tool_offset_number,machine_b_value:bpos_f,xtool:xopos_f,ytool:yopos_f,ztool:zopos_f}
-		{anext:apos_f}
+	{nb,IntToolChangeMode:gcode_f,' '}
+	skipline = false
+	call @UdrHomeNumber((1))
+	{tool_number:'< T>2.0(p)'}
+	if tool_offset_number eq tool_number  
+		tool_offset_number = 11
+	endif   
+	{' H',tool_offset_number,machine_b_value:bpos_f,xtool:xopos_f,ytool:yopos_f,ztool:zopos_f}
+	{anext:apos_f}
 	if StrDeviceType ne 'Tail stock'
 		{' U'NumUpos}
 	endif
-		if spin_unit eq css
-			spin = spin * (spin_direction * 2 - 1) * -1
-			{' V',spin}
-			{' S',spin_limit:spin_f}
-		else
-			{' S',spin}
-		endif
-		{' R5',' P',next_tool_number,' M8'}
+	if spin_unit eq css
+		spin = spin * (spin_direction * 2 - 1) * -1
+		{' V',spin}
+		{' S',spin_limit:spin_f}
 	else
-		call @UdrHomeNumber((1))
+		{' S',spin}
 	endif
+	{' R5',' P',next_tool_number,' M8'}
 endp
 
 @UdrToolChangeStrategy
@@ -194,43 +173,38 @@ endp
 	spin = spin * (tool_direction * 2 - 1) * -1
 	{nb,nb,'N',tool_number}
 	{nl, '(OUTIL 'tool_number, ' - 'tool_message')'}
-	if LogForCimcoOutput eq false
-		{nb,IntToolChangeMode:gcode_f' '}
-		skipline = false
-		call @UdrHomeNumber((1))
-		{tool_number:'<T>2.0(p)'}
-		if job_h_offset eq tool_number  
-	  	job_h_offset = 11
-	  endif  
-		{' H',job_h_offset,bnext:bpos_f}
-		if X5_job eq false
-			if rot_axis_type ne axis4_none	
-				{xonext:xopos_f,yonext:yopos_f,zonext:zopos_f}
-			else
-				{xnext:xpos_f,ynext:ypos_f,znext:zpos_f}
-			endif
+	{nb,IntToolChangeMode:gcode_f' '}
+	skipline = false
+	call @UdrHomeNumber((1))
+	{tool_number:'<T>2.0(p)'}
+	if job_h_offset eq tool_number  
+		job_h_offset = 11
+	endif  
+	{' H',job_h_offset,bnext:bpos_f}
+	if X5_job eq false
+		if rot_axis_type ne axis4_none	
+			{xonext:xopos_f,yonext:yopos_f,zonext:zopos_f}
 		else
-			if LogUsePartCoordinate eq TRUE
-				{xonext:xopos_f,yonext:yopos_f,zonext:zopos_f}
-			else
-				{xhnext:xhpos_f,yhnext:yhpos_f,zhnext:zhpos_f}
-			endif
+			{xnext:xpos_f,ynext:ypos_f,znext:zpos_f}
 		endif
-		{anext:apos_f}
-		if StrDeviceType ne 'Tail stock'
-			{' U'NumUpos}
-		endif
-		{' S'spin}
-		if X5_job eq true
-			{' R0'}
-		else
-			{' R5'}
-		endif
-		{' P',next_tool_number,' M8'}
 	else
-		call @UdrHomeNumber((1))
-		{nb,'G68.2 I90 J',bnext,'K-90'}
+		if LogUsePartCoordinate eq TRUE
+			{xonext:xopos_f,yonext:yopos_f,zonext:zopos_f}
+		else
+			{xhnext:xhpos_f,yhnext:yhpos_f,zhnext:zhpos_f}
+		endif
 	endif
+	{anext:apos_f}
+	if StrDeviceType ne 'Tail stock'
+		{' U'NumUpos}
+	endif
+	{' S'spin}
+	if X5_job eq true
+		{' R0'}
+	else
+		{' R5'}
+	endif
+	{' P',next_tool_number,' M8'}
 endp
 
 @feed_spin
@@ -267,9 +241,6 @@ endp
 		endif
 	endif
 	if X5_job eq true
-		if LogForCimcoOutput eq true
-			{nb,'G69'}
-		endif
 		call @UdrBrake((0)(0),submachine_ID,(1)(1))
 		if LogUsePartCoordinate eq TRUE
 			{nb,'G841'};use Opos set
@@ -301,9 +272,6 @@ endp
 	endif
 	if rot_axis_type ne axis4_none
 		call @UdrBrake((1)(IntBrakeStatus<<3>>),submachine_ID,(0)(0))
-	endif
-	if LogForCimcoOutput eq true
-		{nb,'G69'}
 	endif
 	bpos_f = '< B>5.3(p)'
 	xopos_f = '< X>5.3(p)'
@@ -614,7 +582,6 @@ endp
 	if sync_spindle eq 1
 		;{nb,'M86'}
 		LogInsynh = True
-	else
 	endif
 endp 
 
@@ -655,13 +622,13 @@ endp
 
 @change_ref_point
 	if LogInMCO eq true
-		
+		;??
 	else
 		{nb,'G92 X'xhome' Y',yhome,' Z'zhome}
 	endif
 endp
 
-@plane_data
+@plane_data ;???
 	local integer i
 	i = 1
 		While i le IntHomeIndex
@@ -725,65 +692,38 @@ endp
 
 @UdrGeneralFormats(string a)
 	call @UdrGetMachineType(submachine_ID)	
-	if LogForCimcoOutput eq false
-		xhpos_f = '< X>5.3(p)'
-		yhpos_f = '< Y>5.3(p)'
-		zhpos_f = '< Z>5.3(p)'
-		if submachine_ID eq 1
-			xpos_f = '< X>5.3(p*2)'
-			ypos_f = '< Y>5.3(p)'
-			zpos_f = '< Z>5.3(p)'
-			apos_f = '< A>5.3(p)'
-			bpos_f = '< B>5.3(p)'
-		endif
-		if submachine_ID eq 2
-			xopos_f = '< X>5.3(p)'
-			yopos_f = '< Y>5.3(p)'
-			zopos_f = '< Z>5.3(p)'
-			xpos_f = '< X>5.3(p)'
-			ypos_f = '< Y>5.3(p)'
-			zpos_f = '< Z>5.3(p)'
-			xlpos_f = '< X>5.3(p)'
-			ylpos_f = '< Y>5.3(p)'
-			zlpos_f = '< Z>5.3(p)'
-			apos_f = '< A>5.3(p)'
-			bpos_f = '< B>5.3(p)'
-		endif
-		if submachine_ID eq 3
-			xpos_f = '< X>5.3(p*2)'
-			ypos_f = '< Y>5.3(p)'
-			zpos_f = '< Z>5.3(p)'
-			apos_f = '< C>5.3(p)'
-			bpos_f = '< B>5.3(p)'
-		endif
-		if submachine_ID eq 4
-			if abs(second_axis_angle) eq abs(first_plane_angle) and second_axis_angle ne 0 and first_plane_angle ne 0 ;MV
-				xopos_f = '< X>5.3(p)'
-				yopos_f = '< Y>5.3(p)'
-				zopos_f = '< Z>5.3(p)'
-				xpos_f = '< X>5.3(p)'
-				ypos_f = '< Y>5.3(p)'
-				zpos_f = '< Z>5.3(p)'
-				xlpos_f = '< X>5.3(p)'
-				ylpos_f = '< Y>5.3(p)'
-				zlpos_f = '< Z>5.3(p)'
-				apos_f = '< C>5.3(p)'
-				bpos_f = '< B>5.3(ip)'
-			else
-				xopos_f = '< X>5.3(ip)'
-				yopos_f = '< Y>5.3(ip)'
-				zopos_f = '< Z>5.3(p)'
-				xpos_f = '< X>5.3(ip)'
-				ypos_f = '< Y>5.3(ip)'
-				zpos_f = '< Z>5.3(p)'
-				xlpos_f = '< X>5.3(ip)'
-				ylpos_f = '< Y>5.3(ip)'
-				zlpos_f = '< Z>5.3(p)'
-				apos_f = '< C>5.3(p)'
-				bpos_f = '< B>5.3(ip)'
-			endif
-		endif
-		if submachine_ID eq 5
+	xhpos_f = '< X>5.3(p)'
+	yhpos_f = '< Y>5.3(p)'
+	zhpos_f = '< Z>5.3(p)'
+	if submachine_ID eq 1
+		xpos_f = '< X>5.3(p*2)'
+		ypos_f = '< Y>5.3(p)'
+		zpos_f = '< Z>5.3(p)'
+		apos_f = '< A>5.3(p)'
+		bpos_f = '< B>5.3(p)'
+	endif
+	if submachine_ID eq 2
+		xopos_f = '< X>5.3(p)'
+		yopos_f = '< Y>5.3(p)'
+		zopos_f = '< Z>5.3(p)'
+		xpos_f = '< X>5.3(p)'
+		ypos_f = '< Y>5.3(p)'
+		zpos_f = '< Z>5.3(p)'
+		xlpos_f = '< X>5.3(p)'
+		ylpos_f = '< Y>5.3(p)'
+		zlpos_f = '< Z>5.3(p)'
+		apos_f = '< A>5.3(p)'
+		bpos_f = '< B>5.3(p)'
+	endif
+	if submachine_ID eq 3
+		xpos_f = '< X>5.3(p*2)'
+		ypos_f = '< Y>5.3(p)'
+		zpos_f = '< Z>5.3(p)'
+		apos_f = '< C>5.3(p)'
+		bpos_f = '< B>5.3(p)'
+	endif
+	if submachine_ID eq 4
+		if abs(second_axis_angle) eq abs(first_plane_angle) and second_axis_angle ne 0 and first_plane_angle ne 0 ;MV
 			xopos_f = '< X>5.3(p)'
 			yopos_f = '< Y>5.3(p)'
 			zopos_f = '< Z>5.3(p)'
@@ -794,53 +734,8 @@ endp
 			ylpos_f = '< Y>5.3(p)'
 			zlpos_f = '< Z>5.3(p)'
 			apos_f = '< C>5.3(p)'
-			bpos_f = '< B>5.3(p)'
-		endif
-		if submachine_ID eq 6
-			xopos_f = '< X>5.3(p)'
-			yopos_f = '< Y>5.3(p)'
-			zopos_f = '< Z>5.3(p)'
-			xpos_f = '< X>5.3(p)'
-			ypos_f = '< Y>5.3(p)'
-			zpos_f = '< Z>5.3(p)'
-			xlpos_f = '< X>5.3(p)'
-			ylpos_f = '< Y>5.3(p)'
-			zlpos_f = '< Z>5.3(p)'
-			apos_f = '< C>5.3(p)'
-			bpos_f = '< B>5.3(p)'
-		endif
-	else
-		xhpos_f = '< X>5.3(p)'
-		yhpos_f = '< Y>5.3(p)'
-		zhpos_f = '< Z>5.3(p)'
-		if submachine_ID eq 1
-			xopos_f = '< Z>5.3(p)'
-			yopos_f = '< Y>5.3(p)'
-			zopos_f = '< X>5.3(p)'
-			apos_f = '< A>5.3(p)'
-			bpos_f = '< B>5.3(p)'
-		endif
-		if submachine_ID eq 2
-			xopos_f = '< X>5.3(p)'
-			yopos_f = '< Y>5.3(p)'
-			zopos_f = '< Z>5.3(p)'
-			xpos_f = '< X>5.3(p)'
-			ypos_f = '< Y>5.3(p)'
-			zpos_f = '< Z>5.3(p)'
-			xlpos_f = '< X>5.3(p)'
-			ylpos_f = '< Y>5.3(p)'
-			zlpos_f = '< Z>5.3(p)'
-			apos_f = '< A>5.3(p)'
-			bpos_f = '< B>5.3(p)'
-		endif
-		if submachine_ID eq 3
-			xopos_f = '< Z>5.3(p)'
-			yopos_f = '< Y>5.3(p)'
-			zopos_f = '< X>5.3(p)'
-			apos_f = '< C>5.3(p)'
-			bpos_f = '< B>5.3(p)'
-		endif
-		if submachine_ID eq 4
+			bpos_f = '< B>5.3(ip)'
+		else
 			xopos_f = '< X>5.3(ip)'
 			yopos_f = '< Y>5.3(ip)'
 			zopos_f = '< Z>5.3(p)'
@@ -853,32 +748,32 @@ endp
 			apos_f = '< C>5.3(p)'
 			bpos_f = '< B>5.3(ip)'
 		endif
-		if submachine_ID eq 5
-			xopos_f = '< X>5.3(p)'
-			yopos_f = '< Y>5.3(p)'
-			zopos_f = '< Z>5.3(p)'
-			xpos_f = '< X>5.3(p)'
-			ypos_f = '< Y>5.3(p)'
-			zpos_f = '< Z>5.3(p)'
-			xlpos_f = '< X>5.3(p)'
-			ylpos_f = '< Y>5.3(p)'
-			zlpos_f = '< Z>5.3(p)'
-			apos_f = '< C>5.3(p)'
-			bpos_f = '< B>5.3(p)'
-		endif
-		if submachine_ID eq 6
-			xopos_f = '< X>5.3(p)'
-			yopos_f = '< Y>5.3(p)'
-			zopos_f = '< Z>5.3(p)'
-			xpos_f = '< X>5.3(p)'
-			ypos_f = '< Y>5.3(p)'
-			zpos_f = '< Z>5.3(p)'
-			xlpos_f = '< X>5.3(p)'
-			ylpos_f = '< Y>5.3(p)'
-			zlpos_f = '< Z>5.3(p)'
-			apos_f = '< C>5.3(p)'
-			bpos_f = '< B>5.3(p)'
-		endif
+	endif
+	if submachine_ID eq 5
+		xopos_f = '< X>5.3(p)'
+		yopos_f = '< Y>5.3(p)'
+		zopos_f = '< Z>5.3(p)'
+		xpos_f = '< X>5.3(p)'
+		ypos_f = '< Y>5.3(p)'
+		zpos_f = '< Z>5.3(p)'
+		xlpos_f = '< X>5.3(p)'
+		ylpos_f = '< Y>5.3(p)'
+		zlpos_f = '< Z>5.3(p)'
+		apos_f = '< C>5.3(p)'
+		bpos_f = '< B>5.3(p)'
+	endif
+	if submachine_ID eq 6
+		xopos_f = '< X>5.3(p)'
+		yopos_f = '< Y>5.3(p)'
+		zopos_f = '< Z>5.3(p)'
+		xpos_f = '< X>5.3(p)'
+		ypos_f = '< Y>5.3(p)'
+		zpos_f = '< Z>5.3(p)'
+		xlpos_f = '< X>5.3(p)'
+		ylpos_f = '< Y>5.3(p)'
+		zlpos_f = '< Z>5.3(p)'
+		apos_f = '< C>5.3(p)'
+		bpos_f = '< B>5.3(p)'
 	endif
 endp 	
  
@@ -1000,7 +895,7 @@ endp
 	endw
 endp
 
-@UdrAxisNames	
+@UdrAxisNames
 	move_extr_axis_L1_f = '< '+name_extr_axis_L1+'>5.3'
 	move_extr_axis_L2_f = '< '+name_extr_axis_L2+'>5.3'
 	move_extr_axis_L3_f = '< '+name_extr_axis_L3+'>5.3'
@@ -1075,7 +970,7 @@ endp
 	{[move_axis_x],[move_axis_y],[move_axis_z],[move_axis_a],[move_axis_b]}
 endp
 
-@UdrHommingDetect	
+@UdrHommingDetect
 	local string let
 	local logical ChangeBit
 	local integer i
@@ -1241,11 +1136,6 @@ endp
 				endif
 			endif
 		endif
-		if drill_type eq Peck
-			if down_step gt 0
-				; {' Q0'}
-			endif
-		endif
 	endif
 endp
 
@@ -1296,6 +1186,3 @@ endp
 		{nb,'G43.4 H'job_h_offset}
 	endif
 endp
-
-
-
