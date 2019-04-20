@@ -51,6 +51,17 @@
 	spin_f				= '4.3(p)'
 	blknum_gen      	= FALSE
 	blknum_max			= 99999999	
+	xopos_f 			= '< X>5.3(p)'
+	yopos_f 			= '< Y>5.3(p)'
+	zopos_f 			= '< Z>5.3(p)'
+	xlpos_f 			= '< X>5.3(p)'
+	ylpos_f 			= '< Y>5.3(p)'
+	zlpos_f 			= '< Z>5.3(p)'
+	xpos_f 				= '< X>5.3(p)'
+	ypos_f 				= '< Y>5.3(p)'
+	zpos_f 				= '< Z>5.3(p)'
+	apos_f 				= '< A>5.3(p)'
+	bpos_f 				= '< B>5.3(p)'
 
 	IntBrakeStatus<<2>> = True ;MV
 	IntBrakeStatus<<1>> = True ;MV
@@ -65,7 +76,7 @@
 endp
 
 @start_of_file
-	call @UdrGeneralFormats((''))
+	call @UdrGeneralFormats(('milling'))
 	{nb,'%'}
 	{nl, program_number}
 	if index_split_file eq 1
@@ -74,6 +85,7 @@ endp
 		{'(',upper(split_name),')'}
 	endif
 	{nb, '(W508MT)'}
+	{nb,'(FOR SC2020DV ONLY)'}
 endp
 
 @start_program
@@ -676,74 +688,10 @@ endp
 
 @UdrGeneralFormats(string a)
 	call @UdrGetMachineType(submachine_ID)	
-	xhpos_f = '< X>5.3(p)'
-	yhpos_f = '< Y>5.3(p)'
-	zhpos_f = '< Z>5.3(p)'
-	if submachine_ID eq 1
+	if a eq 'milling'
+		xpos_f = '< X>5.3(p)'
+	else
 		xpos_f = '< X>5.3(p*2)'
-		ypos_f = '< Y>5.3(p)'
-		zpos_f = '< Z>5.3(p)'
-		apos_f = '< A>5.3(p)'
-		bpos_f = '< B>5.3(p)'
-	endif
-	if submachine_ID eq 2
-		xopos_f = '< X>5.3(p)'
-		yopos_f = '< Y>5.3(p)'
-		zopos_f = '< Z>5.3(p)'
-		xpos_f = '< X>5.3(p)'
-		ypos_f = '< Y>5.3(p)'
-		zpos_f = '< Z>5.3(p)'
-		xlpos_f = '< X>5.3(p)'
-		ylpos_f = '< Y>5.3(p)'
-		zlpos_f = '< Z>5.3(p)'
-		apos_f = '< A>5.3(p)'
-		bpos_f = '< B>5.3(p)'
-	endif
-	if submachine_ID eq 3
-		xpos_f = '< X>5.3(p*2)'
-		ypos_f = '< Y>5.3(p)'
-		zpos_f = '< Z>5.3(p)'
-		apos_f = '< C>5.3(p)'
-		bpos_f = '< B>5.3(p)'
-	endif
-	if submachine_ID eq 4
-		xopos_f = '< X>5.3(p)'
-		yopos_f = '< Y>5.3(p)'
-		zopos_f = '< Z>5.3(p)'
-		xpos_f = '< X>5.3(p)'
-		ypos_f = '< Y>5.3(p)'
-		zpos_f = '< Z>5.3(p)'
-		xlpos_f = '< X>5.3(p)'
-		ylpos_f = '< Y>5.3(p)'
-		zlpos_f = '< Z>5.3(p)'
-		apos_f = '< C>5.3(p)'
-		bpos_f = '< B>5.3(p)'
-	endif
-	if submachine_ID eq 5
-		xopos_f = '< X>5.3(p)'
-		yopos_f = '< Y>5.3(p)'
-		zopos_f = '< Z>5.3(p)'
-		xpos_f = '< X>5.3(p)'
-		ypos_f = '< Y>5.3(p)'
-		zpos_f = '< Z>5.3(p)'
-		xlpos_f = '< X>5.3(p)'
-		ylpos_f = '< Y>5.3(p)'
-		zlpos_f = '< Z>5.3(p)'
-		apos_f = '< C>5.3(p)'
-		bpos_f = '< B>5.3(p)'
-	endif
-	if submachine_ID eq 6
-		xopos_f = '< X>5.3(p)'
-		yopos_f = '< Y>5.3(p)'
-		zopos_f = '< Z>5.3(p)'
-		xpos_f = '< X>5.3(p)'
-		ypos_f = '< Y>5.3(p)'
-		zpos_f = '< Z>5.3(p)'
-		xlpos_f = '< X>5.3(p)'
-		ylpos_f = '< Y>5.3(p)'
-		zlpos_f = '< Z>5.3(p)'
-		apos_f = '< C>5.3(p)'
-		bpos_f = '< B>5.3(p)'
 	endif
 endp 	
  
@@ -821,7 +769,7 @@ endp
 endp
 
 @udrB1CustomAngle(numeric a)
-	{nb,'rotate to custom angle'}
+	{nb,'rotate to custom angle'};no idea now to do it
 endp
 
 @UdrAxesHoming(string axes); _XY_Z_CB
