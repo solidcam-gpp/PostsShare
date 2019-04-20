@@ -118,8 +118,7 @@ endp
 	endif
 	spin = spin * (spin_direction * 2 - 1) * -1
 		if spin_unit eq css
-			{' V'spin}
-			{' S',spin_limit}
+			{' V'spin,' S',spin_limit}
 		else
 			{' S',spin}
 		endif
@@ -146,8 +145,7 @@ endp
 	endif
 	if spin_unit eq css
 		spin = spin * (spin_direction * 2 - 1) * -1
-		{' V',spin}
-		{' S',spin_limit:spin_f}
+		{' V',spin,' S',spin_limit:spin_f}
 	else
 		{' S',spin}
 	endif
@@ -205,12 +203,6 @@ endp
 		{' R5'}
 	endif
 	{' P',next_tool_number,' M8'}
-endp
-
-@feed_spin
-	if change(spin) eq true
-	;TBD
-	endif
 endp
 
 @start_of_job
@@ -273,9 +265,6 @@ endp
 	if rot_axis_type ne axis4_none
 		call @UdrBrake((1)(IntBrakeStatus<<3>>),submachine_ID,(0)(0))
 	endif
-	bpos_f = '< B>5.3(p)'
-	xopos_f = '< X>5.3(p)'
-	yopos_f = '< Y>5.3(p)'
 endp
 
 @line
