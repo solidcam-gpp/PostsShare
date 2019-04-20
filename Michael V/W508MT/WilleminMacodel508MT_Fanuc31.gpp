@@ -712,31 +712,17 @@ endp
 		bpos_f = '< B>5.3(p)'
 	endif
 	if submachine_ID eq 4
-		if abs(second_axis_angle) eq abs(first_plane_angle) and second_axis_angle ne 0 and first_plane_angle ne 0 ;MV
-			xopos_f = '< X>5.3(p)'
-			yopos_f = '< Y>5.3(p)'
-			zopos_f = '< Z>5.3(p)'
-			xpos_f = '< X>5.3(p)'
-			ypos_f = '< Y>5.3(p)'
-			zpos_f = '< Z>5.3(p)'
-			xlpos_f = '< X>5.3(p)'
-			ylpos_f = '< Y>5.3(p)'
-			zlpos_f = '< Z>5.3(p)'
-			apos_f = '< C>5.3(p)'
-			bpos_f = '< B>5.3(ip)'
-		else
-			xopos_f = '< X>5.3(ip)'
-			yopos_f = '< Y>5.3(ip)'
-			zopos_f = '< Z>5.3(p)'
-			xpos_f = '< X>5.3(ip)'
-			ypos_f = '< Y>5.3(ip)'
-			zpos_f = '< Z>5.3(p)'
-			xlpos_f = '< X>5.3(ip)'
-			ylpos_f = '< Y>5.3(ip)'
-			zlpos_f = '< Z>5.3(p)'
-			apos_f = '< C>5.3(p)'
-			bpos_f = '< B>5.3(ip)'
-		endif
+		xopos_f = '< X>5.3(p)'
+		yopos_f = '< Y>5.3(p)'
+		zopos_f = '< Z>5.3(p)'
+		xpos_f = '< X>5.3(p)'
+		ypos_f = '< Y>5.3(p)'
+		zpos_f = '< Z>5.3(p)'
+		xlpos_f = '< X>5.3(p)'
+		ylpos_f = '< Y>5.3(p)'
+		zlpos_f = '< Z>5.3(p)'
+		apos_f = '< C>5.3(p)'
+		bpos_f = '< B>5.3(p)'
 	endif
 	if submachine_ID eq 5
 		xopos_f = '< X>5.3(p)'
@@ -1158,7 +1144,6 @@ endp
 			{nb,'G841'};use Opos set
 			if submachine_ID eq 4  ; Working on BS Horizontal
 				{' C0'}
-				bpos_f = '< B>5.3(p)'
 			elseif submachine_ID eq 6 ; Working on BS Horizontal
 				{' C90'}
 			endif
@@ -1166,7 +1151,6 @@ endp
 			{nb,'G843'};use hpos set
 			if submachine_ID eq 4  ; Working on BS Horizontal
 				{' C0'}
-				bpos_f = '< B>5.3(p)'
 			elseif submachine_ID eq 6 ; Working on BS Horizontal
 				{' C90'}
 			endif
