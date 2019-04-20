@@ -1,7 +1,8 @@
 ;W508MT - Fanuc 31i-A5
-;SolidCAM 2019 SP2 HF1
+;SolidCAM 2020DV
 ;20/04/2019
 ;michael.vinetsky@solidcam.com
+;rev 001 - support of @plane_data
 
 @init_post
 	global string move_axis_x_f move_axis_y_f move_axis_z_f move_axis_a_f move_axis_b_f xh_move_f yh_move_f zh_move_f ah_move_f bh_move_f bpos_f spin_f 
@@ -617,14 +618,8 @@ endp
 	endif
 endp
 
-@plane_data ;???
-	local integer i
-	i = 1
-		While i le IntHomeIndex
-		{' A0 B0 U0'}
-		{' (G',(53+i),')'}
-		i = i + 1
-	endw	
+@plane_data
+	{nb,'G10 L2 P'home_id' X',shift_mac_m_x,' Y',shift_mac_m_y,' Z'shift_mac_m_z,' A0 B0 U0 (G',(53+home_id),')'}
 endp
 
 @machine_stop
