@@ -1,8 +1,0 @@
-Date: 16-01-2019 09:47:51 	 Version: 33 	 Update reason: Added Machine Simulation Def' to Working Style (SC2018 SP0) - No needed convert.
-Date: 16-01-2019 09:47:51 	 Version: 33 	 Update reason: Added Tool Magazine to Machine (SC2018 SP0) - No needed convert.
-Date: 16-01-2019 09:47:51 	 Version: 33 	 Update reason: Ability to define geometries for Machine Preview and Machine Simulation (SC2018 SP0) - No needed convert.
-Date: 16-01-2019 09:47:51 	 Version: 33 	 Update reason: 24/05/2018 - Ability to define: left hand Submachine CoordSys + Tilted Plane, 'Reverse Working Plane Z' + Arc Execution, 'Arc Direction By Plane Normal'(SC2018 SP2) - No needed convert.
-Date: 16-01-2019 09:47:51 	 Version: 33 	 Update reason: 01/09/2018 - Ability to define: Threading Cycle, and in Drill Cycle added option of Reamering'(SC2019 SP0) - No needed convert.
-Date: 16-01-2019 09:47:51 	 Version: 33 	 Update reason: 04/10/2018 - Ability to define: Drive Unit name (SC2019 SP0) - No needed convert.
-Date: 16-01-2019 09:47:51 	 Version: 33 	 Update reason: 11/11/2018 - Fix number of pockets in Magazines (SC2019 SP0) - No needed convert.
-Date: 16-01-2019 09:47:51 	 Version: 33 	 Update reason: 29/11/2018 - Added a new option in Tilted Plane Definition called Incline Index (SC2020 SP0) - No needed convert.

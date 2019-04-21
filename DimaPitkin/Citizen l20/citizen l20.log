@@ -1,9 +1,0 @@
-Date: 04-12-2018 15:50:48 	 Version: 27 	 Update reason: Support with Superimposition Axis Mode (for SC217 SP0) - No needed convert.
-Date: 04-12-2018 15:50:48 	 Version: 27 	 Update reason: Support Coolant Flood Through Table (for SC217 SP0) - No needed convert.
-Date: 04-12-2018 15:50:48 	 Version: 27 	 Update reason: Added Axes Parrtens for Channels Sync' (for SC217 SP0) - No needed convert.
-Date: 04-12-2018 15:50:48 	 Version: 27 	 Update reason: Check the CoordSys of Devices (SC217 SP1) - No needed convert.
-Date: 04-12-2018 15:50:48 	 Version: 27 	 Update reason: Check the Stations ID and fix if necessary (SC217 SP2) - No needed convert.
-Date: 04-12-2018 15:50:48 	 Version: 27 	 Update reason: Added a new Paramter 'Full 5x Trace' to Working Style -> Tarce (SC217 SP2) - No needed convert.
-Date: 04-12-2018 15:50:48 	 Version: 27 	 Update reason: Added Machine Simulation Def' to Working Style (SC218 SP0) - No needed convert.
-Date: 04-12-2018 15:50:48 	 Version: 27 	 Update reason: Added Tool Magazine to Machine (SC218 SP0) - No needed convert.
-Date: 04-12-2018 15:50:48 	 Version: 27 	 Update reason: Ability to define geometries for Machine Preview and Machine Simulation (SC218 SP0) - No needed convert.
