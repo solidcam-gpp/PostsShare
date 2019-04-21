@@ -127,6 +127,7 @@ endp
 	endif  
 	{' H',tool_offset_number,machine_b_value:bpos_f,xnext:xpos_f,ynext:ypos_f,znext:zpos_f}
 	if StrDeviceType ne 'Tail stock'
+		call @UdrGetUPosition
 		{' U'NumUpos}
 	endif
 	spin = spin * (spin_direction * 2 - 1) * -1
@@ -138,6 +139,12 @@ endp
 		{' R5',' P',next_tool_number,' M8'}
 	endif
 	call @UdrHomeNumber((1))
+endp
+
+@UdrGetUPosition
+local string sAxis
+sAxis = 'U'
+	NumUpos = get_axis_value_before_job(index_job,sAxis)
 endp
 
 @UdrMCOTurnChangeTool
@@ -154,6 +161,7 @@ endp
 	{' H',tool_offset_number,machine_b_value:bpos_f,xtool:xopos_f,ytool:yopos_f,ztool:zopos_f}
 	{anext:apos_f}
 	if StrDeviceType ne 'Tail stock'
+		call @UdrGetUPosition
 		{' U'NumUpos}
 	endif
 	if spin_unit eq css
@@ -207,6 +215,7 @@ endp
 	endif
 	{anext:apos_f}
 	if StrDeviceType ne 'Tail stock'
+		call @UdrGetUPosition
 		{' U'NumUpos}
 	endif
 	{' S'spin}
@@ -503,7 +512,7 @@ endp
 
 @UdrHomeNumber(logical force)
 	if IntHomeIndexSh ne IntHomeNumber or force eq 1
-		gcode = 53+IntHomeNumber
+		gcode = 53+home_id
 		{nb,gcode' '}
 	endif
 	IntHomeIndexSh = IntHomeNumber
