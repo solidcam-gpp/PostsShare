@@ -24,12 +24,12 @@
 	global integer IntITrace_level;Debug
 	global integer IntITraceCounter;Debug
 	global integer ArNumAxesMove<<16>>;Axes positions array
-	global integer IntUsedHomes;Number of mac transformations for home data
-	global integer IntPlaneDatas;Number of @plane_data routines
+	global integer IntUsedHomes;Number of mac transformations for home data SOL-8189
+	global integer IntPlaneDatas;Number of @plane_data routines SOL-8189
 	;Numerics
 	global numeric NumHeadAngle;BS Head angular position
 	global numeric NumJpos;Jaws open position
-	global numeric ArNumPlaneData<<50,4>>;array of home data
+	global numeric ArNumPlaneData<<50,4>>;array of home data for MAC_ID SOL-8189
 	;Logicals
 	global logical LogInMCO;Inside MCO flag
 	global logical LogInFaceCartesian;Cartesian enabled flag
@@ -641,6 +641,12 @@ endp
 		{nb,'G10 L2 P'ArNumPlaneData<<plane_data_ID,4>>:'5.0(p)', ' X',shift_mac_m_x,' Y',shift_mac_m_y,' Z'shift_mac_m_z,' A0 B0 U0 (G',(53+ArNumPlaneData<<plane_data_ID,4>>),')'}
 	endif
 endp
+
+;@plane_data ;MAC_ID SOL-8189
+;	if MAC_ID gt 0
+;		{nb,'G10 L2 P'MAC_ID:'5.0(p)', ' X',shift_mac_m_x,' Y',shift_mac_m_y,' Z'shift_mac_m_z,' A0 B0 U0 (G',(53+MAC_ID),')'}
+;	endif
+;endp
 
 ;workaround, instead MAC_ID SOL-8189
 @UdrPlaneDataStore(logical SetHome)
