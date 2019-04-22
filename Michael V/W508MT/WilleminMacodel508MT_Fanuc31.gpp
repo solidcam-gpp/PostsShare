@@ -313,7 +313,7 @@ endp
 	endif
 endp 
 
-@UdrFaceCartesian(logical a);not supported by machine
+@UdrFaceCartesian(logical a)
 	if a eq true
 		gcode = 112
 		{nb,gcode}
