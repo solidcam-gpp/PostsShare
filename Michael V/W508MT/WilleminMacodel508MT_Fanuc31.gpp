@@ -3,54 +3,51 @@
 ;20/04/2019
 ;michael.vinetsky@solidcam.com
 ;rev 001 - support of @plane_data
+;rev 002 - U axis position by function
 
 @init_post
-	global string move_axis_x_f move_axis_y_f move_axis_z_f move_axis_a_f move_axis_b_f xh_move_f yh_move_f zh_move_f ah_move_f bh_move_f bpos_f spin_f 
-	global string move_extr_axis_L1_f move_extr_axis_L2_f move_extr_axis_L3_f move_extr_axis_R1_f move_extr_axis_R2_f move_extr_axis_R3_f program_number_f 
-	global string StrMachineType
-	global string StrDeviceType
-	global string StrSpinDevice
-	global string ArStrAxesNames<<16>>
-
-	global integer IntHomeIndex
-	global integer IntHomeIndexSh 
-	global integer IntMachineMode 
-	global integer IntHeadPosition 
-	global integer IntHomeNumber 
-	global integer IntBrakeStatus<<6>>
-	global integer IntToolChangeMode
-	global integer IntCurrentTool
-	global integer ArIntAxis<<8>>	
-	global integer IntITrace_level
-	global integer IntITraceCounter
-	global integer NumIncB1
-	global integer ArNumAxesMove<<16>>
-
-	global numeric NumHeadAngle 
-	global numeric NumJpos 
-	global numeric NumUpos
-
-	global logical LogInMCO
-	global logical LogInFaceCartesian
-	global logical LogInRadialPolar
-	global logical LogIn4xTransform
-	global logical LogDrillRadial
-	global logical LogInTorqueCheck
-	global logical LogInsynh
-	global logical LogDrillRadial
-	global logical LogBarFeederFlag
-	global logical ArLogAxesBits<<16>>
-	global logical LogUsePartCoordinate
-
-	program_number_f 	= '<O>z4.0(p)' 
+	;Formats
+	global string move_axis_x_f move_axis_y_f move_axis_z_f move_axis_a_f move_axis_b_f xh_move_f yh_move_f zh_move_f ah_move_f bh_move_f bpos_f spin_f
+	global string move_extr_axis_L1_f move_extr_axis_L2_f move_extr_axis_L3_f move_extr_axis_R1_f move_extr_axis_R2_f move_extr_axis_R3_f program_number_f
+	;Strings
+	global string StrMachineType;Turning/milling
+	global string StrDeviceType;Device name
+	global string ArStrAxesNames<<16>>;Array of axes names
+	;Integers
+	global integer IntHomeIndexSh;Shadow of used home
+	global integer IntMachineMode;G8xx code of machine
+	global integer IntHeadPosition;Position of back spindle code
+	global integer IntHomeNumber;Current home number
+	global integer IntBrakeStatus<<6>>;The status of spindles brakes
+	global integer IntToolChangeMode;Tool change strategy code
+	global integer IntCurrentTool;Shadow of tool_number
+	global integer IntITrace_level;Debug
+	global integer IntITraceCounter;Debug
+	global integer ArNumAxesMove<<16>>;Axes positions array
+	;Numerics
+	global numeric NumHeadAngle;BS Head angular position
+	global numeric NumJpos;Jaws open position
+	;Logicals
+	global logical LogInMCO;Inside MCO flag
+	global logical LogInFaceCartesian;Cartesian enabled flag
+	global logical LogInRadialPolar;Polar Enables Flag
+	global logical LogIn4xTransform;4x transform enabled flag
+	global logical LogDrillRadial;Drill Radial enabled flag
+	global logical LogInTorqueCheck;Transfer with trque check flag
+	global logical LogInsynh;Spindles are synchronized flag
+	global logical LogBarFeederFlag;Bar feeding flag
+	global logical ArLogAxesBits<<16>>;Axes change bits array
+	global logical LogUsePartCoordinate;Full RTCP enable parameter
+	;Init vars
+	program_number_f 	= '<O>z4.0(p)'
 	numeric_def_f   	= '5.3'
 	integer_def_f  	 	= '5.0(p)'
 	gcode_f         	= '<G>3.1(p)'
 	mcode_f         	= '<M>3.1(p)'
 	feed_f          	= '< F>4.3(p)'
 	spin_f				= '4.3(p)'
-	blknum_gen      	= FALSE
-	blknum_max			= 99999999	
+	blknum_gen			= FALSE
+	blknum_max			= 99999999
 	xopos_f 			= '< X>5.3(p)'
 	yopos_f 			= '< Y>5.3(p)'
 	zopos_f 			= '< Z>5.3(p)'
@@ -62,16 +59,15 @@
 	zpos_f 				= '< Z>5.3(p)'
 	apos_f 				= '< A>5.3(p)'
 	bpos_f 				= '< B>5.3(p)'
-
 	IntBrakeStatus<<2>> = True ;MV
 	IntBrakeStatus<<1>> = True ;MV
-
-	if IntITraceCounter eq 0
-		IntITraceCounter = 1
-		Input "Trace level : 0-None  5-All", IntITrace_level
-		trace "all":IntITrace_level
-	endif
-
+	;Debug
+;	if IntITraceCounter eq 0
+;		IntITraceCounter = 1
+;		Input "Trace level : 0-None  5-All", IntITrace_level
+;		trace "all":IntITrace_level
+;	endif
+	;Post parameters
 	LogUsePartCoordinate = true ; IF yes part coordinate (G841) with OPOS set will be generate, if no Table coordinate (G843) with HPOS
 endp
 
@@ -84,7 +80,7 @@ endp
 	else
 		{'(',upper(split_name),')'}
 	endif
-	{nb, '(W508MT)'}
+	{nb,'(W508MT)'}
 	{nb,'(FOR SC2020DV ONLY)'}
 endp
 
@@ -128,7 +124,6 @@ endp
 	{' H',tool_offset_number,machine_b_value:bpos_f,xnext:xpos_f,ynext:ypos_f,znext:zpos_f}
 	if StrDeviceType ne 'Tail stock'
 		call @UdrGetUPosition
-		{' U'NumUpos}
 	endif
 	spin = spin * (spin_direction * 2 - 1) * -1
 		if spin_unit eq css
@@ -142,9 +137,11 @@ endp
 endp
 
 @UdrGetUPosition
-local string sAxis
-sAxis = 'U'
-	NumUpos = get_axis_value_before_job(index_job,sAxis)
+	local string sAxis
+	local numeric nUpos
+	sAxis = 'U'
+	nUpos = get_axis_value_before_job(index_job,sAxis)
+	{' U'nUpos}
 endp
 
 @UdrMCOTurnChangeTool
@@ -162,7 +159,6 @@ endp
 	{anext:apos_f}
 	if StrDeviceType ne 'Tail stock'
 		call @UdrGetUPosition
-		{' U'NumUpos}
 	endif
 	if spin_unit eq css
 		spin = spin * (spin_direction * 2 - 1) * -1
@@ -216,7 +212,6 @@ endp
 	{anext:apos_f}
 	if StrDeviceType ne 'Tail stock'
 		call @UdrGetUPosition
-		{' U'NumUpos}
 	endif
 	{' S'spin}
 	if X5_job eq true
@@ -246,7 +241,7 @@ endp
 			if rot_axis_type eq axis4_radial
 				LogDrillRadial = true
 			endif
-			call @UdrBrake((0)(IntBrakeStatus<<3>>),submachine_ID,(1)(0))			
+			call @UdrBrake((0)(IntBrakeStatus<<3>>),submachine_ID,(1)(0))
 			if rot_axis_type eq axis4_face
 				call @UdrMachinePlane((17))
 			else
@@ -315,7 +310,7 @@ endp
 		LogIn4xTransform = true
 	else
 		LogIn4xTransform = false
-	endif		
+	endif
 endp 
 
 @UdrFaceCartesian(logical a);not supported by machine
@@ -348,7 +343,7 @@ endp
 	if machine_plane eq YZ
 		gcode = 19
 	endif
-	if rot_axis_type eq axis4_radial;?
+	if rot_axis_type eq axis4_radial
 		gcode = 19
 	endif
 	if a ne 0
@@ -373,7 +368,6 @@ endp
 
 @start_mach_ctrl
 	LogInMCO = true
-	NumIncB1 = 0
 	LogBarFeederFlag = true
 endp
 
@@ -457,10 +451,7 @@ endp
 					{[' G94'feed_move:feed_f]}
 				endif
 			endif
-		endif
-		if uax eq true
-			NumUpos = ArNumAxesMove<<axu>>
-		endif		
+		endif	
 	else
 		if LogBarFeederFlag eq true
 			if fax eq true
@@ -628,7 +619,7 @@ endp
 endp
 
 @message
-	{nb,'(',message,')'} 
+	{nb,'(',message,')'}
 endp
 
 @change_ref_point
@@ -696,7 +687,7 @@ endp
 endp
 
 @UdrGeneralFormats(string a)
-	call @UdrGetMachineType(submachine_ID)	
+	call @UdrGetMachineType(submachine_ID)
 	if a eq 'milling'
 		xpos_f = '< X>5.3(p)'
 	else
@@ -735,17 +726,14 @@ endp
 	endif
 	if ID eq 1;ms
 		StrMachineType = 'Turning'
-		StrSpinDevice = 'MS'
 		IntMachineMode = 800
 	endif
 	if ID eq 2;ms mill
 		StrMachineType = 'Milling'
 		IntMachineMode = 800
-		StrSpinDevice = 'SP'
 	endif
 	if ID eq 3 
 		StrMachineType = 'Turning'
-		StrSpinDevice = 'BS'
 		if StrDeviceType eq 'BS vertical'
 			IntMachineMode = 810
 		endif
@@ -755,7 +743,6 @@ endp
 	endif
 	if ID eq 4 or ID eq 6;bs mill
 		StrMachineType = 'Milling'
-		StrSpinDevice = 'SP'
 		if StrDeviceType eq 'BS vertical'
 			IntMachineMode = 810
 		endif
@@ -765,13 +752,10 @@ endp
 	endif
 	if ID eq 5;vice
 		StrMachineType = 'Milling'
-		StrSpinDevice = 'SP'
 		if StrDeviceType eq 'Vice up'
-
 			IntMachineMode = 820
 		endif
 		if StrDeviceType eq 'Vice down'
-
 			IntMachineMode = 810
 		endif
 	endif
@@ -811,7 +795,6 @@ endp
 	endif
 	if instr(axes,'U') ne 0
 		order<<instr(axes,'U')>> = ' U270'
-		NumUpos = 270
 	endif
 	while i le strlen(axes)
 		i=i+1
@@ -1094,16 +1077,16 @@ endp
 		call @UdrBrake((0)(0),submachine_ID,(1)(1))
 		if LogUsePartCoordinate eq TRUE
 			{nb,'G841'};use Opos set
-			if submachine_ID eq 4  ; Working on BS Horizontal
+			if submachine_ID eq 4; Working on BS Horizontal
 				{' C0'}
-			elseif submachine_ID eq 6 ; Working on BS Horizontal
+			elseif submachine_ID eq 6; Working on BS Horizontal
 				{' C90'}
 			endif
 		else
 			{nb,'G843'};use hpos set
-			if submachine_ID eq 4  ; Working on BS Horizontal
+			if submachine_ID eq 4; Working on BS Horizontal
 				{' C0'}
-			elseif submachine_ID eq 6 ; Working on BS Horizontal
+			elseif submachine_ID eq 6; Working on BS Horizontal
 				{' C90'}
 			endif
 		endif
