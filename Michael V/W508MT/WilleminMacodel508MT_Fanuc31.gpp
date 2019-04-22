@@ -87,7 +87,6 @@ endp
 @start_program
 	call @UdrAxesHoming(('_Z_YXBU'))
 	{nb,'M370'}
-	{nb,'G54'}
 endp
 
 @end_program
