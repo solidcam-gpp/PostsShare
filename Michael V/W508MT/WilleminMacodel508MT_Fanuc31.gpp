@@ -30,14 +30,14 @@
 	;Logicals
 	global logical LogInMCO;Inside MCO flag
 	global logical LogInFaceCartesian;Cartesian enabled flag
-	global logical LogInRadialPolar;Polar Enables Flag
+	global logical LogInRadialPolar;Polar enabled Flag
 	global logical LogIn4xTransform;4x transform enabled flag
 	global logical LogDrillRadial;Drill Radial enabled flag
 	global logical LogInTorqueCheck;Transfer with trque check flag
 	global logical LogInsynh;Spindles are synchronized flag
 	global logical LogBarFeederFlag;Bar feeding flag
 	global logical ArLogAxesBits<<16>>;Axes change bits array
-	global logical LogUsePartCoordinate;Full RTCP enable parameter
+	global logical LogUsePartCoordinate;Full RTCP enabled parameter
 	;Init vars
 	program_number_f 	= '<O>z4.0(p)'
 	numeric_def_f   	= '5.3'
