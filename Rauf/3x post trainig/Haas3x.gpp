@@ -1,4 +1,5 @@
 @init_post
 
-
+	Input "Trace level : 0-None ; 5-All", trace_level
+	trace "all":trace_level
 endp
