@@ -26,7 +26,6 @@ endp
 	{nb,'G0 G90 X'xnext, ' Y'ynext}
 	{nb,'M8'}
 	{nb,'G43 H'h_offset,' Z'znext}
-	
 endp
 
 @m_feed_spin
