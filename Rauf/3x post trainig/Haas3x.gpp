@@ -45,13 +45,13 @@ endp
 	if spin_direction eq ccw
 		mcode = 4
 	endif
-;	if spin_direction eq off; for SC2019+
-;		mcode = 5
-;	endif
+	if spin_direction eq off
+		mcode = 5
+	endif
 	{nb'M'mcode}
-;	if spin_direction ne off
+	if spin_direction ne off
 		{' S'spin}
-;	endif
+	endif
 endp
 
 @rapid_move
