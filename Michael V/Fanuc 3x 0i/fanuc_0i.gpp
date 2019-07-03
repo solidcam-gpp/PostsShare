@@ -35,6 +35,10 @@ endp
  ;commnetwrong commnet fvdfvd
 endp
 
+@new routine1
+ ;commnetwrong commnet fvdfvd
+endp
+
 @start_of_file
 	{'%'}
 	{nb,'O',program_number:'z4.0(p)','(',g_file_name,')'}
