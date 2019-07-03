@@ -12,6 +12,7 @@
 ;
 ;Used:
 ;Indigo (Israel) - IV 200 ST
+;SP2HF3
 
 @init_post
 	global numeric ArNumSaveFA<<2>> NumMoveAxisZ NumHomeData<<20>>
