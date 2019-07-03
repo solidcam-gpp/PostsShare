@@ -7,7 +7,7 @@
 ;DialogBox: trace_level/integer(0)
 ;Fanuc 3x
 ;Michael V. 4/8/2013 New post
-
+;FROM MASTER
 @init_post
 	global logical LogFirst_move
 	global string StrSpin_f
@@ -25,6 +25,14 @@
 	blknum_delta	= 2
 	;Input "Trace level : 0-None ; 5-All", trace_level
 	;trace "all":trace_level
+endp
+
+@new routine
+ ;commnetwrong commnet fvdfvd
+endp
+
+@new routine1
+ ;commnetwrong commnet fvdfvd
 endp
 
 @start_of_file
