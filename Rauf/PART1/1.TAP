@@ -1,0 +1,47 @@
+
+(1)@start_of_file   ==> 
+                      > %
+(0)@vmid_info       ==> 
+(0)@vmid_info       ==> 
+(0)@vmid_info       ==> 
+(0)@def_tool        ==> 
+(1)@start_program   ==> 
+                      > O5000(PART1)
+                      > N10 G90 G80 G40 G17 G96 G99
+(0)@setup           ==> 
+(0)@rotate_to_plane ==> 
+(0)@home_number     ==> 
+(1)@change_tool     ==> 
+                      > N15 G28 G91 Z0
+                      > N20 M6 T1
+(0)@offset_change   ==> 
+(1)@start_of_job    ==> 
+                      > N25 G54
+                      > N30 G0 G90 X-50. Y5.
+                      > N35 M8
+                      > N40 G43 H1 Z25.
+(2)@start_tool      ==> 
+                      > N45 M3 S5000
+(0)@message         ==> 
+(0)@message         ==> 
+(0)@message         ==> 
+(1)@m_feed_spin     ==> 
+(0)@tool_path_info  ==> 
+(1)@rapid_move      ==> 
+                      > N50 X-50. Y5.
+                      > N55 Z-50.
+(1)@rapid_move      ==> 
+                      > N60 X-50. Y5.
+                      > N65 Z-50.
+(0)@tool_path_info  ==> 
+(0)@line            ==> 
+(0)@arc             ==> 
+(0)@tool_path_info  ==> 
+(1)@rapid_move      ==> 
+                      > N70 X-8.66 Y-10.
+                      > N75 Z-8.66
+(0)@tool_path_info  ==> 
+(0)@end_of_job      ==> 
+(0)@end_program     ==> 
+(0)@plane_data      ==> 
+(0)@end_of_file     ==> 
