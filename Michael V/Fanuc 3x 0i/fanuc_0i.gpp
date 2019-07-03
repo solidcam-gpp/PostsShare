@@ -8,6 +8,7 @@
 ;Fanuc 3x
 ;Michael V. 4/8/2013 New post
 ;Michael
+;FROM MASTER
 @init_post
 	global logical LogFirst_move
 	global string StrSpin_f
