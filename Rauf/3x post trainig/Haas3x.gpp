@@ -22,10 +22,11 @@ endp
 
 @start_of_job
 	{nb'G'(53+part_home_number)}
+	call @start_tool
 	{nb,'G0 G90 X'xnext, ' Y'ynext}
 	{nb,'M8'}
 	{nb,'G43 H'h_offset,' Z'znext}
-	call @start_tool
+	
 endp
 
 @m_feed_spin
