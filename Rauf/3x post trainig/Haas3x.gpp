@@ -1,5 +1,80 @@
 @init_post
 
+local integer trace_level
+global string spin_f
+
 	Input "Trace level : 0-None ; 5-All", trace_level
 	trace "all":trace_level
+	spin_f = '5.3(p)'
+
 endp
+
+@start_of_file
+{nl,'%'}
+endp
+
+@start_program
+{nl,'O',program_number,'('part_name')'}
+{nb,'G90 G80 G40 G17 G96 G99'}
+endp
+
+@change_tool
+	{nb,'G28 G91 Z0'}
+	{nb,'M6 T'tool_number}
+endp
+
+@start_of_job
+{nb'G'(53+part_home_number)}
+{nb,'G0 G90 X'xnext, ' Y'ynext}
+{nb,'M8'}
+{nb,'G43 H'h_offset,' Z'znext}
+call @start_tool
+endp
+
+@m_feed_spin
+	if change(spin) eq true
+		call @start_tool
+	endif
+endp
+
+
+@start_tool
+	if spin_direction eq cw
+		mcode = 3
+	endif
+	if spin_direction eq ccw
+		mcode = 4
+	endif
+;	if spin_direction eq off; for SC2019+
+;		mcode = 5
+;	endif
+	{nb'M'mcode}
+;	if spin_direction ne off
+		{' S'spin}
+;	endif
+endp
+
+@rapid_move
+	gcode = 0
+	{nb,['G'gcode], [' X'xpos], [' Y'ypos] ,['Z'zpos]}
+endp
+
+@line
+	gcode = 1
+	{nb,['G'gcode], [' X'xpos], [' Y'ypos] ,['Z'zpos],[' F'feed]}
+endp
+
+@arc
+    gcode = 2+arc_direction
+	if arc_size gt 180
+		radius = radius * - 1
+	endif
+	if arc_size eq 360
+		{nb,['G'gcode], [' X'xpos], [' Y'ypos] ,['Z'zpos],[' I'xcenter] [' J'ycenter][' F'feed]}
+	else
+		{nb,['G'gcode], [' X'xpos], [' Y'ypos] ,['Z'zpos],[' R'radius][' F'feed]}
+	endif
+endp
+
+
+		
