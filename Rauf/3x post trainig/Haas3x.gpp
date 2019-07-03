@@ -1,21 +1,18 @@
 @init_post
-
-local integer trace_level
-global string spin_f
-
+	local integer trace_level
+	global string spin_f
 	Input "Trace level : 0-None ; 5-All", trace_level
 	trace "all":trace_level
 	spin_f = '5.3(p)'
-
 endp
 
 @start_of_file
-{nl,'%'}
+	{'%'}
 endp
 
 @start_program
-{nl,'O',program_number,'('part_name')'}
-{nb,'G90 G80 G40 G17 G96 G99'}
+	{nl,'O',program_number,'('part_name')'}
+	{nb,'G90 G80 G40 G17 G96 G99'}
 endp
 
 @change_tool
@@ -24,11 +21,11 @@ endp
 endp
 
 @start_of_job
-{nb'G'(53+part_home_number)}
-{nb,'G0 G90 X'xnext, ' Y'ynext}
-{nb,'M8'}
-{nb,'G43 H'h_offset,' Z'znext}
-call @start_tool
+	{nb'G'(53+part_home_number)}
+	{nb,'G0 G90 X'xnext, ' Y'ynext}
+	{nb,'M8'}
+	{nb,'G43 H'h_offset,' Z'znext}
+	call @start_tool
 endp
 
 @m_feed_spin
@@ -36,7 +33,6 @@ endp
 		call @start_tool
 	endif
 endp
-
 
 @start_tool
 	if spin_direction eq cw
