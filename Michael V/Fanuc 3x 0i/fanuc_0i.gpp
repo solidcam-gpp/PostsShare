@@ -7,7 +7,7 @@
 ;DialogBox: trace_level/integer(0)
 ;Fanuc 3x
 ;Michael V. 4/8/2013 New post
-;DANIEL
+;Michael
 @init_post
 	global logical LogFirst_move
 	global string StrSpin_f
