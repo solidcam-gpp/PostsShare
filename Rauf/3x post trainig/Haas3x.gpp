@@ -10,7 +10,7 @@ global string spin_f
 endp
 
 @start_of_file
-{nl,'%'}
+{'%'}
 endp
 
 @start_program
@@ -56,7 +56,7 @@ endp
 
 @rapid_move
 	gcode = 0
-	{nb,['G'gcode], [' X'xpos], [' Y'ypos] ,['Z'zpos]}
+	{nb,['G'gcode], [' X'xpos], [' Y'ypos] ,[' Z'zpos]}
 endp
 
 @line
@@ -73,6 +73,49 @@ endp
 		{nb,['G'gcode], [' X'xpos], [' Y'ypos] ,['Z'zpos],[' I'xcenter] [' J'ycenter][' F'feed]}
 	else
 		{nb,['G'gcode], [' X'xpos], [' Y'ypos] ,['Z'zpos],[' R'radius][' F'feed]}
+	endif
+endp
+
+@drill
+	call @rapid_move
+	gcode = 98
+	{nb,'G'gcode,' G'}
+	if drill_type eq Drilling
+		gcode = 81
+	endif
+	if drill_type eq Peck
+		gcode = 83
+	endif
+	if drill_type eq Tapping
+		gcode = 95
+		{''gcode,' G'}
+		gcode = 84
+	endif
+	if drill_type eq Boring
+		gcode = 85
+	endif
+	{gcode,' X'xpos,' Y'ypos,' Z' ,drill_lower_z:zpos_f,' R',drill_upper_z}
+	if drill_type eq Peck
+		{' Q'down_step}
+	endif
+	if drill_type eq Tapping
+		{' F'(feed/spin):feed_f}
+	else
+		{' F'feed}
+	endif
+endp
+
+@drill_point
+	if first_drill eq false
+		{nb,'   ',[' X'xpos],[' Y'ypos]}
+	endif
+endp
+
+@end_drill
+	{nb,'G80'}
+	if drill_type eq Tapping
+		gcode = 94
+		{' ',gcode}
 	endif
 endp
 

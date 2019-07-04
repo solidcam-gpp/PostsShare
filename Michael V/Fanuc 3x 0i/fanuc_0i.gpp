@@ -151,7 +151,6 @@ endp
 endp
 
 @drill
-	call @rapid_move
 	gcode = 98
 	{nb,gcode,' '}
 	if drill_type eq Drilling
