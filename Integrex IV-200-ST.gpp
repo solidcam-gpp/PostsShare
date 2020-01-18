@@ -1,0 +1,1400 @@
+;Mazak INTEGREX IV series
+;SC2018 SP0
+;**do not run on older version**
+
+;versions:
+;	DATE 			Revision					Person			   Description
+
+;03/04/2018		4.0							Michael V.		Move to SC2018 SP0, support of axes pattern, clean up post
+;10/04/2018		4.1							Michael V.		Move to SC2018 SP0, @plane_data support and clean up
+;17/04/2018		4.2							Michael V. 		New Machsim and rewiew of VMID, removed workarounds
+;Email: michael.vinetsky@solidcam.com
+;
+;Used:
+;Indigo (Israel) - IV 200 ST
+;SP2HF3
+
+@init_post
+	global numeric ArNumSaveFA<<2>> NumMoveAxisZ NumHomeData<<20>>
+	global logical ArLogMillingMode<<2>> ArLogBrake<<3>> LogInclPlane LogInMCO LogFirstMove LogFirst5XMove
+	global logical LogTorqueControl LogInFaceCartesian LogInRadialPolar LogRapidFeed LogTraceCancel LogCHKmode
+	global integer IntFloodCoolant LogInRadialInt IntThroughCoolant IntSCType IntSavePartHomeNumber 
+	global integer ArIntMachineID<<4,3>> IntTraceLevel IntSaveToolReversed<<2>> IntSaveToolPosition<<2>>
+	global string move_axis_x_f move_axis_y_f move_axis_z_f spin_f ArStrSpindleStatus<<3>> 
+	global string move_axis_a_f move_axis_b_f xh_move_f yh_move_f StrPatternSave<<2>>
+	global string zh_move_f ah_move_f bh_move_f bpos_f sync_label_f alt_sync_label_f
+	global integer IntNumberOfHomes IntHomeID IntSaveToolNumber<<2>> IntSaveToolPositionInTurret<<2>> 
+	global string s_name_axis_x s_name_axis_y s_name_axis_z s_name_axis_a s_name_axis_b StrPattern
+	global integer IntHomeCounter IntHomeNumber
+	global numeric ArNumHomeData<<100,4>>
+
+
+	mcode_f = '<M>5.1(p)'
+	gcode_f = '<G>3.1(p)'
+	xopos_f = '< X>5.3(*2)'
+	yopos_f = '< Y>5.3'
+	zopos_f = '< Z>5.3'
+	xpos_f = '< X>5.3'
+	ypos_f = '< Y>5.3'
+	zpos_f = '< Z>5.3'
+	xlpos_f = '< X>5.3'
+	ylpos_f = '< Y>5.3'
+	zlpos_f = '< Z>5.3'
+	xhpos_f = '< X>5.3'
+	yhpos_f = '< Y>5.3'
+	zhpos_f = '< Z>5.3'
+	apos_f = '< C>5.3'
+	bpos_f = '< B>5.3'
+	feed_f = '< F>5.3(p)'
+	spin_f = '< S>5.0(p)'
+	sync_label_f = '<P>z2/5.0(p)'
+	alt_sync_label_f = '<M>z3/3.0(p)'
+
+	if LogTraceCancel eq false
+		Input "Trace level : 0-None ; 5-All", IntTraceLevel
+		trace "all":IntTraceLevel
+		LogTraceCancel = true
+			
+		;init vars:
+		ArLogBrake<<1>> = false
+		ArLogBrake<<2>> = false
+		ArLogBrake<<3>> = true
+		ArLogMillingMode<<1>> = false
+		ArLogMillingMode<<2>> = false
+		IntThroughCoolant = 154
+		IntFloodCoolant = 9
+		blknum_gen = true
+		blknum_delta = 2
+		blknum_max = 999999
+		gcode_space = true
+		call @UdrMachineID
+			
+	endif		
+endp
+
+@drill_plane
+	if rotate_plane_off eq false
+		{nb,'G5 P0'}
+		{nb,'G49'}
+		{nb,'G97 G98'}
+		if second_axis_angle ne 0
+			{nb,'G68.5 X0 Y0 Z0 I0 J1 K0 R',first_plane_angle}
+			LogInclPlane = true
+		endif
+	else
+		call @UdrCoordSysRotateOff
+		LogFirst5XMove = true
+		call @UdrBrake(spindle,(0),(0))
+	endif
+endp
+
+@fourth_axis
+	call @UdrBrake(spindle,(0),(1))
+	gcode = 0
+	{nb,gcode,first_axis_angle:apos_f}
+	call @UdrBrake(spindle,(1),(1))
+endp
+
+@relative_mode
+	xopos_f = '< U>5.3(*2)'
+	yopos_f = '< V>5.3'
+	zopos_f = '< W>5.3'
+	xpos_f = '< U>5.3'
+	ypos_f = '< V>5.3'
+	zpos_f = '< W>5.3'
+	xhpos_f = '< U>5.3'
+	yhpos_f = '< V>5.3'
+	zhpos_f = '< W>5.3'
+endp
+
+@absolute_mode
+	xopos_f = '< X>5.3(*2)'
+	yopos_f = '< Y>5.3'
+	zopos_f = '< Z>5.3'
+	xpos_f = '< X>5.3'
+	ypos_f = '< Y>5.3'
+	zpos_f = '< Z>5.3'
+	xhpos_f = '< X>5.3'
+	yhpos_f = '< Y>5.3'
+	zhpos_f = '< Z>5.3'
+endp
+
+@rapid_move
+	gcode = 0
+	if job_machine_type eq turning
+		{nb,[gcode],[xopos],[zopos]}
+	else
+		{nb,[gcode],[xpos],[ypos],[zpos]}	
+	endif	
+	;blknum_gen = false
+endp
+
+@line
+	if next_command eq '@turn_endproc'
+		;blknum_gen  = true
+		change(gcode) = true
+	endif
+	gcode = 1
+	if job_machine_type eq turning
+		{nb,[gcode],[xopos],[zopos],[feed]}	
+	else
+		{nb,[gcode],[xpos],[ypos],[zpos],[feed]}	
+	endif
+	;blknum_gen = false
+endp
+
+@arc
+	gcode = 2+arc_direction
+	if job_machine_type eq turning
+		{nb,[gcode],[xopos],[zopos]}
+		{' R'radius, [feed]}
+	else
+		{nb,[gcode],[xpos],[ypos],[zpos]}	
+		{' R'radius, [feed]}
+	endif	
+	;blknum_gen = false
+endp
+
+@UdrFaceCartesian(logical a)
+	if a eq true
+		gcode = 12.1
+		{nb,gcode}
+		LogInFaceCartesian = true
+	else
+		if LogInFaceCartesian eq true
+			gcode = 13.1
+			{nb,gcode}
+			LogInFaceCartesian = false
+		endif
+	endif
+endp
+
+@UdrRadialPolar(logical a)
+	if a eq true
+		call @UdrFaceCartesian((1))
+		gcode = 122
+		{nb,gcode}
+		LogInRadialPolar = true
+	else
+		if LogInRadialPolar eq true
+			gcode = 123
+			{nb,gcode}
+			call @UdrFaceCartesian((0))
+			LogInRadialPolar = false
+		endif
+	endif
+endp
+
+@UdrRadialMode
+	if job_machine_type eq turning
+		gcode = 123.1
+	else
+		if rot_axis_type eq axis4_none
+			gcode = 122.1
+		else
+			if rot_axis_type eq axis4_face
+				gcode = 122.1
+			else
+				gcode = 123.1
+			endif
+		endif
+	endif
+	if LogInclPlane ne true
+		{nb,gcode}
+	endif
+endp
+
+@start_of_job
+	if rot_axis_type ne axis4_face
+		call @UdrRadialMode
+	endif
+	if job_machine_type eq turning
+		call @UdrBrake(spindle,(0),(1))
+		call @UdrMachinePlane((18))
+		call @UdrStartTool(spindle,spin,spin_direction)
+		call @UdrStartCoolant
+	else
+		call @UdrStartTool(spindle,tool_first_spin,tool_first_direction)
+		if rot_axis_type eq axis4_none
+			call @UdrBrake(spindle,(1-x5_job),(1-x5_job))
+			if x5_job eq false
+				call @UdrMachinePlane((17))
+				call @UdrStartCoolant
+			else
+				call  @UdrMillBrake((1))
+			endif
+		else
+			call @UdrBrake(spindle,(0),(1))
+			if rot_axis_type ne axis4_face	
+				{nb,'G0',yonext:yopos_f,zonext:zopos_f}
+				if job_type ne 'drill'
+					{nb,'G1',xonext:xopos_f,' F2000'}
+					call @UdrMachinePlane((18))
+					{' W0 H0'}
+					call @UdrStartCoolant
+					call @UdrRadialInt((1))
+				else
+					{nb,'G0',xonext:xopos_f}
+					call @UdrStartCoolant
+				endif
+			else
+				if ArIntMachineID<<submachine_ID,1>> eq 1 or ArIntMachineID<<submachine_ID,1>> eq 3 
+					{nb,'G0',zonext:zpos_f}
+					{nb,'  ',xonext:xpos_f}
+				else
+					{nb,'G0',yonext:ypos_f,zonext:zpos_f}
+					{nb,'  ',xonext:xpos_f}
+				endif
+				{nb,'G0 C0'}
+				call @UdrMachinePlane((17))
+				if rot_axis_coord eq axis4_cartesian
+					{'UH'}
+					call @UdrFaceCartesian((1))
+					call @UdrRadialMode
+					call @UdrMillBrake((1))
+				endif
+				if rot_axis_coord eq axis4_polar
+					{'UH'}
+					if job_type eq 'drill'
+						call @UdrRadialPolar((1))
+					else
+						call @UdrFaceCartesian((1))
+					endif
+					call @UdrRadialMode
+					call @UdrMillBrake((1))
+				endif
+				call @UdrStartCoolant
+			endif
+		endif
+	endif
+	LogFirst5XMove = true
+	LogFirstMove = false
+endp
+
+@UdrRadialInt(logical a)
+	if a eq true
+		{nb,'G07.1 C'(radial_diameter/2)}	
+		LogInRadialInt = true
+	else
+		if LogInRadialInt eq true
+			{nb,'G07.1 C0'}	
+			LogInRadialInt = false
+		endif
+	endif
+endp
+
+@balance_process
+	if start_balance_process eq true
+		mcode = 562
+	else
+		mcode = 563
+	endif
+	if slave_drive_unit eq false
+		{nb,mcode}
+	endif
+endp
+
+@UdrMillBrake(logical a)
+	if a eq true
+		mcode = (spindle+2)*100+11
+		{nb,mcode}
+		ArLogBrake<<(spindle+1)>> = true
+	endif
+endp
+
+@end_of_job
+	if x5_job eq true
+		{nb,'G98'}
+		{nb,'G49'}
+		{nb,'G97'}
+		{nb,'G69.5'}
+	endif
+	call @UdrRadialPolar((0))
+	call @UdrFaceCartesian((0))
+	call @UdrRadialInt((0))
+	call @absolute_mode
+endp
+
+@change_tool
+	if LogInMCO eq false
+		if ArIntMachineID<<submachine_ID,1>> eq 1
+			call @UdrChangeToolUpper
+		else
+			call @UdrChangeToolLower(tool_position_in_turret,tool_position,submachine_ID)
+		endif
+	else
+		call @UdrMcoToolChange
+	endif
+	LogFirstMove = true
+	IntSavePartHomeNumber = 0
+endp
+
+@UdrMcoToolChange
+	if DeviceName eq 'LW_TR'
+		{nb,'T',tool_position_in_turret:'z3.0(n)'tool_position_in_turret:'z3.0(p)'}
+	else
+		{nb,'T',tool_number:'z3.0',tool_position:'2.0(p)','T',next_tool_in_turret:'z3.0(p)','M6'}
+		{'D'tool_number:'z3.0(p)'}
+	endif
+endp
+
+@UdrToolOffsetSave
+	IntSaveToolNumber<<ChannelID>> = tool_number
+	IntSaveToolPositionInTurret<<ChannelID>> = tool_position_in_turret
+	IntSaveToolReversed<<ChannelID>> = tool_reversed
+	IntSaveToolPosition<<ChannelID>> = tool_position
+endp
+
+@turn_chng_offset
+	local logical LogCallTCH
+	LogCallTCH = 0
+	if tool_number ne IntSaveToolNumber<<ChannelID>>
+		LogCallTCH = 1
+	endif
+	if tool_position_in_turret ne IntSaveToolPositionInTurret<<ChannelID>>
+		LogCallTCH = 1
+	endif
+	if IntSaveToolReversed<<ChannelID>> ne tool_reversed
+		LogCallTCH = 1
+	endif
+	if IntSaveToolPosition<<ChannelID>> ne tool_position
+		LogCallTCH = 1
+	endif
+	if LogCallTCH eq 1
+		call @turn_change_tool
+	endif
+	call @UdrToolOffsetSave
+endp
+
+@turn_change_tool
+	if LogInMCO eq false
+		if ArIntMachineID<<submachine_ID,1>> eq 1
+			call @UdrTurnChangeToolUpper
+		else
+			call @UdrTurnChangeToolLower(tool_position_in_turret,tool_position,submachine_ID)
+		endif
+	else
+		call @UdrMcoToolChange
+	endif
+	LogFirstMove = true
+	IntSavePartHomeNumber = 0
+	call @UdrToolOffsetSave
+endp
+
+@UdrRotateToPlane
+	if job_machine_type eq milling
+		call @UdrHomeReturn(zmtool,submachine_ID)
+		if x5_job eq true or rot_axis_type ne axis4_none
+			if x5_job eq true
+				call @UdrBrake(spindle,(0),(0))
+			endif
+			gcode = 0
+			{nb,gcode,bnext:bpos_f}
+			call @UdrCoordShift
+			if rot_axis_coord ne axis4_polar and rot_axis_type ne axis4_face
+				{nb,gcode,anext:apos_f}
+			else
+				{nb,'G0 C0'}
+			endif
+		else
+			{nb,'G0 B',second_axis_angle}
+			call @UdrMillingMode(spindle,(1))
+			call @UdrCoordShift
+			call @UdrBrake(spindle,(0),(1))
+			{nb,'G0 C'first_axis_angle}
+			ArNumSaveFA<<(spindle+1)>> = first_axis_angle
+		endif
+			if rot_axis_type eq axis4_none and x5_job eq false
+				call @UdrBrake(spindle,(1),(1))
+			endif
+		if first_plane_angle ne 0 and rot_axis_type eq axis4_none
+			{nb,'G68.5 X0 Y0 Z0 I0 J1 K0 R',first_plane_angle}
+			LogInclPlane = true
+		else
+			call @UdrCoordSysRotateOff
+		endif
+	endif
+endp
+
+@rotate_to_plane
+	if RTP_before_MCO eq false
+		if change_tool_follows eq false
+			;call @UdrHomeReturn(zmtool,submachine_ID)
+			call @UdrRotateToPlane
+		endif
+	endif
+endp
+
+@message
+	{nb,'(',message,')'}
+endp
+
+@UdrHomeReturn(numeric z,integer sub)
+	LogInclPlane = false
+	if ArIntMachineID<<sub,1>> eq 1
+		{nb,'G69.5'}
+		{nb,'G0 G28 U0'}
+		{nb,'G28 V0'}
+		{nb,'G28 W0'}
+	else
+		{nb,'G0 G28 U0'}
+		{nb,'G53 Z0'}
+	endif
+endp
+
+@UdrCoordSysRotateOff
+	if LogInclPlane eq true
+		{nb,'G69.5'}
+		LogInclPlane = false
+	endif
+endp
+
+@UdrCoordShift
+	IntHomeID = ArNumHomeData<<plane_data_ID,1>>
+	if submachine_ID lt 3
+		{nb,'(MAIN SPINDLE OPERATION WORK OFFSET N#',(100+IntHomeID),')'}
+	else
+		{nb,'(BACK SPINDLE OPERATION WORK OFFSET N#',(100+IntHomeID),')'}
+	endif
+	{nb,'G53.5 Z#',(100+IntHomeID)}
+	if job_machine_type eq milling
+		{' C#'(123+spindle)}
+	endif
+endp
+
+@UdrChangeToolLower(integer tpt, integer tp,integer sub)
+	call @UdrBrake(spindle,(0),(1))
+	{nb,'G52.5'}
+	call @UdrSpindleSelect(spindle)
+	call @UdrHomeReturn(zrtool,sub)
+	call @UdrMillingMode(spindle,(0))
+	if ArIntMachineID<<sub,2>> eq 4
+		tpt = tpt +100
+	endif
+	{nb,'T',tpt:'z3.0(n)',tpt:'z3.0(p)'}
+	call @UdrCoordShift
+endp
+
+@UdrTurnChangeToolLower(integer tpt, integer tp,integer sub)
+	call @UdrBrake(spindle,(0),(1))
+	{nb,'G52.5'}
+	call @UdrSpindleSelect(spindle)
+	call @UdrHomeReturn(zrtool,sub)
+	call @UdrMillingMode(spindle,(0))
+	if ArIntMachineID<<sub,2>> eq 4
+		tpt = tpt +100
+	endif
+	if tool_type eq Turn_DRILLING
+		{nb,'T',tpt:'z3.0(n)'}
+	else
+		{nb,'T',tpt:'z3.0(n)',tpt:'z3.0(p)'}
+	endif
+	call @UdrCoordShift
+endp
+
+@UdrMillingMode(integer sp,logical st)
+	if LogInMCO eq 1
+		ArLogBrake<<(sp+1)>> = true
+		call @UdrBrake(sp,(0),(1))
+		if st eq true
+			ArLogMillingMode<<(sp+1)>> = false
+		else
+			ArLogMillingMode<<(sp+1)>> = true
+		endif
+	endif
+	if ArLogMillingMode<<(sp+1)>> eq false and st eq true
+		{nb,'M',((sp+2)*100)}
+		ArLogMillingMode<<(sp+1)>> = true
+	endif
+	if ArLogMillingMode<<(sp+1)>> eq true and st eq false
+		{nb,'M',((sp+2)*100 +2)}
+		ArLogMillingMode<<(sp+1)>> = false
+	endif
+endp
+
+@UdrBrake(integer sp logical a logical b)
+	if ArLogBrake<<(sp+1)>> eq true and a eq false
+		mcode = (sp+2)*100+12
+		{nb,mcode}
+		ArLogBrake<<(sp+1)>> = false
+	endif
+	if ArLogBrake<<(sp+1)>> eq false and a eq true
+		mcode = (sp+2)*100+10
+		{nb,mcode}
+		ArLogBrake<<(sp+1)>> = true
+	endif
+	if ArIntMachineID<<submachine_ID,1>> eq 1
+		if ArLogBrake<<3>> eq false and b eq true
+			mcode = 251
+			{nb,mcode}
+			ArLogBrake<<3>> = true
+		endif
+		if ArLogBrake<<3>> eq true and b eq false
+			mcode = 250
+			{nb,mcode}
+			ArLogBrake<<3>> = false
+		endif
+	endif
+endp
+
+@UdrStopTurnTool(integer sp)
+	mcode = 5+(300*sp)
+	{nb,mcode}
+	ArStrSpindleStatus<<(sp+1)>> = 'off'
+endp
+
+@stop_tool
+	if job_machine_type eq milling
+		call @UdrStopTool
+	else
+		call @UdrStopTurnTool(spindle)
+	endif
+endp
+
+@UdrStopTool
+	if ArStrSpindleStatus<<(3)>> ne 'off'
+		mcode = 205
+		{nb,mcode}
+		call @UdrStopCoolant
+		ArStrSpindleStatus<<(3)>> = 'off'
+	endif
+endp
+
+@UdrChangeToolUpper
+	call @UdrSpindleSelect(spindle)
+	if ArStrSpindleStatus<<(spindle+1)>> ne 'off'
+		call @UdrStopTurnTool(spindle)
+	endif
+	call @UdrStopCoolant
+	call @UdrHomeReturn(zrtool,submachine_ID)
+	{nb,'G52.5'}
+	call @UdrBrake(spindle,(0),(0))
+	call @UdrMillingMode(spindle,(1))
+	{nb,'T',tool_number:'z3.0',tool_position:'z2.0(p)',' T',next_tool_number:'z3.0(p)',' M6 D'tool_number:'z3.0(p)'}
+	{nb,'G53 Z0'}
+	call @UdrRotateToPlane
+endp
+
+@UdrTurnChangeToolUpper
+	call @UdrSpindleSelect(spindle)
+	call @UdrStopCoolant
+	call @UdrHomeReturn(zrtool,submachine_ID)
+	{nb,'G52.5'}
+	call @UdrBrake(spindle,(0),(0))
+	call @UdrMillingMode(spindle,(0))
+	if tool_type eq drill OR  tool_type EQ Turn_DRILLING 
+		{nb,'T',tool_number:'z3.0(p)', ' T',next_tool_in_turret:'z3.0(p)',' M6'}
+  else
+  	{nb,'T',tool_number:'z3.0',(tool_reversed+1):'z2.0(p)',' T',next_tool_number:'z3.0(p)',' M6'}
+  endif
+	{' D'tool_number:'z3.0(p)'}
+	{nb,'G53 Z0'}
+	gcode = 0
+	{nb,gcode,' B',machine_b_value}
+	call @UdrCoordShift
+endp
+
+@UdrMachinePlane(numeric a)
+	if machine_plane eq XY
+		gcode = 17
+	endif
+	if machine_plane eq ZX
+		gcode = 18
+	endif
+	if machine_plane eq YZ
+		gcode = 19
+	endif
+	if rot_axis_type eq axis4_radial
+		gcode = 19
+	endif
+	if a ne 0
+		gcode = a
+	endif
+	{nb,gcode}
+endp
+
+@UdrStartTool(integer sp,numeric s,numeric dir)
+	if job_machine_type eq milling
+		call @UdrStartToolMill(sp,s,dir)
+	else
+		call @UdrStartToolTurn(sp,s,dir)
+	endif
+endp
+
+@UdrStartToolMill(integer sp,numeric s,numeric dir)
+	{nb ,'G97 G98'}
+	mcode = 203+dir
+	{s:spin_f,' ',mcode}
+	if dir eq 0
+		ArStrSpindleStatus<<3>> = 'cw'
+	else
+		ArStrSpindleStatus<<3>> = 'ccw'
+	endif
+endp
+
+@UdrStartToolTurn(integer sp,numeric s,numeric dir)
+	if Slave_Drive_Unit eq 0
+		local string s_dir
+		mcode = 3+spin_direction+(300*sp)
+		s_dir = ArStrSpindleStatus<<(sp+1)>>
+		if spin_direction eq 0
+			ArStrSpindleStatus<<(sp+1)>> = 'cw'
+		else
+			ArStrSpindleStatus<<(sp+1)>> = 'ccw'
+		endif
+		if s_dir eq 'cw' and ArStrSpindleStatus<<(sp+1)>> eq 'ccw'
+			{nb,'M',(5+(300*sp))}
+			{nb,'G98 G4 P2000'}
+		endif
+		if s_dir eq 'ccw' and ArStrSpindleStatus<<(sp+1)>> eq 'cw'
+			{nb,'M',(5+(300*sp))}
+			{nb,'G98 G4 P2000'}
+		endif
+		local numeric R
+		local string R_f
+		R_f = '1.0(p)'
+		if submachine_ID eq 1 or submachine_ID eq 4
+			R=1
+		else
+			R=2
+		endif
+		if spin_unit eq css
+			{nb,'G50 S'spin_limit:'5.0(p)',' R',R:'1.0(p)'}
+			{nb,'G96 R',R:'1.0(p)',' '}	
+		else
+			{nb,'G97 '}
+		endif
+		if feed_unit eq 0
+			{'G98'}
+		else
+			{'G99'}
+		endif
+		skipline = false
+		{nb,s:spin_f,' ',mcode}
+	else
+		if feed_unit eq 0
+			{nb'G98'}
+		else
+			{nb'G99'}
+		endif
+		{nb,'(SLAVE TOOL)'}
+	endif
+endp
+
+@start_of_file
+	{nl,'O'program_number,'(',g_file_name,')'}
+	{nl,'(TIME:			'time,')'}
+	{nl,'(MACHINE		INTEGREX IV 200 ST)'}
+	{nl,'(DRAWING		',part_name,')'}
+	{nl,'(COMPANY		INDIGO)'}
+	{nl,'(DIAMETER: 'stock_x,'MM)'} 
+	{nl,'(LENGTH: ',stock_z,'MM)'}
+	{nl,'(STOCK FACE EXTENSION: ',(bound_z_max),'MM)'}
+	if bound_x_internal ne 0
+		{nl,'(HOLE DIAMETER: ',(bound_x_internal*2),')'}
+	endif
+	{nl,'M202 M302'}	
+	{nl,'M312 M212'}	
+	{nl,'#123 = 0 (MAIN SPINDLE C)'}
+	{nl,'#124 = 0 (BACK SPINDLE C)'}	
+endp
+
+@plane_data
+	local integer i
+	local integer LogExistHome
+	IntHomeNumber = 0
+		i = 1
+		While i le plane_data_ID
+			if round(shift_Mac_m_x,2) eq round(ArNumHomeData<<i,2>>,2) and round(shift_Mac_m_y,2) eq round(ArNumHomeData<<i,3>>,2) and round(shift_Mac_m_z,2) eq round(ArNumHomeData<<i,4>>,2)
+				IntHomeNumber = i
+				LogExistHome = true
+				break
+			endif
+			i = i + 1
+		endw
+		If LogExistHome eq 1
+			ArNumHomeData<<plane_data_ID,1>> = ArNumHomeData<<IntHomeNumber,1>>
+			LogExistHome = false
+		else
+			IntHomeCounter = IntHomeCounter + 1
+			{nl,'#' (100 + IntHomeCounter)' = 'shift_Mac_m_z,' (Z POSITION N'IntHomeCounter,')'}
+			ArNumHomeData<<plane_data_ID,1>> = IntHomeCounter
+		endif
+	ArNumHomeData<<plane_data_ID,2>> = shift_Mac_m_x
+	ArNumHomeData<<plane_data_ID,3>> = shift_Mac_m_y
+	ArNumHomeData<<plane_data_ID,4>> = shift_Mac_m_z
+endp
+
+@start_program
+	{nl,'G109 L'channelID}
+endp
+
+@end_program
+	if channelID eq 1
+		call @UdrSpindleSelect((0))
+		{nb,'P99998'}
+		{nl,'M202 M302'}
+		{nl,'M312 M213'}
+		{nb,'G28 U0 V0'}
+		{nb,'G28 W0'}
+		{nb,'P99999'}
+		{nb, 'M30'}
+	else
+		call @UdrSpindleSelect((1))
+		{nb,'P99998'}
+		{nb,'G28 U0'}
+		{nb,'G28 W0'}
+		{nb,'P99999'}
+		{nb, 'M30'}
+	endif
+endp
+
+@UdrSpindleSelect(integer a)
+	mcode = 901+a
+	{nb,mcode}
+endp
+
+@end_of_file
+	{nl,'%'}
+	{nl}
+endp
+
+@working_mode
+	if MCO_Working_Mode eq 1
+		call @UdrMillingMode((DeviceNum-1),(1))
+	else
+		call @UdrMillingMode((DeviceNum-1),(0))
+	endif                
+endp
+
+@UdrMachineID
+	;frst device set
+	ArIntMachineID<<1,1>> = 1 ;submachine 1 first device: upper turret
+	ArIntMachineID<<2,1>> = 3 ;submachine 2 first device: lower turret
+	ArIntMachineID<<3,1>> = 1 ;submachine 3 first device: upper turret
+	ArIntMachineID<<4,1>> = 3 ;submachine 4 first device: lower turret
+	;second device set
+	ArIntMachineID<<1,2>> = 2 ;submachine 1 second device: main spindle
+	ArIntMachineID<<2,2>> = 2 ;submachine 2 second device: main spindle
+	ArIntMachineID<<3,2>> = 4 ;submachine 3 second device: back spindle
+	ArIntMachineID<<4,2>> = 4 ;submachine 4 second device: back spindle
+	;C axis control set	
+	ArIntMachineID<<1,3>> = 2 ;submachine 1 control main spindle
+	ArIntMachineID<<2,3>> = 4 ;submachine 2 control back spindle
+	ArIntMachineID<<3,3>> = 2 ;submachine 3 control main spindle
+	ArIntMachineID<<4,3>> = 4 ;submachine 4 control back spindle
+endp
+
+@check_toruqe
+	if min_torque_limit ne 0
+		mcode = 508
+		LogTorqueControl = true
+	else
+		mcode = 509
+		LogTorqueControl = false
+	endif
+	{nb,mcode}
+endp
+
+@start_obj_act
+	IntSCType = 0
+	s_name_axis_x=name_axis_x
+	s_name_axis_y=name_axis_y
+	s_name_axis_z=name_axis_z
+	s_name_axis_a=name_axis_a
+	s_name_axis_b=name_axis_b
+endp
+
+@open_close_obj
+	if open_close eq 1
+		if DeviceName eq 'MAIN_SP'
+			{nb,'M206'}
+		else
+			{nb,'M306'}
+		endif
+	else
+		if DeviceName eq 'MAIN_SP'
+			{nb,'M207'}
+		else
+			{nb,'M307'}
+		endif
+	endif
+endp
+
+@cool_flood
+	if flood_coolant eq false
+		if IntFloodCoolant eq 8
+			{nb,'M9'}
+			IntFloodCoolant = 9
+		endif
+	else
+		if IntFloodCoolant eq 9
+			{nb,'M8'}
+			IntFloodCoolant = 8
+		endif
+	endif
+endp
+
+@cool_through_tool
+	if through_coolant eq false
+		if IntThroughCoolant eq 153
+			{nb,'M154'}
+			IntThroughCoolant = 154
+		endif
+	else
+		if IntThroughCoolant eq 154
+			{nb,'M153'}
+			IntThroughCoolant = 153
+		endif
+	endif
+endp
+
+@UdrStartCoolant
+	if through_coolant eq true
+		call @cool_through_tool
+	endif
+	if flood_coolant eq true
+		call @cool_flood
+	endif
+endp
+
+@UdrStopCoolant
+	through_coolant = false
+	flood_coolant = false
+	call @cool_through_tool
+	call @cool_flood
+endp
+
+@mco_message
+	{nb,'('message')'}
+endp
+
+@active_air_through_spindle
+	if air_blast_coolant eq 1
+		if DeviceName eq 'MAIN_SP'
+			{nb,'M58'}
+		endif
+		if DeviceName eq 'BACK_SP'
+			{nb,'M358'}
+		endif
+	endif
+endp
+
+@machine_stop
+	if machine_stop eq 1
+		{nb,'M0'}
+	endif
+endp
+
+@machine_opt_stop
+	if optional_stop eq 1
+		{nb,'M1'}
+	endif
+endp
+
+@spin
+	if deviceName eq 'MAIN_SP'
+		mcode = 2+spin_direction
+	endif
+	if deviceName eq 'BACK_SP'
+		mcode = 302+spin_direction
+	endif
+	if deviceType eq 2 ;turret
+		if ArIntMachineID<<submachine_ID,1>> ne DeviceIdNum
+			call @UdrCrossMode
+			skipline = false
+		endif
+		mcode = 202+spin_direction
+	endif
+	{nb,mcode}
+	if spin_direction lt 3
+		{spin_rate:spin_f}
+	endif
+endp
+
+@UdrCrossMode
+	{nb,'G112 L'(1+mod(submachine_ID,2)):'1.0(p)',' '}
+endp	
+
+@UdrModalityCheck
+	change(move_axis_a) =  userDef_a
+	change(move_axis_b) =  userDef_b
+	change(move_axis_x) =  userDef_x
+	change(move_axis_y) =  userDef_y
+	change(move_axis_z) =  userDef_z
+	change(ah_move) =  userDef_a
+	change(bh_move) =  userDef_b
+	change(xh_move) =  userDef_x
+	change(yh_move) =  userDef_y
+	change(zh_move) =  userDef_z
+endp
+
+@move_object
+	call @UdrModalityCheck
+	call @UdrAxisNames
+	call @UdrMoveBDetect
+	call @UdrSCSelect
+	if is_rapid_move eq 0 and LogTorqueControl eq true
+		gcode = 31
+	else
+		gcode = 1-is_rapid_move
+	endif
+	if MCO_CoordSysType eq 1 or LogTorqueControl eq true
+		if LogTorqueControl eq true
+			{nb,gcode,(move_axis_z-NumMoveAxisZ):move_axis_z_f,feed_move:feed_f}
+		else
+			{nb,[move_axis_x],[move_axis_y],[move_axis_z],[move_axis_a],[move_axis_b]}
+		endif
+	else
+		{nb,gcode,[xh_move],[yh_move],[zh_move],[ah_move],[bh_move]}
+		if is_rapid_move eq 0
+			{[feed_move:feed_f]}
+		endif
+	endif
+	NumMoveAxisZ = move_axis_z
+endp
+
+@UdrMoveBDetect
+	local logical f
+	f = false
+	if name_axis_a eq 'B'
+		if  MCO_CoordSysType eq 1
+			if change(move_axis_a) eq true
+				f = true
+			endif
+		else
+			if change(ah_move) eq true
+				f = true
+			endif
+		endif
+	endif
+	if name_axis_b eq 'B'
+		if  MCO_CoordSysType eq 1
+			if change(move_axis_b) eq true
+				f = true
+			endif
+		else
+			if change(bh_move) eq true
+				f = true
+			endif
+		endif
+	endif
+	if f eq true
+		call @UdrBrake((0),ArLogBrake<<1>>,(0))
+	endif
+endp
+
+@UdrAxisNames
+	if name_axis_z eq 'Z[B]2' and LogTorqueControl eq true
+		name_axis_z = 'W'
+	endif
+	name_axis_x=left(name_axis_x,1)
+	name_axis_y=left(name_axis_y,1)
+	name_axis_z=left(name_axis_z,1)
+	name_axis_a=left(name_axis_a,1)
+	name_axis_b=left(name_axis_b,1)
+	move_axis_x_f = '< '+name_axis_x+'>5.3'
+	move_axis_y_f = '< '+name_axis_y+'>5.3'
+	move_axis_z_f = '< '+name_axis_z+'>5.3'
+	move_axis_a_f = '< '+name_axis_a+'>5.3'
+	move_axis_b_f = '< '+name_axis_b+'>5.3'
+	xh_move_f = '< '+name_axis_x+'>5.3'
+	yh_move_f = '< '+name_axis_y+'>5.3'
+	zh_move_f = '< '+name_axis_z+'>5.3'
+	ah_move_f = '< '+name_axis_a+'>5.3'
+	bh_move_f = '< '+name_axis_b+'>5.3'
+endp
+
+@start_mach_ctrl
+	LogInMCO = true
+	{nb,'G69.5'}
+endp
+
+@end_mach_ctrl
+	LogInMCO = false
+endp
+
+@UdrSCSelect
+	if MCO_CoordSysType eq 1 and LogTorqueControl eq false
+		gcode = 53
+		{nb,gcode} 
+		skipline = false
+	endif
+	if MCO_CoordSysType eq 2 and IntSCType ne MCO_CoordSysType
+		call @UdrCoordShift
+	endif
+	IntSCType = MCO_CoordSysType
+endp
+
+@end_obj_act 
+	call @UdrBrake((0),(ArLogBrake<<(1)>>),(1))
+endp
+
+@spindles_sync
+	if sync_spindle eq 1
+		if DeviceName eq 'MAIN_SP'
+			{nb,'M511'}
+		else
+			{nb,'M512'}
+		endif
+	else
+		{nb,'M513'}
+	endif
+endp
+
+@spindle_orient
+	if SpindleOrientation eq 1
+		if DeviceName eq 'MAIN_SP'
+			{nb,'M19'}
+		endif
+		if DeviceName eq 'BACK_SP'
+			{nb,'M319'}
+		endif
+		if DeviceName eq 'UP_TR'
+			{nb,'M219'}
+		endif
+	endif
+	if DeviceName eq 'UP_TR' or DeviceName eq 'LW_TR'
+		if ValSpindleOrientation eq 180
+			IntSaveToolReversed<<ChannelID>> = 1
+		endif
+	endif
+endp
+
+@sync_process
+	local string StrCaxisControl PatternExt
+	local integer OppositeChannel
+	if label_numbering_style eq 0
+		{nl,sync_label:sync_label_f}
+	else
+		{nl,sync_label:alt_sync_label_f}
+	endif
+	if internal_sync_label eq false
+		StrPattern = get_axes_pattern_name(Sync_Data_Name, ChannelID, sync_label)
+		if instr(StrPattern, 'Z[B]') eq 0 and LogCHKmode eq true
+			{nb,'M541'}
+			LogCHKmode = false
+		endif
+		call @UdrOppositeChannel(ChannelID,OppositeChannel)
+		StrCaxisControl = tostr(OppositeChannel:'<C>1.0(p)')
+		PatternExt = replace(StrPattern,'Cx',StrCaxisControl)
+		if StrPatternSave<<channelID>> ne StrPattern
+			if instr(StrPattern, 'Z[B]') ne 0 
+				{nb,'M540'}
+				LogCHKmode = true
+			endif
+			{nb,PatternExt}
+		endif
+		StrPatternSave<<channelID>> = StrPattern
+	endif
+endp
+
+@UdrOppositeChannel(integer a,integer OC)
+	if a eq 1
+		OC = 2
+	endif
+	if a eq 2
+		OC = 1
+	endif
+endp
+
+@move_5x  
+	if x5_job eq true
+		if LogFirst5XMove eq true
+			gcode = 0
+			{nb,gcode,apos,bpos}
+			{nb,'G93'}
+			gcode = 43.4
+			{nb,gcode}
+			LogFirst5XMove = false
+		endif
+		gcode = 0
+		{nb,[gcode],[xpos],[ypos],[zpos],[apos],[bpos]}
+	else
+		gcode = 1
+		LogRapidFeed = true
+		if rot_axis_type ne axis4_face  
+			{nb,gcode,[xopos],[apos],[zopos],' F2000'}
+		else
+			if rot_axis_coord eq axis4_cartesian
+				{nb,[gcode],[xhpos:xpos_f],[yhpos:apos_f],[zhpos],' F2000'}
+			else
+				{nb,[gcode],[xhpos:xpos_f],[yhpos:apos_f],[zhpos],' F2000'}
+			endif
+		endif
+	endif
+	feed = 2000
+endp
+               
+@line_5x
+	if LogRapidFeed eq true
+		change(feed) = true
+		LogRapidFeed = false
+	endif
+	if x5_job eq true
+		if LogFirst5XMove eq true
+			{nb,[gcode],[apos],[bpos],[feed]}
+			{nb,'G93'}
+			gcode = 43.4
+			{nb,gcode,' H',tool_number}
+			LogFirst5XMove = false
+		endif
+		gcode = 1
+		{nb,[gcode],[xpos],[ypos],[zpos],[apos],[bpos],inverse_feed:feed_f}
+	else
+		gcode = 1
+		if rot_axis_type ne axis4_face 
+			{nb,[gcode],[xopos],[apos],[zopos],[feed]}
+		else
+			if rot_axis_coord eq axis4_cartesian
+				{nb,[gcode],[xhpos:xpos_f],[yhpos:apos_f],[zhpos],[feed]}
+			else
+				{nb,[gcode],[xhpos:xpos_f],[yhpos:apos_f],[zhpos],[feed]}
+			endif
+		endif
+	endif
+endp
+
+@arc_5x	
+	if rot_axis_type ne axis4_face
+		gcode = 2+arc_odirection
+		{nb,[gcode],[xopos],[apos],[zopos]}
+	else
+		if rot_axis_coord eq axis4_cartesian
+			gcode = 2+arc_odirection
+			{nb,[gcode],[xhpos:xpos_f],[yhpos:apos_f],[zhpos]}
+		else
+			gcode = 2+arc_odirection	
+			{nb,[gcode],[xhpos:xpos_f],[yhpos:apos_f],[zhpos]}
+		endif
+	endif
+	{' R'radius, [feed]}
+endp     
+
+@drill
+	gcode = 0
+	if rot_axis_type eq axis4_none
+		if x5_job eq true; 5x drill
+			{nb,[gcode],[xlpos],[ylpos],[zlpos]}
+		else
+			{nb,[gcode],[xpos],[ypos],[zpos]}
+		endif
+	else
+		if rot_axis_coord eq axis4_polar
+			if rot_axis_type eq axis4_radial
+				{nb,[gcode],[xopos],[apos],[zopos]}
+			else
+				{nb,[gcode],[xopos:xpos_f],[apos],[zopos]}
+			endif
+		endif
+		if rot_axis_coord eq axis4_cartesian
+			{nb,[gcode],[xhpos],[yhpos:apos_f],[zhpos]}
+		endif
+	endif	
+	if rot_axis_type eq axis4_none
+	call @UdrBrake(spindle,(1),(1))
+	endif
+	if rot_axis_type eq axis4_radial
+		if drill_type eq Drilling
+				gcode = 87
+		endif
+		if drill_type eq Tapping 
+			gcode = 88.2
+		endif
+		if drill_type eq Boring
+			gcode = 89
+		endif
+		{nb,gcode,zopos,' X',drill_lower_zo:'5.3(*2)',' R',((drill_clearance_zo - drill_upper_zo)*2)}
+	else
+		if drill_type eq Drilling
+			gcode = 83
+		endif
+		if drill_type eq Tapping 
+			gcode = 84.2
+		endif
+		if drill_type eq Boring
+			gcode = 85
+		endif
+		if x5_job eq false
+			if rot_axis_type ne axis4_none
+				if rot_axis_coord eq axis4_cartesian
+					{nb,gcode,xhpos:xpos_f,yhpos:apos_f' Z',drill_lower_z,' R',(drill_clearance_z - drill_upper_z)}
+				else
+					{nb,gcode,xopos:xpos_f,apos' Z',drill_lower_zo,' R',(drill_clearance_zo - drill_upper_zo)}
+				endif
+			else
+				{nb,gcode,xpos:xpos_f,ypos' Z',drill_lower_z,' R',(drill_clearance_z - drill_upper_z)}
+			endif
+		else
+			{nb,gcode,xlpos,ylpos,' Z',drill_lower_zl,' R',(drill_clearance_zl - drill_upper_zl)}
+		endif
+	endif
+	if drill_type eq Drilling
+		if down_step gt 0
+			{' Q'down_step:'5.4'}
+		else
+			{' Q999.'}
+		endif
+	endif
+	if drill_type eq Tapping
+		{' F'tool_drill_lead}
+	else
+		{feed}
+	endif
+	if drill_type eq Tapping
+		mcode = 203+spin_direction
+		{' ',mcode}
+	endif
+endp
+
+@drill_point
+	if first_drill eq false
+		if rot_axis_type eq axis4_none
+			if x5_job eq true; 5x drill
+				{nb,xlpos,ylpos}
+			else
+				{nb,xpos,ypos}
+			endif
+		else
+			if rot_axis_coord eq axis4_polar
+				if rot_axis_type eq axis4_radial
+					{nb,zopos,apos}		
+				else
+					{nb,xopos:xpos_f,apos}
+				endif
+			endif
+			if rot_axis_coord eq axis4_cartesian
+				if rot_axis_type eq axis4_radial
+					;{nb,zopos,apos}		
+				else
+					{nb,xhpos:xpos_f,yhpos:apos_f}
+				endif
+			endif
+		endif
+		if drill_type eq Drilling
+			if down_step gt 0
+				{' Q'down_step:'5.4'}
+			else
+				{' Q999.'}
+			endif
+		endif
+	endif
+endp
+
+@turn_drill
+	gcode = 74
+	{nb,gcode,' Z',drill_lower_z}
+	if down_step eq 0
+		down_step = abs(drill_depth)
+	endif
+	if submachine_ID eq 1 or submachine_ID eq 2
+		{' Q',down_step:'5.0(*1000p)'}
+	else
+		{' Q',(down_step*-1):'5.0(*1000p)'}
+	endif
+	{feed}
+endp
+
+@end_drill
+	{nb,'G80'}
+endp
+
+@compensation
+	if rot_axis_type eq axis4_face
+		gcode = 42-side_o
+	else
+		gcode = 42-side
+	endif
+	{nb,gcode,' '}
+	skipline = false
+endp
+
+@unload_tool
+	if ArIntMachineID<<submachine_ID,1>> ne DeviceIdNum
+		call @UdrCrossMode
+		skipline = false
+	endif
+	if DeviceName eq 'LW_TR'
+		{nb,'T',tool_position_in_turret:'z3.0(n)'tool_position_in_turret:'z3.0(p)'}
+	else
+		{nb,'T',tool_number:'z3.0',tool_position:'2.0(p)','T',next_tool_in_turret:'z3.0(p)','M6'}
+		{'D'tool_number:'z3.0(p)'}
+	endif               
+endp
+
+@turning
+	if work_type eq rough
+		if process_type eq long
+			{nb,'G71 U'down_step,' R'retreat_distance}
+			{nb,'G71 P'start_line,' Q'end_line,' U0 W0'feed}
+		else
+			{nb,'G72 W'down_step,' R'retreat_distance}
+			{nb,'G72 P'start_line,' Q'end_line,' U0 W0'feed}
+		endif
+	endif
+	if work_type eq copy
+		{nb,'G73 U'(retreat_distance*2),' W'retreat_distance}
+		{nb,'G73 P'start_line,' Q'end_line,' U0 W0'feed}
+	endif
+	if work_type eq profile
+		{nb,'G70 P'start_line,' Q'end_line,feed}
+	endif
+endp
+
+@thread
+	if lead_unit ne mm
+		lead = 25.4 / lead
+	endif
+	if work_type eq multiple
+		{nb,'G76 P0101',tool_ALFA:'z2.0(n)',' R0'}
+		{nb,'G76 X'last_pos_x:'4.3(*2)',' Z'last_pos_z}
+		if (first_pos_x - last_pos_x) ne 0
+			{' R'(first_pos_x - last_pos_x)}
+		endif
+		{' P'depth,' Q'down_step,' F'lead}
+	else
+		{nb,'G92 X'last_pos_x:'4.3(*2)',' Z'last_pos_z}
+		if (first_pos_x - last_pos_x) ne 0
+			{' R'(first_pos_x - last_pos_x)}
+		endif
+		{' F'lead}
+	endif
+	gcode = 999999
+endp
+
+@groove
+	if work_type eq 0
+		if process_type eq long
+			{nb,'G75 R'release_dist}
+			{nb,'G75 X'(last_pos_x*2),' Z'last_pos_z}
+			if down_step ne 0
+				{' P'down_step}
+			endif
+			if side_step ne 0
+				{' Q'side_step}
+			endif
+		else
+			{nb,'G74 R'release_dist}
+			{nb,'G74 X'(last_pos_x*2),' Z'last_pos_z}
+			if down_step ne 0
+				{' P'side_step}
+			endif
+			if side_step ne 0
+				{' Q'down_step}
+			endif
+		endif
+	else
+		if process_type eq long
+			{nb,'G75 X'(last_pos_x*2)}
+			if down_step ne 0
+				{' P'down_step}
+			endif
+		else
+			{nb,'G74 Z'last_pos_z}
+			if side_step ne 0
+				{' Q'down_step}
+			endif
+		endif
+	endif	
+	{feed}
+endp

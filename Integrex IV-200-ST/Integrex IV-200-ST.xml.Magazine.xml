@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<machine_definition>
+    <machine_data name="tmp_MachSimToolKit" version="1.9" units="metric" controller="">
+        <view_transform initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+    </machine_data>
+    <magazine>
+        <head name="tool_item_cmpTool--|id:1">
+            <transform id="transform_cmpHSK A63WH MULNR J12MW--|id:2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="geom_cmpHSK A63WH MULNR J12MW--|id:2" geo="geometry.stl" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <transform id="transform_cmpProfile--|id:3" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool_cmpProfile--|id:3" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="0.50196081" noncuttb="0.50196081" arborr="0.00000000" arborg="0.80784315" arborb="0.81960785" holderr="0.41960785" holderg="0.55686277" holderb="0.13725491" />
+                    <transform id="origin_position_transformProfile--|id:3" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="origin_positionProfile--|id:3" geo="02mmBall.STL" clrr="1.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                    </transform>
+                </transform>
+            </transform>
+        </head>
+        <head name="tool_item_cmpTool--|id:11">
+            <transform id="transform_cmpHSK A63 SRKIN10X85--|id:12" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="geom_cmpHSK A63 SRKIN10X85--|id:12" geo="geometry.stl" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <transform id="transform_cmpECA100F22-2C10--|id:13" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool_cmpECA100F22-2C10--|id:13" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="0.50196081" noncuttb="0.50196081" arborr="0.00000000" arborg="0.80784315" arborb="0.81960785" holderr="0.41960785" holderg="0.55686277" holderb="0.13725491" />
+                    <transform id="origin_position_transformECA100F22-2C10--|id:13" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="origin_positionECA100F22-2C10--|id:13" geo="02mmBall.STL" clrr="1.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                    </transform>
+                </transform>
+            </transform>
+        </head>
+        <head name="tool_item_cmpTool--|id:14">
+            <transform id="transform_cmpHolder--|id:15" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="geom_cmpHolder--|id:15" geo="geometry.stl" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <transform id="transform_cmpProfile--|id:17" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool_cmpProfile--|id:17" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="0.50196081" noncuttb="0.50196081" arborr="0.00000000" arborg="0.80784315" arborb="0.81960785" holderr="0.41960785" holderg="0.55686277" holderb="0.13725491" />
+                    <transform id="origin_position_transformProfile--|id:17" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="origin_positionProfile--|id:17" geo="02mmBall.STL" clrr="1.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                    </transform>
+                </transform>
+            </transform>
+        </head>
+        <head name="tool_item_cmpTool--|id:4">
+            <transform id="transform_cmpProfile--|id:6" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="tool_cmpProfile--|id:6" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="0.50196081" noncuttb="0.50196081" arborr="0.00000000" arborg="0.80784315" arborb="0.81960785" holderr="0.41960785" holderg="0.55686277" holderb="0.13725491" />
+                <transform id="origin_position_transformProfile--|id:6" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="origin_positionProfile--|id:6" geo="02mmBall.STL" clrr="1.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                </transform>
+            </transform>
+        </head>
+        <head name="tool_item_cmpTool--|id:7">
+            <transform id="transform_cmpHolder--|id:8" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="geom_cmpHolder--|id:8" geo="geometry.stl" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <transform id="transform_cmpShank--|id:9" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="geom_cmpShank--|id:9" geo="geometry.stl" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                    <transform id="transform_cmpDRILL--|id:10" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="tool_cmpDRILL--|id:10" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="0.50196081" noncuttb="0.50196081" arborr="0.00000000" arborg="0.80784315" arborb="0.81960785" holderr="0.41960785" holderg="0.55686277" holderb="0.13725491" />
+                        <transform id="origin_position_transformDRILL--|id:10" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <geometry name="origin_positionDRILL--|id:10" geo="02mmBall.STL" clrr="1.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                        </transform>
+                    </transform>
+                </transform>
+            </transform>
+        </head>
+        <head name="tool_item_cmpTool_1--|id:18">
+            <transform id="transform_cmpEmptyHolder - 40.000--|id:19" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="geom_cmpEmptyHolder - 40.000--|id:19" geo="geometry.stl" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <transform id="transform_cmpEND MILL--|id:20" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool_cmpEND MILL--|id:20" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="0.50196081" noncuttb="0.50196081" arborr="0.00000000" arborg="0.80784315" arborb="0.81960785" holderr="0.41960785" holderg="0.55686277" holderb="0.13725491" />
+                    <transform id="origin_position_transformEND MILL--|id:20" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="origin_positionEND MILL--|id:20" geo="02mmBall.STL" clrr="1.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                    </transform>
+                </transform>
+            </transform>
+        </head>
+    </magazine>
+</machine_definition>

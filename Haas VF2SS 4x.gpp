@@ -1,0 +1,322 @@
+@init_post
+	;locals
+	local integer trace_level ;tracing level of Gcode 0 to 5
+	;globals
+	global integer int_plane_prescision ;the prescision of machine plane G17/18/19 recognition, digits after dot
+	global integer int_move_prescision  ;the presision of linear axes (resolution), digits after dot, taken from VMID
+	global integer q_code ;common Q code variable
+	global integer int_save_mac_number ;shadow of the last used MAC
+	global integer int_work_plane ;the current working plane - G17/18/19
+	global integer int_drill_cycle ;the drill cycle G-Code - 81, 83 and etc
+	global logical log_after_tool_change ;the tool change was executed before the @start_of_job
+	global logical Log_No_plane ;the machine plane not recognized, the operation is not ortogonal to machine planes
+	global logical log_used_macs<<99>> ;array of printed in @plane_data MACs, used to avoid multiple printing of same MAC
+	global logical log_shift_home_to_tool ;define the working style, if Y, the home will be shifted to tool origin for angular head
+	global numeric num_tool_data<<100,100,3>> ;array of tool origin positions Offset H Num, Index, Axis num (x y z) relative to the station
+	global numeric num_home_shifted<<2>> ;shifted MAC position X, Y
+	;general formats
+	global string spin_f xocenter_rel_f yocenter_rel_f zocenter_rel_f radius_f xtonext_f ytonext_f zonext_f int_work_plane_f q_code_f 
+	global string xonext_f yonext_f num_home_shifted_f num_tool_data_f
+
+	;initialization of variables
+	int_plane_prescision 	= 5
+	int_move_prescision 	= get_machine_precision("movement"); get prescision from VMID
+	num_home_shifted_f 		= '5.' + tostr(int_move_prescision)
+	num_tool_data_f			= '5.' + tostr(int_move_prescision)
+	spin_f 					= '5.3(p)'
+	gcode_f 				= '<G>5.0(p)'
+	mcode_f 				= '<M>5.0(p)'
+	spin_f 					= '< S>5.0(p)'
+	xocenter_rel_f 			= '< I>5.' + tostr(int_move_prescision)
+	yocenter_rel_f 			= '< J>5.' + tostr(int_move_prescision)
+	zocenter_rel_f 			= '< K>5.' + tostr(int_move_prescision)
+	xtopos_f 				= '< X>5.' + tostr(int_move_prescision)
+	ytopos_f 				= '< Y>5.' + tostr(int_move_prescision)
+	zopos_f					= '< Z>5.' + tostr(int_move_prescision)
+	xopos_f 				= '< X>5.' + tostr(int_move_prescision)
+	yopos_f 				= '< Y>5.' + tostr(int_move_prescision)
+	feed_f 					= '< F>5.0(p)'
+	radius_f 				= '< R>5.' + tostr(int_move_prescision)
+	xtonext_f 				= '< X>5.' + tostr(int_move_prescision)
+	ytonext_f 				= '< Y>5.' + tostr(int_move_prescision)
+	xonext_f 				= '< X>5.' + tostr(int_move_prescision)
+	yonext_f 				= '< Y>5.' + tostr(int_move_prescision)
+	zonext_f 				= '< Z>5.' + tostr(int_move_prescision)
+	int_work_plane_f 		= '<G>5.0(p)< >'
+	q_code_f 				= '< Q>5.3'
+	blknum_exist 			= false
+	log_shift_home_to_tool 	= true
+
+	;debugging
+	Input "Trace level : 0-None ; 5-All", trace_level
+	trace "all":trace_level
+endp
+
+@start_of_file
+	{'%'}
+	{nl,'O',program_number,'('part_name')'}
+	{nb,'G90 G80 G40 G17 G94'}
+	{nb,'G103 P0'}
+	{nb}
+endp
+
+@change_tool
+	{nb,'M5 M9'}
+	{nb,'G28 G91 G0 Z0'}
+	{nb,'M6 T'tool_number}
+	log_after_tool_change = true
+endp
+
+@end_of_job
+	if num_home_shifted<<1>> ne 0 or num_home_shifted<<2>> ne 0
+		{nb,'G90 G10 L2 P'mac_number,' X',shift_Mac_m_x,' Y',shift_Mac_m_y,' Z'shift_Mac_m_z}
+		num_home_shifted<<1>> = 0
+		num_home_shifted<<2>> = 0
+	endif
+endp
+
+@start_of_job
+	if int_save_mac_number ne mac_number and log_after_tool_change eq false
+		{nb,'G91 G28 G0 Z0'}
+		int_save_mac_number = mac_number
+	endif
+	log_after_tool_change = false
+	spin_direction = tool_first_direction
+	call @start_tool
+	{nb'G'(53 + mac_number)}
+	if log_shift_home_to_tool eq true
+		num_home_shifted<<1>> = num_tool_data<<h_offset,tool_position,1>>
+		num_home_shifted<<2>> = num_tool_data<<h_offset,tool_position,2>>
+		if num_home_shifted<<1>> ne 0 or num_home_shifted<<2>> ne 0
+			{nb,'G91 G10 L1 P',mac_number,' X',num_tool_data<<h_offset,tool_position,1>>,' Y',num_tool_data<<h_offset,tool_position,2>>}
+		endif
+	endif
+	call @Udr_Machine_Plane
+	if log_shift_home_to_tool eq true
+		{nb,'G0 G90'xonext,yonext}
+	else
+		{nb,'G0 G90'xtonext,ytonext}
+	endif
+	{nb,'M8'}
+	{nb,'G43 H'h_offset,zonext}
+endp
+
+@Udr_Machine_Plane ;print the machine plane code (G17/18/19) and detect non ortogonal (false) plane
+	local integer s_wp
+	local logical test_wp
+	s_wp = int_work_plane
+	if abs(round(spindle_direction_x,int_plane_prescision)) eq 1
+		int_work_plane = 19
+		test_wp = true
+	endif
+	if abs(round(spindle_direction_y,int_plane_prescision)) eq 1
+		int_work_plane = 18
+		test_wp = true
+	endif
+	if abs(round(spindle_direction_z,int_plane_prescision)) eq 1
+		int_work_plane = 17
+		test_wp = true
+	endif
+	if s_wp ne int_work_plane and test_wp eq true
+		{nb,int_work_plane}
+		skipline = false
+		Log_No_plane = false
+	endif
+	if test_wp eq false
+		Log_No_plane = true
+	endif
+endp
+
+@controlled_coolant
+	if coolant_control eq 1 
+		mcode = 8
+	else
+		mcode = 9
+	endif
+	{nb,mcode}
+endp
+
+@dwell
+	{nb,'G04 P'dwell_time:'5.0(p)'}
+endp
+
+@m_feed_spin
+	if change(spin) eq true
+		call @start_tool
+	endif
+endp
+
+@start_tool
+	if spin_direction eq 0
+		mcode = 3
+	endif
+	if spin_direction eq 1
+		mcode = 4
+	endif
+	if spin_direction eq 2
+		mcode = 5
+	endif 
+	{nb,mcode}
+	if spin_direction ne 2
+		{spin}
+	endif
+endp
+
+@rapid_move
+	gcode = 0
+	if log_shift_home_to_tool eq true
+		{nb,[gcode],[xopos],[yopos],[zopos]}
+	else
+		{nb,[gcode],[xtopos],[ytopos],[zopos]}
+	endif
+endp
+
+@line
+	gcode = 1
+	if log_shift_home_to_tool eq true
+		{nb,[gcode],[xopos],[yopos],[zopos],[feed]}
+	else
+		{nb,[gcode],[xtopos],[ytopos],[zopos],[feed]}
+	endif
+endp
+
+@arc
+	if Log_No_plane eq true
+		call @udr_error(('Arc not possible'))
+	endif
+	call @udr_arc_plane
+	gcode = 2 + arc_odirection
+	if log_shift_home_to_tool eq true
+		{nb,[gcode],[xopos],[yopos],[zopos],xocenter_rel,yocenter_rel,zocenter_rel,[feed]}
+	else
+		{nb,[gcode],[xtopos],[ytopos],[zopos],xocenter_rel,yocenter_rel,zocenter_rel,[feed]}
+	endif
+endp
+
+@udr_arc_plane ;print the plane code for arcs
+	local integer s_wp
+	s_wp = int_work_plane
+	if arc_plane_m eq YZ
+		int_work_plane = 19
+	endif
+	if arc_plane_m eq ZX
+		int_work_plane = 18
+	endif
+	if arc_plane_m eq XY
+		int_work_plane = 17
+	endif
+	if s_wp ne int_work_plane
+		{nb,int_work_plane}
+		skipline = false
+	endif
+endp
+
+@compensation
+	if side ne 2
+		call @Udr_Machine_Plane
+	endif
+	gcode = 42-side_o
+	{nb,gcode,' '}
+	skipline = false
+	if side ne 2
+		{nb,'D'd_offset,' '}
+		skipline = false
+	endif
+	if side_o gt 10 or side_o lt -10
+		call @udr_error(('Compensation not possible'))
+	endif
+endp
+
+@end_program
+	{nb,'G28 G91 G0 Z0'}
+	{nb,'G28 G91 G0 Y0'}
+	mcode = 30
+	{nb,mcode}
+endp
+
+@end_of_file
+	{nl,'%'}
+	{nl}
+endp
+
+@plane_data
+	if log_used_macs<<mac_ID>> ne true
+		log_used_macs<<mac_ID>> = true
+		{nb,'(MAC NUMBER:'mac_number,')'}
+		{nb,'  G90 G10 L2 P'mac_number,' X',shift_Mac_m_x,' Y',shift_Mac_m_y,' Z'shift_Mac_m_z}
+	endif
+endp
+
+@def_tool
+	{nb,'(TOOL NUMBER:'tool_number' TOOL:'tool_name' HOLDER:'holder_name,')'}
+	{nb,'  G90 G10 L10 P'h_offset,' R',tool_origin_position_z}
+	{nb,'  G90 G10 L12 P'd_offset,' R',tool_offset}
+	num_tool_data<<h_offset,tool_position,1>> = tool_origin_position_x
+	num_tool_data<<h_offset,tool_position,2>> = tool_origin_position_y
+	num_tool_data<<h_offset,tool_position,3>> = tool_origin_position_z
+endp
+
+@message
+	{nb,'(',message,')'}
+endp
+
+@udr_error(string l_message) ;printing the error message and qiut g-code generation
+	print l_message 
+	;abort
+endp
+
+@compensation_h
+	if log_shift_home_to_tool eq true
+		num_home_shifted<<1>> = num_tool_data<<h_offset,tool_position,1>>
+		num_home_shifted<<2>> = num_tool_data<<h_offset,tool_position,2>>
+		if num_home_shifted<<1>> ne 0 or num_home_shifted<<2>> ne 0
+			{nb,'G90 G10 L2 P'mac_number,' X',shift_Mac_m_x,' Y',shift_Mac_m_y,' Z'shift_Mac_m_z}
+			{nb,'G91 G10 L1 P',mac_number,' X',num_tool_data<<h_offset,tool_position,1>>,' Y',num_tool_data<<h_offset,tool_position,2>>}
+		endif
+	endif
+	{nb,'G43 H'offset_height,' '}
+	skipline = false
+endp
+
+@drill
+	if drill_type eq 0 ;Drilling G81
+		int_drill_cycle = 81
+		change(q_code) = false
+	endif
+	if drill_type eq 1 ;Peck G83
+		int_drill_cycle = 83
+		q_code = down_step
+		change(q_code) = true
+	endif
+	if drill_type eq 2 ;Tapping G84
+		int_drill_cycle = 84
+		change(q_code) = false
+	endif
+	if drill_type eq 3 ;Boring G85
+		int_drill_cycle = 85
+		change(q_code) = false
+	endif
+	if round(spindle_direction_z,3) ne 1
+		call @udr_error(('Drill cycle impossible'))
+	endif
+endp
+
+@drill_point
+	if log_shift_home_to_tool eq true
+		if first_drill eq true
+			{nb,int_drill_cycle:gcode_f,' R',drill_upper_z,[q_code],xopos,yopos,drill_lower_z:zopos_f,feed}
+		else
+			{nb,[xhpos],[yhpos]}
+		endif
+	else
+		if first_drill eq true
+			{nb,int_drill_cycle:gcode_f,' R',drill_upper_z,[q_code],xtopos,ytopos,drill_lower_z:zopos_f,feed}
+		else
+			{nb,[xtopos],[ytopos]}
+		endif
+	endif
+endp
+
+@end_drill
+	{nb,'G80'}
+endp

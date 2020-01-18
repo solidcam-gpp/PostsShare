@@ -1,0 +1,335 @@
+
+@init_post
+	;locals
+	local integer trace_level ;tracing level of Gcode 0 to 5
+
+	;globals
+	global integer int_plane_prescision ;the prescision of machine plane G17/18/19 recognition, digits after dot
+	global integer int_move_prescision  ;the presision of linear axes (resolution), digits after dot, taken from VMID
+	global integer int_rotary_prescision ;the presision of rotary axes (resolution), digits after dot, taken from VMID
+	global integer q_code ;common Q code variable
+	global integer int_save_mac_number ;shadow of the last used MAC
+	global integer int_work_plane ;the current working plane - G17/18/19
+	global integer int_drill_cycle ;the drill cycle G-Code - 81, 83 and etc
+	global logical log_after_tool_change ;the tool change was executed before the @start_of_job
+	global logical Log_No_plane ;the machine plane not recognized, the operation is not ortogonal to machine planes
+
+	;general formats
+	global string spin_f xcenter_rel_f ycenter_rel_f zcenter_rel_f radius_f xhnext_f yhnext_f zhnext_f int_work_plane_f q_code_f 
+	global string bpos_f inverse_feed_f xnext_f ynext_f znext_f second_axis_angle_f first_axis_angle_f
+
+	;initialization of variables
+	int_plane_prescision 	= 5
+	int_move_prescision 	= get_machine_precision("movement"); get prescision from VMID
+	int_rotary_prescision 	= get_machine_precision("rotary"); get prescision from VMID
+	spin_f 					= '5.3(p)'
+	gcode_f 				= '<G>5.0(p)'
+	mcode_f 				= '<M>5.0(p)'
+	spin_f 					= '< S>5.0(p)'
+	xcenter_rel_f 			= '< I>5.' + tostr(int_move_prescision)
+	ycenter_rel_f 			= '< J>5.' + tostr(int_move_prescision)
+	zcenter_rel_f 			= '< K>5.' + tostr(int_move_prescision)
+	xhpos_f 				= '< X>5.' + tostr(int_move_prescision)
+	yhpos_f 				= '< Y>5.' + tostr(int_move_prescision)
+	zhpos_f					= '< Z>5.' + tostr(int_move_prescision)
+	xpos_f 					= '< X>5.' + tostr(int_move_prescision)
+	ypos_f 					= '< Y>5.' + tostr(int_move_prescision)
+	zpos_f					= '< Z>5.' + tostr(int_move_prescision)
+	apos_f					= '< C>5.' + tostr(int_rotary_prescision)
+	bpos_f					= '< B>5.' + tostr(int_rotary_prescision)
+	feed_f 					= '< F>5.0(p)'
+	radius_f 				= '< R>5.' + tostr(int_move_prescision)
+	xnext_f 				= '< X>5.' + tostr(int_move_prescision)
+	ynext_f 				= '< Y>5.' + tostr(int_move_prescision)
+	znext_f 				= '< Z>5.' + tostr(int_move_prescision)
+	xhnext_f 				= '< X>5.' + tostr(int_move_prescision)
+	yhnext_f 				= '< Y>5.' + tostr(int_move_prescision)
+	zhnext_f 				= '< Z>5.' + tostr(int_move_prescision)
+	inverse_feed_f 			= '< F>5.3'
+	int_work_plane_f 		= '<G>5.0(p)< >'
+	q_code_f 				= '< Q>5.3'
+	blknum_exist 			= false
+
+	;debugging
+	Input "Trace level : 0-None ; 5-All", trace_level
+	trace "all":trace_level
+endp
+
+@start_of_file
+	{'%'}
+	{nl,'O',program_number,'('part_name')'}
+	{nb,'G90 G80 G40 G17 G94 G21'}
+	{nb,'(AXES INTERSECTION POINT)'}
+	{nb,'  G90 G10 L2 P5 X--254. Y-203. Z-456.31'}
+	{nb,'G103 P0'}
+endp
+
+@def_tool
+	{nb,'(TOOL NUMBER:'tool_number' TOOL:'tool_name' HOLDER:'holder_name,')'}
+	{nb,'  G90 G10 L10 P'h_offset,' R',(-1*tool_origin_position_z)}
+	{nb,'  G90 G10 L12 P'd_offset,' R',(2*tool_offset)}
+	{nb,'  (TOOL VECTOR:',mounting_direction_x' 'mounting_direction_y' 'mounting_direction_z')'}
+endp
+
+@change_tool
+	{nb,'M5 M9'}
+	{nb,'G91 G0 G28 Z0.'}
+	{nb,'M6 T'tool_number}
+	log_after_tool_change = true
+endp
+
+@end_of_job
+	if X5_job eq true
+		{nb,'G49'}
+	else
+		{nb,'G255'}
+	endif
+endp
+
+@start_of_job
+	if submachine_ID eq 1
+		apos_f = '< C>5.' + tostr(int_rotary_prescision)
+		bpos_f = '< B>5.' + tostr(int_rotary_prescision)
+		second_axis_angle_f = bpos_f
+		first_axis_angle_f = apos_f
+	else
+		apos_f = '< B>5.' + tostr(int_rotary_prescision)
+		bpos_f = '< C>5.' + tostr(int_rotary_prescision)
+		second_axis_angle_f = bpos_f
+		first_axis_angle_f = apos_f
+		bpos = get_axis_value_before_job(index_job,'C')
+		bnext = bpos
+		second_axis_angle = bpos
+	endif
+	if int_save_mac_number ne plane_data_ID and log_after_tool_change eq false or X5_job eq true
+		{nb,'M5 M9'}
+		{nb,'G91 G0 G28 Z0.'}
+		{nb,'G91 G0 G28 Y0.'}
+		int_save_mac_number = plane_data_ID
+	endif
+	log_after_tool_change = false
+	spin_direction = tool_first_direction
+	int_work_plane = 9999
+	if X5_job eq true
+		call @UdrAxesLock(('OpenA'))
+		call @UdrAxesLock(('OpenB'))
+		{nb,'G58'}
+		{nb,'G0 G90'bnext:bpos_f,anext:apos_f}
+		{nb,'G0 'xrnext,yrnext}
+		{nb,'M8'}
+		{nb,'G234 H'h_offset,zhnext}
+	else
+		call @Udr_Machine_Plane
+		call @UdrAxesLock(('OpenA'))
+		call @UdrAxesLock(('OpenB'))
+		{nb,'G'(53+mac_number)}
+		{nb,'G0 G90'second_axis_angle,first_axis_angle}
+		{nb,'G254'}
+		call @UdrAxesLock(('CloseA'))
+		call @UdrAxesLock(('CloseB'))
+		{nb,'G0 G94 G90'xnext,ynext}
+		{nb,'M8'}
+		{nb,'G43 H'h_offset,znext}
+	endif
+endp
+
+@UdrAxesLock(string act) ;Clamp unclamp commands print routine
+	if act eq 'OpenA'
+		mcode = 11
+	endif
+	if act eq 'CloseA'
+		mcode = 10
+	endif
+	if act eq 'OpenB'
+		mcode = 13
+	endif
+	if act eq 'CloseB'
+		mcode = 12
+	endif
+	{nb,mcode}
+endp
+
+@Udr_Machine_Plane ;print the machine plane code (G17/18/19) and detect non ortogonal (false) plane
+	local integer s_wp
+	local logical test_wp
+	s_wp = int_work_plane
+	if abs(round(spindle_direction_x,int_plane_prescision)) eq 1
+		int_work_plane = 19
+		test_wp = true
+	endif
+	if abs(round(spindle_direction_y,int_plane_prescision)) eq 1
+		int_work_plane = 18
+		test_wp = true
+	endif
+	if abs(round(spindle_direction_z,int_plane_prescision)) eq 1
+		int_work_plane = 17
+		test_wp = true
+	endif
+	if s_wp ne int_work_plane and test_wp eq true
+		{nb,int_work_plane}
+		Log_No_plane = false
+	endif
+	if test_wp eq false
+		Log_No_plane = true
+	endif
+endp
+
+@controlled_coolant
+	if coolant_control eq 1 
+		mcode = 8
+	else
+		mcode = 9
+	endif
+	{nb,mcode}
+endp
+
+@dwell
+	{nb,'G04 P'dwell_time:'5.0(p)'}
+endp
+
+@m_feed_spin
+	if change(spin) eq true
+		call @start_tool
+	endif
+endp
+
+@start_tool
+	if spin_direction eq 0
+		mcode = 3
+	endif
+	if spin_direction eq 1
+		mcode = 4
+	endif
+	if spin_direction eq 2
+		mcode = 5
+	endif 
+	{nb,mcode}
+	if spin_direction ne 2
+		{spin}
+	endif
+endp
+
+@rapid_move
+	gcode = 0
+	{nb,[gcode],[xpos],[ypos],[zpos]}
+endp
+
+@line
+	gcode = 1
+	{nb,[gcode],[xpos],[ypos],[zpos],[feed]}
+endp
+
+@arc
+	call @udr_arc_plane
+	gcode = 2 + arc_direction
+	{nb,[gcode],[xpos],[ypos],[zpos],xcenter_rel,ycenter_rel,zcenter_rel,[feed]}
+endp
+
+@udr_arc_plane ;print the plane code for arcs
+	local integer s_wp
+	s_wp = int_work_plane
+	if arc_plane eq YZ
+		int_work_plane = 19
+	endif
+	if arc_plane eq ZX
+		int_work_plane = 18
+	endif
+	if arc_plane eq XY
+		int_work_plane = 17
+	endif
+	if s_wp ne int_work_plane
+		{nb,int_work_plane}
+		skipline = false
+	endif
+endp
+
+@compensation
+	if side ne 2
+		call @Udr_Machine_Plane
+	endif
+	gcode = 42-side
+	{nb,gcode,' '}
+	skipline = false
+	if side ne 2
+		{nb,'D'd_offset,' '}
+		skipline = false
+	endif
+	if side gt 10 or side lt -10 or Log_No_plane eq true
+		call @udr_error(('Compensation not possible'))
+	endif
+endp
+
+@end_program
+	{nb,'G91 G0 G28 Z0.'}
+	{nb,'G91 G0 G28 Y0.'}
+	mcode = 30
+	{nb,mcode}
+endp
+
+@end_of_file
+	{nl,'%'}
+endp
+
+@message
+	{nb,'(',message,')'}
+endp
+
+@udr_error(string l_message) ;printing the error message and qiut g-code generation
+	print l_message 
+	;abort
+endp
+
+@compensation_h
+	{nb,'G43 H'offset_height,' '}
+	skipline = false
+endp
+
+@drill
+	if drill_type eq 0 ;Drilling G81
+		int_drill_cycle = 81
+		change(q_code) = false
+	endif
+	if drill_type eq 1 ;Peck G83
+		int_drill_cycle = 83
+		q_code = down_step
+		change(q_code) = true
+	endif
+	if drill_type eq 2 ;Tapping G84
+		int_drill_cycle = 84
+		change(q_code) = false
+	endif
+	if drill_type eq 3 ;Boring G85
+		int_drill_cycle = 85
+		change(q_code) = false
+	endif
+	if round(spindle_direction_z,3) ne 1
+		call @udr_error(('Drill cycle impossible'))
+	endif
+endp
+
+@drill_point
+	if first_drill eq true
+		{nb,int_drill_cycle:gcode_f,' R',drill_upper_z,[q_code],xpos,ypos,drill_lower_z:zpos_f,feed}
+	else
+		{nb,[xpos],[ypos]}
+	endif
+endp
+
+@end_drill
+	{nb,'G80'}
+endp
+
+@setup
+	{nb,'(MAC ',mac_number,')'}
+	{nb,'  G90 G10 L2 P'mac_number,' X',setup_shift_from_MCS_x,' Y',setup_shift_from_MCS_y,' Z',setup_shift_from_MCS_z}
+endp
+
+@move_5x
+	gcode = 0
+	{nb,[gcode],[xhpos],[yhpos],[zhpos],[apos],[bpos]}
+endp
+
+@line_5x
+	gcode = 1
+	{nb,[gcode],[xhpos],[yhpos],[zhpos],[apos],[bpos],[inverse_feed]}
+endp

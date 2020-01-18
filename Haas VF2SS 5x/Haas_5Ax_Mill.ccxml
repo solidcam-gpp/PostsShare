@@ -1,0 +1,1275 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<NcController>
+  <FileHeader Name="Haas_5Ax_Mill" MachineType="Mill" Description="Milling machine" Author="Shashi" Comments="May2016 - Configured for ISO 5Axis controller" Family="ISO" Version="Version 1" />
+  <CommandsGrouped>
+    <Group Name="MW_GRP_AbsoluteIncrementalPositioning" Description="Group 03">
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_AbsolutePositioning" Description="Absolute Position Commands" IsDefaultOnReset="True" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G90</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_IncrementalPositioning" Description="Incremental Position Commands" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G91</Item>
+        </SearchKeys>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_CoordinateSystemSelection" Description="Group 12">
+      <Command Type="OffsetTableCommand" Name="MW_CMD_ExtendedWorkOffset#1" Description="Extended Work Coordinate System selection G110-G129, following the G54-G59. The first 6 are reserved for G54 to G59, 7-27 are for G110-G129 and G154 P1-P20, 27-... are for G154 P21-P..." ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands" RegisterID="7">
+        <SearchKeys>
+          <Item>G110</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="OffsetTableCommand" Name="MW_CMD_ExtendedWorkOffset#Parameter" Description="Select Work Coordinate System by parameter P. Starting by 6 a P1 would be register 6 + 1 = 7. It is the same register as G110 writes into." ExecutionPriority="1" IsModal="True" NameRule="G154" NameTextStyle="MW_TextStyleGroupedCommands" RegisterID="6" RegisterOffsetType="RegisterIDPlusParameter">
+        <SearchKeys>
+          <Item>G154</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_WorkOffset#1" Description="Select Work Coordinate System #1" ExecutionPriority="1" IsDefaultOnReset="True" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G54</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_WorkOffset#2" Description="Select Work Coordinate System #2" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G55</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_WorkOffset#3" Description="Select Work Coordinate System #3" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G56</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_WorkOffset#4" Description="Select Work Coordinate System #4" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G57</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_WorkOffset#5" Description="Select Work Coordinate System #5" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G58</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_WorkOffset#6" Description="Select Work Coordinate System #6" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G59</Item>
+        </SearchKeys>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_CutterCompensation" Description="Group 07">
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_CutterCompensationCancel" Description="Cutter Compensation Cancel" ExecutionPriority="1" IsDefaultOnReset="True" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G40</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandNoParameter" Name="MW_CMD_CutterCompensationLeft" Description="2D Cutter Compensation Left" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G41</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_CutterCompensationCancel</Item>
+        </CommandsToCancel>
+      </Command>
+      <Command Type="CommandNoParameter" Name="MW_CMD_CutterCompensationRight" Description="2D Cutter Compensation Right" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G42</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_CutterCompensationCancel</Item>
+        </CommandsToCancel>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_Cycles" Description="Group 09">
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillBackBoreCycle" Description="Back Bore Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillBackBoreCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G77</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillBoreAndStopCycle" Description="Bore and Stop Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillBoreAndStopCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G86</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillBoreInAndManualRetractCycle" Description="Bore In and Manual Retract Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillBoreInAndManualRetractCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G87</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillBoreInDwellBoreOutCycle" Description="Bore In, Dwell, Bore Out Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillBoreInDwellBoreOutCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G89</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillBoreInDwellManualRetractCycle" Description="Bore In, Dwell, Manual Retract Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillBoreInDwellManualRetractCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G88</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillBoringCycle" Description="Boring Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillBoringCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G85</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillCycle" Description="Drill Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G81</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandNoParameter" Name="MW_CMD_DrillCycleCancel" Description="Cycle Cancel" IsDefaultOnReset="True" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G80</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillFineBoringCycle" Description="Fine Boring Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillFineBoringCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G76</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillHighSpeedPeckCycle" Description="High-Speed Peck Drilling Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillHighSpeedPeckCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G73</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillPeckDrillingCycle" Description="Normal Peck Drilling Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillPeckDrillingCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G83</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillReverseTapCycle" Description="Reverse Tap Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillReverseTapCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G74</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillSpotDrillCycle" Description="Spot Drill Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillSpotDrillCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G82</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_DrillTappingCycle" Description="Tapping Canned Cycle" IsModal="True" NameRule="Rule for MW_CMD_DrillTappingCycle" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G84</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+        </CommandsToCancel>
+        <CommandsToHide>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_Feedrate" Description="Group 05">
+      <Command Type="CommandNoParameter" Name="MW_CMD_FeedPerMinute" Description="Feed per minute" ExecutionPriority="1" IsDefaultOnReset="True" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G94</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandNoParameter" Name="MW_CMD_FeedPerRevolution" Description="Feed per revolution" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G95</Item>
+        </SearchKeys>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_NonModal" Description="Group 00" IsModal="False">
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_Dwell" Description="Dwell" NameRule="G04" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G0?4</Item>
+        </SearchKeys>
+        <CommandsToHide>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+          <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+          <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoringCycle</Item>
+          <Item>MW_CMD_DrillCycle</Item>
+          <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+          <Item>MW_CMD_DrillSpotDrillCycle</Item>
+          <Item>MW_CMD_DrillTappingCycle</Item>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_LocalCoordinateSystem" Description="Sets the tool location as the distance and direction FROM the program zero TO the tool current position. G52 is similar to G92:&#xD;&#xA;- G52 always uses the provided value as an offset.&#xD;&#xA;- G92 always uses the difference between the current position and the provided values as an offset.&#xD;&#xA;This command shifts all work coordinate systems (G54-59, G110-129) so that the commanded position becomes the current position in the active work system&#xD;&#xA;A G92 command cancels any G52 in effect for the commanded axes:&#xD;&#xA;G92 X1.4 cancels the G52 for the X-axis. The other axes are not affected.&#xD;&#xA;And vice versa, a G52 command cancels any G92 in effect for the commanded axes:&#xD;&#xA;G52 X1.4 cancels the G92 for the X-axis. The other axes are not affected." ExecutionPriority="1" NameRule="position register" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G52</Item>
+        </SearchKeys>
+        <CommandsToHide>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+          <Item>MW_CMD_DrillBackBoreCycle</Item>
+          <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+          <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoringCycle</Item>
+          <Item>MW_CMD_DrillCycle</Item>
+          <Item>MW_CMD_DrillFineBoringCycle</Item>
+          <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+          <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+          <Item>MW_CMD_DrillReverseTapCycle</Item>
+          <Item>MW_CMD_DrillSpotDrillCycle</Item>
+          <Item>MW_CMD_DrillTappingCycle</Item>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_MachineZeroPositionCheck" Description="Machine zero reference position return check" ExecutionPriority="1" NameRule="rule_RefReturn" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G27</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToCancel>
+      </Command>
+      <Command Type="ChangeOffsetTableCommand" Name="MW_CMD_ProgrammableDataInput" Description="Data Setting" ExecutionPriority="3" NameRule="Rule for Data Setting command" NameTextStyle="MW_TextStyleUngroupedCommands" RegisterID="6" RegisterOffsetType="RegisterIDPlusParameter">
+        <SearchKeys>
+          <Item>G10</Item>
+        </SearchKeys>
+        <CommandsToHide>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+          <Item>MW_CMD_DrillBackBoreCycle</Item>
+          <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+          <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoringCycle</Item>
+          <Item>MW_CMD_DrillCycle</Item>
+          <Item>MW_CMD_DrillFineBoringCycle</Item>
+          <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+          <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+          <Item>MW_CMD_DrillReverseTapCycle</Item>
+          <Item>MW_CMD_DrillSpotDrillCycle</Item>
+          <Item>MW_CMD_DrillTappingCycle</Item>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_ReturnFromMachineZeroReferencePoint" Description="Return from the machine zero reference position" NameRule="rule_RefReturn" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G29</Item>
+        </SearchKeys>
+        <CommandsToHide>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_ReturnToMachineZeroReferencePoint" Description="Return to primary machine zero reference position" NameRule="rule_RefReturn" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G28</Item>
+        </SearchKeys>
+        <CommandsToHide>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_ReturnToSecondaryMachineZeroRefrencePoint" Description="Return to secondary machine zero reference position" NameRule="G30" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G30</Item>
+        </SearchKeys>
+        <CommandsToHide>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_SkipSignalProbing" Description="Skip Signal - Probing move" NameRule="G31" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G31</Item>
+        </SearchKeys>
+        <CommandsToHide>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_StrokeLimitCheckOFF" Description="Stroke limit check off" IsDefaultOnReset="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G23</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_StrokeLimitCheckON" Description="Stroke limit check" NameRule="G22" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G22</Item>
+        </SearchKeys>
+        <CommandsToHide>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+          <Item>MW_CMD_DrillBackBoreCycle</Item>
+          <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+          <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoringCycle</Item>
+          <Item>MW_CMD_DrillCycle</Item>
+          <Item>MW_CMD_DrillFineBoringCycle</Item>
+          <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+          <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+          <Item>MW_CMD_DrillReverseTapCycle</Item>
+          <Item>MW_CMD_DrillSpotDrillCycle</Item>
+          <Item>MW_CMD_DrillTappingCycle</Item>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_WorkCoordinatesShift" Description="Sets the tool location as the distance and direction FROM the program zero TO the tool current position. G92 is similar to G52:&#xD;&#xA;- G52 always uses the provided value as an offset.&#xD;&#xA;- G92 always uses the difference between the current position and the provided values as an offset.&#xD;&#xA;This command shifts all work coordinate systems (G54-59, G110-129) so that the commanded position becomes the current position in the active work system&#xD;&#xA;A G92 command cancels any G52 in effect for the commanded axes:&#xD;&#xA;G92 X1.4 cancels the G52 for the X-axis. The other axes are not affected.&#xD;&#xA;And vice versa, a G52 command cancels any G92 in effect for the commanded axes:&#xD;&#xA;G52 X1.4 cancels the G92 for the X-axis. The other axes are not affected." ExecutionPriority="1" NameRule="position register" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G92</Item>
+        </SearchKeys>
+        <CommandsToHide>
+          <Item>MW_CMD_ArcMoveCCW</Item>
+          <Item>MW_CMD_ArcMoveCW</Item>
+          <Item>MW_CMD_DrillBackBoreCycle</Item>
+          <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+          <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoringCycle</Item>
+          <Item>MW_CMD_DrillCycle</Item>
+          <Item>MW_CMD_DrillFineBoringCycle</Item>
+          <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+          <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+          <Item>MW_CMD_DrillReverseTapCycle</Item>
+          <Item>MW_CMD_DrillSpotDrillCycle</Item>
+          <Item>MW_CMD_DrillTappingCycle</Item>
+          <Item>MW_CMD_LinearMove</Item>
+          <Item>MW_CMD_RapidMove</Item>
+        </CommandsToHide>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_PlaneSelection" Description="Group 02">
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_PlaneXY" Description="XY Plane Selection" ExecutionPriority="1" IsDefaultOnReset="True" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G17</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_PlaneXZ" Description="XZ Plane Selection" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G18</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_PlaneYZ" Description="YZ Plane Selection" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G19</Item>
+        </SearchKeys>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_Positioning" Description="Group 01">
+      <Command Type="CommandArcT" Name="MW_CMD_ArcMoveCCW" Description="CCW Circular Interpolation Motion" ArcModes="R_Radius|IJK_SignedOffsetFromStart" IsModal="True" NameRule="rule_arc_cmd" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G0?3</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_DrillBackBoreCycle</Item>
+          <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+          <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoringCycle</Item>
+          <Item>MW_CMD_DrillCycle</Item>
+          <Item>MW_CMD_DrillFineBoringCycle</Item>
+          <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+          <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+          <Item>MW_CMD_DrillReverseTapCycle</Item>
+          <Item>MW_CMD_DrillSpotDrillCycle</Item>
+          <Item>MW_CMD_DrillTappingCycle</Item>
+        </CommandsToCancel>
+      </Command>
+      <Command Type="CommandArcT" Name="MW_CMD_ArcMoveCW" Description="CW Circular Interpolation Motion" ArcModes="R_Radius|IJK_SignedOffsetFromStart" IsModal="True" NameRule="rule_arc_cmd" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G0?2</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_DrillBackBoreCycle</Item>
+          <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+          <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoringCycle</Item>
+          <Item>MW_CMD_DrillCycle</Item>
+          <Item>MW_CMD_DrillFineBoringCycle</Item>
+          <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+          <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+          <Item>MW_CMD_DrillReverseTapCycle</Item>
+          <Item>MW_CMD_DrillSpotDrillCycle</Item>
+          <Item>MW_CMD_DrillTappingCycle</Item>
+        </CommandsToCancel>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_LinearMove" Description="Linear Interpolation Motion" IsModal="True" NameRule="rule_linear_feedrate" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G0?1</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_DrillBackBoreCycle</Item>
+          <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+          <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoringCycle</Item>
+          <Item>MW_CMD_DrillCycle</Item>
+          <Item>MW_CMD_DrillFineBoringCycle</Item>
+          <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+          <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+          <Item>MW_CMD_DrillReverseTapCycle</Item>
+          <Item>MW_CMD_DrillSpotDrillCycle</Item>
+          <Item>MW_CMD_DrillTappingCycle</Item>
+        </CommandsToCancel>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_RapidMove" Description="Rapid Motion Positioning" IsDefaultOnReset="True" IsModal="True" NameRule="rule_linear_feedrate" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G0?0</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_DrillBackBoreCycle</Item>
+          <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+          <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+          <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+          <Item>MW_CMD_DrillBoringCycle</Item>
+          <Item>MW_CMD_DrillCycle</Item>
+          <Item>MW_CMD_DrillFineBoringCycle</Item>
+          <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+          <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+          <Item>MW_CMD_DrillReverseTapCycle</Item>
+          <Item>MW_CMD_DrillSpotDrillCycle</Item>
+          <Item>MW_CMD_DrillTappingCycle</Item>
+        </CommandsToCancel>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_RetractMode" Description="Group 10">
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_RetractInitialPointReturn" Description="Cycle Initial Point Return" IsDefaultOnReset="True" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G98</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_RetractRPlaneReturn" Description="Cycle R Plane Return" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G99</Item>
+        </SearchKeys>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_SpindleSpeed" Description="GroupSpindleCommands">
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_SpindleOnCCW" Description="Counter clockwise spindle rotation" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleUngroupedCommands">
+        <SearchKeys>
+          <Item>M0?4</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_SpindleOnCW" Description="Clockwise spindle rotation" ExecutionPriority="1" IsModal="True" NameTextStyle="MW_TextStyleUngroupedCommands">
+        <SearchKeys>
+          <Item>M0?3</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_SpindleStop" Description="Spindle rotation off" ExecutionPriority="1" IsDefaultOnReset="True" IsModal="True" NameTextStyle="MW_TextStyleUngroupedCommands">
+        <SearchKeys>
+          <Item>M0?5</Item>
+        </SearchKeys>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_SpindleSpeedInterpretation" Description="Group 00">
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_ConstantSpindleSpeed" Description="Spindle speed in rotations per minute " ExecutionPriority="1" IsDefaultOnReset="True" IsModal="True" NameRule="ConstantSpeed" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G97</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_ConstantSurfaceSpeed" Description="Constant spindle speed in meters or feet per minute" ExecutionPriority="1" IsModal="True" NameRule="ConstantSpeed" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G96</Item>
+        </SearchKeys>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_ToolLengthCompensation" Description="Group 08">
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_ToolCenterPointControl" Description="TCPC ON" ExecutionPriority="2" IsModal="True" NameRule="rule_LengthComp" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G43\.4</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_RTCPOFF</Item>
+          <Item>MW_CMD_ToolLengthCompensationCancel</Item>
+          <Item>MW_CMD_ToolLengthCompensationPositive</Item>
+        </CommandsToCancel>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_ToolLengthCompensationCancel" Description="Tool Length Compensation Cancel" ExecutionPriority="1" IsDefaultOnReset="True" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G49</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ToolCenterPointControl</Item>
+          <Item>MW_CMD_ToolLengthCompensationNegative</Item>
+          <Item>MW_CMD_ToolLengthCompensationPositive</Item>
+        </CommandsToCancel>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_ToolLengthCompensationNegative" Description="Tool Length Compensation - (Subtract)" ExecutionPriority="1" IsModal="True" NameRule="rule_LengthComp" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G44</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ToolCenterPointControl</Item>
+          <Item>MW_CMD_ToolLengthCompensationCancel</Item>
+          <Item>MW_CMD_ToolLengthCompensationPositive</Item>
+        </CommandsToCancel>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_ToolLengthCompensationPositive" Description="Tool Length Compensation + (Add)" ExecutionPriority="1" IsModal="True" NameRule="rule_LengthComp" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G43</Item>
+        </SearchKeys>
+        <CommandsToCancel>
+          <Item>MW_CMD_ToolCenterPointControl</Item>
+          <Item>MW_CMD_ToolLengthCompensationCancel</Item>
+          <Item>MW_CMD_ToolLengthCompensationNegative</Item>
+        </CommandsToCancel>
+      </Command>
+    </Group>
+    <Group Name="MW_GRP_Units" Description="Group 06">
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_UnitsInch" Description="Select Inch Units" IsDefaultOnReset="False" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G20</Item>
+        </SearchKeys>
+      </Command>
+      <Command Type="CommandUnorderedParameters" Name="MW_CMD_UnitsMM" Description="Select Metric Units" IsDefaultOnReset="True" IsModal="True" NameTextStyle="MW_TextStyleGroupedCommands">
+        <SearchKeys>
+          <Item>G21</Item>
+        </SearchKeys>
+      </Command>
+    </Group>
+  </CommandsGrouped>
+  <CommandsUngrouped>
+    <Command Type="CommandLineNumber" Name="MW_CMD_LineNumber" Description="Block numbers" NameRule="ruleBlockNumber" NameTextStyle="N" />
+    <Command Type="CommandNoParameter" Name="MW_CMD_Comment" Description="This command comments a range in a line \(.*\) or comments from the position of the searchkey to the end of the block ;.*$" NameTextStyle="Comment">
+      <SearchKeys>
+        <Item>;.*$</Item>
+        <Item>\(.*\)</Item>
+      </SearchKeys>
+    </Command>
+    <Command Type="CommandNoParameter" Name="MW_CMD_Ignored" Description="These commands are all ignored" IsUnique="False" NameTextStyle="MW_TextStyleGroupedCommands">
+      <SearchKeys>
+        <Item>%</Item>
+        <Item>M0?[189]</Item>
+      </SearchKeys>
+    </Command>
+    <Command Type="CommandNoParameter" Name="MW_CMD_Ignored" Description="generic grouped command matching all G0-G999. Needs to be defined last (fallback)." IsUnique="False" NameTextStyle="MW_TextStyleGroupedCommands">
+      <SearchKeys>
+        <Item>G\d{1,3}</Item>
+      </SearchKeys>
+    </Command>
+    <Command Type="CommandNoParameter" Name="MW_CMD_Ignored" Description="generic ungrouped command matching all M0-M999. Needs to be defined last (fallback)." IsUnique="False" NameTextStyle="MW_TextStyleUngroupedCommands">
+      <SearchKeys>
+        <Item>M\d{1,3}</Item>
+      </SearchKeys>
+    </Command>
+    <Command Type="CommandNoParameter" Name="MW_CMD_RotationCancel" Description="Patter rotation cancel" IsDefaultOnReset="True" NameTextStyle="MW_TextStyleGroupedCommands">
+      <SearchKeys>
+        <Item>G69</Item>
+      </SearchKeys>
+      <CommandsToCancel>
+        <Item>MW_CMD_Rotation</Item>
+        <Item>MW_CMD_TiltedWorkingPlane</Item>
+      </CommandsToCancel>
+    </Command>
+    <Command Type="CommandNoParameter" Name="MW_CMD_ToolChangeExecution" Description="Tool Change Execution" NameTextStyle="MW_TextStyleUngroupedCommands">
+      <SearchKeys>
+        <Item>M0?6</Item>
+      </SearchKeys>
+      <CommandsToCancel>
+        <Item>MW_CMD_CutterCompensationLeft</Item>
+        <Item>MW_CMD_CutterCompensationRight</Item>
+        <Item>MW_CMD_DrillBackBoreCycle</Item>
+        <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+        <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoringCycle</Item>
+        <Item>MW_CMD_DrillCycle</Item>
+        <Item>MW_CMD_DrillFineBoringCycle</Item>
+        <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+        <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+        <Item>MW_CMD_DrillReverseTapCycle</Item>
+        <Item>MW_CMD_DrillSpotDrillCycle</Item>
+        <Item>MW_CMD_DrillTappingCycle</Item>
+        <Item>MW_CMD_SpindleOnCCW</Item>
+        <Item>MW_CMD_SpindleOnCW</Item>
+        <Item>MW_CMD_ToolLengthCompensationNegative</Item>
+        <Item>MW_CMD_ToolLengthCompensationPositive</Item>
+      </CommandsToCancel>
+      <CommandsToHide>
+        <Item>MW_CMD_ArcMoveCCW</Item>
+        <Item>MW_CMD_ArcMoveCW</Item>
+        <Item>MW_CMD_LinearMove</Item>
+        <Item>MW_CMD_RapidMove</Item>
+      </CommandsToHide>
+    </Command>
+    <Command Type="CommandUnorderedParameters" Name="MW_CMD_MainProgramEnd" Description="End of main program" NameTextStyle="MW_TextStyleUngroupedCommands">
+      <SearchKeys>
+        <Item>M0?2</Item>
+      </SearchKeys>
+      <CommandsToCancel>
+        <Item>MW_CMD_ArcMoveCCW</Item>
+        <Item>MW_CMD_ArcMoveCW</Item>
+        <Item>MW_CMD_DrillBackBoreCycle</Item>
+        <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+        <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoringCycle</Item>
+        <Item>MW_CMD_DrillCycle</Item>
+        <Item>MW_CMD_DrillFineBoringCycle</Item>
+        <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+        <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+        <Item>MW_CMD_DrillReverseTapCycle</Item>
+        <Item>MW_CMD_DrillSpotDrillCycle</Item>
+        <Item>MW_CMD_DrillTappingCycle</Item>
+        <Item>MW_CMD_LinearMove</Item>
+        <Item>MW_CMD_RapidMove</Item>
+      </CommandsToCancel>
+    </Command>
+    <Command Type="CommandUnorderedParameters" Name="MW_CMD_MainProgramEndAndReset" Description="End of program and reset" NameTextStyle="MW_TextStyleUngroupedCommands">
+      <SearchKeys>
+        <Item>M30</Item>
+      </SearchKeys>
+      <CommandsToCancel>
+        <Item>MW_CMD_ArcMoveCCW</Item>
+        <Item>MW_CMD_ArcMoveCW</Item>
+        <Item>MW_CMD_DrillBackBoreCycle</Item>
+        <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+        <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoringCycle</Item>
+        <Item>MW_CMD_DrillCycle</Item>
+        <Item>MW_CMD_DrillFineBoringCycle</Item>
+        <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+        <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+        <Item>MW_CMD_DrillReverseTapCycle</Item>
+        <Item>MW_CMD_DrillSpotDrillCycle</Item>
+        <Item>MW_CMD_DrillTappingCycle</Item>
+        <Item>MW_CMD_LinearMove</Item>
+        <Item>MW_CMD_RapidMove</Item>
+        <Item>MW_CMD_ToolLengthCompensationNegative</Item>
+        <Item>MW_CMD_ToolLengthCompensationPositive</Item>
+      </CommandsToCancel>
+    </Command>
+    <Command Type="CommandUnorderedParameters" Name="MW_CMD_Rotation" Description="Pattern Rotation" NameRule="G68" NameTextStyle="MW_TextStyleGroupedCommands">
+      <SearchKeys>
+        <Item>G68</Item>
+      </SearchKeys>
+      <CommandsToHide>
+        <Item>MW_CMD_ArcMoveCCW</Item>
+        <Item>MW_CMD_ArcMoveCW</Item>
+        <Item>MW_CMD_DrillBackBoreCycle</Item>
+        <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+        <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoringCycle</Item>
+        <Item>MW_CMD_DrillCycle</Item>
+        <Item>MW_CMD_DrillFineBoringCycle</Item>
+        <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+        <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+        <Item>MW_CMD_DrillReverseTapCycle</Item>
+        <Item>MW_CMD_DrillSpotDrillCycle</Item>
+        <Item>MW_CMD_DrillTappingCycle</Item>
+        <Item>MW_CMD_LinearMove</Item>
+        <Item>MW_CMD_RapidMove</Item>
+      </CommandsToHide>
+    </Command>
+    <Command Type="CommandUnorderedParameters" Name="MW_CMD_RTCPOFF" Description="RTCP OFF" IsDefaultOnReset="True" NameRule="RTCP" NameTextStyle="MW_TextStyleUngroupedCommands">
+      <SearchKeys>
+        <Item>dummy1</Item>
+      </SearchKeys>
+    </Command>
+    <Command Type="CommandUnorderedParameters" Name="MW_CMD_Scaling" Description="Scaling" NameRule="G51" NameTextStyle="MW_TextStyleGroupedCommands">
+      <SearchKeys>
+        <Item>G51</Item>
+      </SearchKeys>
+      <CommandsToHide>
+        <Item>MW_CMD_ArcMoveCCW</Item>
+        <Item>MW_CMD_ArcMoveCW</Item>
+        <Item>MW_CMD_DrillBackBoreCycle</Item>
+        <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+        <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoringCycle</Item>
+        <Item>MW_CMD_DrillCycle</Item>
+        <Item>MW_CMD_DrillFineBoringCycle</Item>
+        <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+        <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+        <Item>MW_CMD_DrillReverseTapCycle</Item>
+        <Item>MW_CMD_DrillSpotDrillCycle</Item>
+        <Item>MW_CMD_DrillTappingCycle</Item>
+        <Item>MW_CMD_LinearMove</Item>
+        <Item>MW_CMD_RapidMove</Item>
+      </CommandsToHide>
+    </Command>
+    <Command Type="CommandUnorderedParameters" Name="MW_CMD_ScalingCancel" Description="Cancel Scaling" IsDefaultOnReset="True" NameTextStyle="MW_TextStyleGroupedCommands">
+      <SearchKeys>
+        <Item>G50</Item>
+      </SearchKeys>
+    </Command>
+    <Command Type="CommandUnorderedParameters" Name="MW_CMD_SubprogramCall" Description="program call" NameRule="program_call_alternatives" NameTextStyle="MW_TextStyleUngroupedCommands">
+      <SearchKeys>
+        <Item>M98</Item>
+      </SearchKeys>
+      <CommandsToHide>
+        <Item>MW_CMD_ArcMoveCCW</Item>
+        <Item>MW_CMD_ArcMoveCW</Item>
+        <Item>MW_CMD_DrillBackBoreCycle</Item>
+        <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+        <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoringCycle</Item>
+        <Item>MW_CMD_DrillCycle</Item>
+        <Item>MW_CMD_DrillFineBoringCycle</Item>
+        <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+        <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+        <Item>MW_CMD_DrillReverseTapCycle</Item>
+        <Item>MW_CMD_DrillSpotDrillCycle</Item>
+        <Item>MW_CMD_DrillTappingCycle</Item>
+        <Item>MW_CMD_LinearMove</Item>
+        <Item>MW_CMD_RapidMove</Item>
+      </CommandsToHide>
+    </Command>
+    <Command Type="CommandUnorderedParameters" Name="MW_CMD_SubprogramEnd" Description="program end" NameTextStyle="MW_TextStyleUngroupedCommands">
+      <SearchKeys>
+        <Item>M99</Item>
+      </SearchKeys>
+      <CommandsToHide>
+        <Item>MW_CMD_ArcMoveCCW</Item>
+        <Item>MW_CMD_ArcMoveCW</Item>
+        <Item>MW_CMD_DrillBackBoreCycle</Item>
+        <Item>MW_CMD_DrillBoreAndStopCycle</Item>
+        <Item>MW_CMD_DrillBoreInAndManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellBoreOutCycle</Item>
+        <Item>MW_CMD_DrillBoreInDwellManualRetractCycle</Item>
+        <Item>MW_CMD_DrillBoringCycle</Item>
+        <Item>MW_CMD_DrillCycle</Item>
+        <Item>MW_CMD_DrillFineBoringCycle</Item>
+        <Item>MW_CMD_DrillHighSpeedPeckCycle</Item>
+        <Item>MW_CMD_DrillPeckDrillingCycle</Item>
+        <Item>MW_CMD_DrillReverseTapCycle</Item>
+        <Item>MW_CMD_DrillSpotDrillCycle</Item>
+        <Item>MW_CMD_DrillTappingCycle</Item>
+        <Item>MW_CMD_LinearMove</Item>
+        <Item>MW_CMD_RapidMove</Item>
+      </CommandsToHide>
+    </Command>
+    <Command Type="CommandUnorderedParameters" Name="MW_CMD_TiltedWorkingPlane" Description="Tilted Working Plane" NameRule="Rule for Tilted Working Plane " NameTextStyle="MW_TextStyleGroupedCommands">
+      <SearchKeys>
+        <Item>G68\.2</Item>
+      </SearchKeys>
+      <CommandsToCancel>
+        <Item>MW_CMD_RotationCancel</Item>
+      </CommandsToCancel>
+      <CommandsToHide>
+        <Item>MW_CMD_ArcMoveCCW</Item>
+        <Item>MW_CMD_ArcMoveCW</Item>
+        <Item>MW_CMD_LinearMove</Item>
+        <Item>MW_CMD_RapidMove</Item>
+      </CommandsToHide>
+    </Command>
+    <Command Type="CommandUnorderedParameters" Name="MW_CMD_ToolAxisDirectionControl" Description="Tool axis direction control" NameTextStyle="MW_TextStyleUngroupedCommands">
+      <SearchKeys>
+        <Item>G53\.1</Item>
+      </SearchKeys>
+    </Command>
+    <Command Type="CommandValue" Name="MW_CMD_ProgramDefinition" Description="Defines a program definition" ExecutionPriority="2" NameRule="Program_Definition" NameTextStyle="DHLOP" />
+    <Command Type="CommandValue" Name="MW_CMD_ToolNumber" Description="Tool number command" ExecutionPriority="2" NameRule="Tool_Number" NameTextStyle="T" />
+  </CommandsUngrouped>
+  <ControllerSettings />
+  <DNCSettings BaudRate="9600" DataBits="7" DelayCharacter="0" DelayLine="0" DiscardNull="True" FlowControl="XonXoff" FlowcontrolHardwareCdc="True" FlowcontrolHardwareCtsDsr="True" LinePostfix="" LinePrefix="" NewLineReceive="CRLF_WIN" NewLineSend="CRLF_WIN" Parity="Even" ParityCharacter="63" Port="" ProgramPostfix="" ProgramPrefix="" ReceiveTimeout="80000" RemoveComments="True" SendTimeout="60000" StopBits="Two" TransferEnd="%" TransferStart="%" Xoff="17" Xon="19" />
+  <Formattings>
+    <Formatting Type="CalculatorSignedDecimal" Name="CalculatorFormatSignedDecimal format for +4.4/+5.3" Description="" DecimalImperial="8" DecimalMetric="8" IntegerImperial="8" IntegerMetric="8" IsScalingSupported="True" Separator="." />
+    <Formatting Type="CalculatorSignedInt" Name="CalculatorFormatSignedInt format for 8/8" Description="" IntegerImperial="8" IntegerMetric="8" IsScalingSupported="True" />
+    <Formatting Type="CalculatorSignedDecimal" Name="CalculatorFormatUnsignedDecimal format for 8/8" Description="" DecimalImperial="8" DecimalMetric="8" IntegerImperial="8" IntegerMetric="8" IsScalingSupported="True" Separator="." />
+    <Formatting Type="CalculatorUnsignedInt" Name="CalculatorFormatUnsignedInt format for 8/8" Description="" IntegerImperial="8" IntegerMetric="8" IsScalingSupported="True" />
+    <Formatting Type="CombinedProgramNumberAndLoop" Name="Combined repetition and program number" Description="Formatting for llllpppp with l being the loop, p the program number" />
+    <Formatting Type="RegisterAccess" Name="RegisterAccess" Description="The value given is taken as the register value" DigitsForRegisterID="4" />
+    <Formatting Type="QuotedStringFormat" Name="FormattingStringTemplate" Description="" />
+  </Formattings>
+  <MachineSettings>
+    <MachineZeroReferencePositions>
+      <MachineZeroReferencePosition Description="First Machine Zero Reference Position" X="0" Y="0" Z="0" />
+      <MachineZeroReferencePosition Description="Second Machine Zero Reference Position" X="0" Y="0" Z="0" />
+      <MachineZeroReferencePosition Description="Third Machine Zero Reference Position" X="0" Y="0" Z="0" />
+      <MachineZeroReferencePosition Description="Fourth Machine Zero Reference Position" X="0" Y="0" Z="0" />
+    </MachineZeroReferencePositions>
+    <ToolChangePosition Description="Tool change position description" X="-760" Y="0" Z="0" />
+  </MachineSettings>
+  <Parameters>
+    <Parameter Type="Number,SearchKey" Name="MW_P_ArcI" Description="Circle center in X axis" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Arc I" NameTextStyle="IJKRQ" SearchKey="I" TypeOfInitialization="InitializeOnDefinitionOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ArcJ" Description="Circle center in Y axis" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Arc J" NameTextStyle="IJKRQ" SearchKey="J" TypeOfInitialization="InitializeOnDefinitionOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ArcK" Description="Circle center in Z axis" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Arc K" NameTextStyle="IJKRQ" SearchKey="K" TypeOfInitialization="InitializeOnDefinitionOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ArcRadius" Description="Arc radius" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Radius" NameTextStyle="IJKRQ" SearchKey="R" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ARotation" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="A-Axis" NameTextStyle="ABC" SearchKey="A" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_BRotation" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="B-Axis" NameTextStyle="ABC" SearchKey="B" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CRotation" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="C-Axis" NameTextStyle="ABC" SearchKey="C" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleClearPlane" Description="Position of clear plane (R) in drilling cycle" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Cycle_Clear_Plane" NameTextStyle="IJKRQ" SearchKey="R" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleConstantCutDepth" Description="Cut Depth (always incremental)" IsInterpretationRelative="True" NameFormattings="CalculatorFormatUnsignedDecimal format for 8/8" NameRegister="Cycle_Constant_Cut_Depth" NameTextStyle="IJKRQ" SearchKey="Q" TypeOfInitialization="InitializeOnDefinitionOfCommand" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleDrillHoleDepth" Description="Position of the Z-axis at the bottom of hole" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Cycle_Z_Level" NameTextStyle="Z" SearchKey="Z" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleDwellBottom" Description="Cycle dwell time" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="Cycle_Dwell" SearchKey="P" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleFeedrate" Description="Cycle feedrate" NameFormattings="CalculatorFormatUnsignedDecimal format for 8/8" NameRegister="Cycle_Feedrate" NameTextStyle="FS" SearchKey="F" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleFirstPeckDepth" Description="First cut depth" NameFormattings="CalculatorFormatUnsignedDecimal format for 8/8" NameRegister="Cycle_First_Peck_Depth" NameTextStyle="IJKRQ" SearchKey="I" TypeOfInitialization="InitializeOnDefinitionOfCommand" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleMinimumPeckDepth" Description="Minimum depth of cut (The control will calculate the number of pecks)" NameFormattings="CalculatorFormatUnsignedDecimal format for 8/8" NameRegister="Cycle_Minimum_Peck_Depth" NameTextStyle="IJKRQ" SearchKey="K" TypeOfInitialization="InitializeOnDefinitionOfCommand" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleReducePeckDepth" Description="Amount to reduce cutting depth for pass" NameFormattings="CalculatorFormatUnsignedDecimal format for 8/8" NameRegister="Cycle_Reduce_Pecking_Depth_For_Pass" NameTextStyle="IJKRQ" SearchKey="J" TypeOfInitialization="InitializeOnDefinitionOfCommand" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleRepeats" Description="Drill cycle repetition" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="Cycle_Loop" SearchKey="L" TypeOfInitialization="InitializeOnDefinitionOfCommand" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleRetractMultiple" Description="Retract Multiple (How fast to retract)" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="Cycle_Retract_Multiple" NameTextStyle="IJKRQ" SearchKey="J" TypeOfInitialization="InitializeOnDefinitionOfCommand" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleShiftAmount" Description="The shift value, always incremental" IsInterpretationRelative="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Cycle_Shift_Value" NameTextStyle="IJKRQ" SearchKey="Q" TypeOfInitialization="InitializeOnDefinitionOfCommand" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleXShift" Description="Shift value along the X-axis before retracting, if Q is not specified" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Cycle_X_Shift" NameTextStyle="IJKRQ" SearchKey="I" TypeOfInitialization="InitializeOnDefinitionOfCommand" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_CycleYShift" Description="Shift value along the Y-axis before retracting, if Q is not specified" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Cycle_Y_Shift" NameTextStyle="IJKRQ" SearchKey="J" TypeOfInitialization="InitializeOnDefinitionOfCommand" TypeOfModality="ForgottenOnEndOfCommand" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_DwellTime" Description="Dwell time" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="Dwell" SearchKey="P" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_Feedrate" Description="Feed rate" NameFormattings="CalculatorFormatUnsignedDecimal format for 8/8" NameRegister="feedrate" NameTextStyle="FS" SearchKey="F" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_FeedrateProbing" Description="Probing feedrate" NameFormattings="CalculatorFormatUnsignedDecimal format for 8/8" NameRegister="MW_P_FeedrateProbing" NameTextStyle="FS" SearchKey="F" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_LineNumber" Description="Line number" NameFormattings="CalculatorFormatUnsignedInt format for 8/8" NameRegister="Line number" NameTextStyle="N" SearchKey="N" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_MachineHomePosition#2" Description="Secondary Machine Home Position in G30Pxx" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="secondary machine home position" SearchKey="P" TypeOfInitialization="InitializeOnStartAndResetOfProgram" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_OffsetCategory" Description="Selects offset category in G10" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="Data Setting Register Type Selection" SearchKey="L" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ProgramGoToLineP" Description="Go to the line" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="Program goto line" SearchKey="P" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ProgramNumber" Description="Program number" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="Program number" SearchKey="O" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ProgramRepetitions" Description="Program repetition" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="Program repetitions" SearchKey="L" TypeOfInitialization="InitializeOnDefinitionOfCommand" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ProgramRepetitionsAndNumber" Description="Program call with either Plllloooo or Pooo [Lllll], with oooo being the program number and llll being the repetitions" NameFormattings="Combined repetition and program number" NameRegister="Combined repetition and program number" SearchKey="P" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_RegisterValue" Description="Offset value or increment for length and diameter, used in G10." IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Register update value" NameTextStyle="IJKRQ" SearchKey="R" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_RotationAngle" Description="Angle of rotation specified in degrees Three-place decimal -360.000 to 360.000" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Rotation Angle" NameTextStyle="IJKRQ" SearchKey="R" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ScalingCenterX" Description="Center of scaling for the X axis" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Scaling Center X" NameTextStyle="X" SearchKey="X" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ScalingCenterY" Description="Center of scaling for the Y axis" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Scaling Center Y" NameTextStyle="Y" SearchKey="Y" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ScalingCenterZ" Description="Center of scaling for the Z axis" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Scaling Center Z" NameTextStyle="Z" SearchKey="Z" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ScalingFactor" Description="Scaling factor for all axes; three-place decimal from 0.001 to 8383.000" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Scaling Factor" SearchKey="P" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_SelectSpecificOffset" Description="Selects a specific offset for G10 command" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="Extended register" SearchKey="P" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_SpindleSpeed" Description="Spindle speed" NameFormattings="CalculatorFormatSignedInt format for 8/8" NameRegister="SpindleSpeed" NameTextStyle="FS" SearchKey="S" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_StrokeLimitXMax" Description="x axis value of second edge for stroke limit" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="X-Axis strokelimit 2" NameTextStyle="IJKRQ" SearchKey="I" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_StrokeLimitXMin" Description="x axis value of first edge for stroke limit" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="X-Axis strokelimit 1" NameTextStyle="X" SearchKey="X" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_StrokeLimitYMax" Description="y axis value of second edge for stroke limit" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Y-Axis strokelimit 2" NameTextStyle="IJKRQ" SearchKey="J" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_StrokeLimitYMin" Description="y axis value of first edge for stroke limit" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Y-Axis strokelimit 1" NameTextStyle="Y" SearchKey="Y" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_StrokeLimitZMax" Description="z axis value of second edge for stroke limit" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Z-Axis strokelimit 2" NameTextStyle="IJKRQ" SearchKey="K" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_StrokeLimitZMin" Description="z axis value of first edge for stroke limit" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Z-Axis strokelimit 1" NameTextStyle="Z" SearchKey="Z" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_SubProgramNumber" Description="call for program Number " NameFormattings="CalculatorFormatUnsignedInt format for 8/8" NameRegister="Program number" SearchKey="P" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ToolDiameterOffset" Description="Tool diameter offset" IsIncrementalRegisterUpdateSupported="True" NameFormattings="RegisterAccess|CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Cutter and Tool Compensation register D" SearchKey="D" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ToolLengthOffset" Description="Tool height Offset" NameFormattings="RegisterAccess|CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Tool Compensation H" SearchKey="H" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ToolNumber" Description="Tool number" NameFormattings="CalculatorFormatUnsignedInt format for 8/8" NameRegister="tool_number" NameTextStyle="T" SearchKey="T" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_WorkPlaneA" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="WorkPlaneA" NameTextStyle="ABC" SearchKey="I" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_WorkPlaneB" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="WorkPlaneB" NameTextStyle="ABC" SearchKey="J" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_WorkPlaneC" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="WorkPlaneC" NameTextStyle="ABC" SearchKey="K" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_WorkPlaneX" Description="Center of rotation/translation for the X axis" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Rotation Center X" NameTextStyle="X" SearchKey="X" TypeOfInitialization="InitializeOnStartAndResetOfProgram" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_WorkPlaneXOffset" Description="offset parameter in x" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="X-Axis offset" NameTextStyle="X" SearchKey="X" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_WorkPlaneY" Description="Center of rotation/translation for the Y axis" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Rotation Center Y" NameTextStyle="Y" SearchKey="Y" TypeOfInitialization="InitializeOnStartAndResetOfProgram" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_WorkPlaneYOffset" Description="offset parameter in y" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Y-Axis offset" NameTextStyle="Y" SearchKey="Y" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_WorkPlaneZ" Description="Center of rotation/translation for the Z axis" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Rotation Center Z" NameTextStyle="Z" SearchKey="Z" TypeOfInitialization="InitializeOnStartAndResetOfProgram" TypeOfModality="ForgottenOnEndOfBlock" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_WorkPlaneZOffset" Description="offset parameter in z" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Z-Axis offset" NameTextStyle="Z" SearchKey="Z" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_XCoordinate" Description="Is always overwritten by machine home position on start" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="X-Axis" NameTextStyle="X" SearchKey="X" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_YCoordinate" Description="Is always overwritten by machine home position on start" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Y-Axis" NameTextStyle="Y" SearchKey="Y" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+    <Parameter Type="Number,SearchKey" Name="MW_P_ZCoordinate" Description="Is always overwritten by machine home position on start" IsIncrementalRegisterUpdateSupported="True" NameFormattings="CalculatorFormatSignedDecimal format for +4.4/+5.3" NameRegister="Z-Axis" NameTextStyle="Z" SearchKey="Z" TypeOfInitialization="InitializeOnStartAndResetOfProgram" />
+  </Parameters>
+  <Registers>
+    <Register Type="Number" Name="A-Axis" Description="Axis register for A rotation" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Arc I" Description="The Arc Value i" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Arc J" Description="The Arc Value j" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Arc K" Description="The Arc Value k" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="B-Axis" Description="Axis register for B rotation" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="C-Axis" Description="Axis register for C rotation" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Combined repetition and program number" Description="a P01601234 or P1601234 will call program O1234 160 times. P10110 will call program 110 1 time. The minimum length is 1(for repetitions)+4(program number) and the maximum length is 4(max repetitions)+4(program number)" ValueMin="10000" ValueMax="99999999" ValueInitial="0" />
+    <Register Type="Number" Name="Cutter and Tool Compensation register D" Description="..." ValueMin="0" ValueMax="99999.9999" ValueInitial="NaN" />
+    <Register Type="Number" Name="Cycle_Clear_Plane" Description="Cycle R-level" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Cycle_Constant_Cut_Depth" Description="Cycle G73 Q register (always incremental)" ValueMin="0" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Cycle_Dwell" Description="The register for the modal Cycle dwell" ValueMin="0" ValueMax="99999" ValueInitial="0" />
+    <Register Type="Number" Name="Cycle_Feedrate" Description="Cycle feedrate" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Cycle_First_Peck_Depth" Description="Cycle G73 I register First cut depth" ValueMin="0" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Cycle_Loop" Description="The register for the number of Cycle repetitions iff in incremental mode" ValueMin="0" ValueMax="99999" ValueInitial="1" />
+    <Register Type="Number" Name="Cycle_Minimum_Peck_Depth" Description="Cycle G73 K register Minimum Depth Of Cut" ValueMin="0" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Cycle_Reduce_Pecking_Depth_For_Pass" Description="Cycle G73 J register Amount to reduce cutting depth per pass" ValueMin="0" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Cycle_Retract_Multiple" Description="Cycle retract multiple for G74/G84 register. The multiple of the feedrate and spindlespeed used on retraction" ValueMin="1" ValueMax="9" ValueInitial="1" />
+    <Register Type="Number" Name="Cycle_Shift_Value" Description="The shift value Q, always incremental" ValueMin="0" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Cycle_X_Shift" Description="Shift value along the X-axis before retracting, if Q is not specified" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Cycle_Y_Shift" Description="Shift value along the Y-axis before retracting, if Q is not specified" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Cycle_Z_Level" Description="Cycle z level" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Data Setting Register Type Selection" Description="select the offset table type: L2 - work, L10 - tool length, L11 - tool wear, L12 - width, L13 width wear, L20 - additional work" ValueMin="0" ValueMax="20" ValueInitial="NaN" />
+    <Register Type="Number" Name="Dwell" Description="The register for the dwell" ValueMin="0" ValueMax="99999" ValueInitial="0" />
+    <Register Type="Number" Name="Extended register" Description="access extended register" ValueMin="0" ValueMax="9999" ValueInitial="NaN" />
+    <Register Type="Number" Name="feedrate" Description="The register for the feedrate" ValueMin="0" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Line number" Description="each line number being found" ValueMin="0" ValueMax="99999999" ValueInitial="0" />
+    <Register Type="Number" Name="MW_P_FeedrateProbing" Description="The register for the feedrate used for probing" ValueMin="0" ValueMax="99999.9999" ValueInitial="NaN" />
+    <Register Type="Number" Name="Program goto line" Description="after the program ends jump to this line" ValueMin="0" ValueMax="99999" ValueInitial="NaN" />
+    <Register Type="Number" Name="Program number" Description="each program number being found" ValueMin="0" ValueMax="99999" ValueInitial="0" />
+    <Register Type="Number" Name="Program repetitions" Description="repetitions of the program" ValueMin="0" ValueMax="9999" ValueInitial="1" />
+    <Register Type="Number" Name="Radius" Description="The radius register" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="NaN" />
+    <Register Type="Number" Name="Register update value" Description="the new value for the register" ValueMin="0" ValueMax="9999" ValueInitial="NaN" />
+    <Register Type="Number" Name="Rotation Angle" Description="Rotation Angle" ValueMin="-9999" ValueMax="9999" ValueInitial="0" />
+    <Register Type="Number" Name="Rotation Center X" Description="X position of Center of Rotation" ValueMin="-9999" ValueMax="9999" ValueInitial="0" />
+    <Register Type="Number" Name="Rotation Center Y" Description="Y position of Center of Rotation" ValueMin="-9999" ValueMax="9999" ValueInitial="0" />
+    <Register Type="Number" Name="Rotation Center Z" Description="Z position of Center of Rotation" ValueMin="-9999" ValueMax="9999" ValueInitial="0" />
+    <Register Type="Number" Name="Scaling Center X" Description="X position of Center of Scale" ValueMin="-9999" ValueMax="9999" ValueInitial="0" />
+    <Register Type="Number" Name="Scaling Center Y" Description="Y position of Center of Scale" ValueMin="-9999" ValueMax="9999" ValueInitial="0" />
+    <Register Type="Number" Name="Scaling Center Z" Description="Z position of Center of Scale" ValueMin="-9999" ValueMax="9999" ValueInitial="0" />
+    <Register Type="Number" Name="Scaling Factor" Description="Scales axes by factor" ValueMin="-9999" ValueMax="9999" ValueInitial="1" />
+    <Register Type="Number" Name="secondary machine home position" Description="a G30 P1 will go to the first machine home position" ValueMin="1" ValueMax="4" ValueInitial="1" />
+    <Register Type="Number" Name="SpindleSpeed" Description="The register for the spindle speed" ValueMin="0" ValueMax="99999" ValueInitial="0" />
+    <Register Type="Number" Name="Tool Compensation H" Description="..." ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="NaN" />
+    <Register Type="Number" Name="tool_number" Description="Tool number" ValueMin="0" ValueMax="99999" ValueInitial="0" />
+    <Register Type="Number" Name="WorkPlaneA" Description="WorkPlane rotation around A" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="WorkPlaneB" Description="WorkPlane rotation around B" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="WorkPlaneC" Description="WorkPlane rotation around C" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="X-Axis" Description="Axis register in x direction" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="X-Axis offset" Description="Axis offset register in x direction" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="X-Axis strokelimit 1" Description="X-Axis strokelimit of first corner" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="X-Axis strokelimit 2" Description="X-Axis strokelimit of second corner" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Y-Axis" Description="Axis register in y direction" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Y-Axis offset" Description="Axis offset register in y direction" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Y-Axis strokelimit 1" Description="Y-Axis strokelimit of first corner" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Y-Axis strokelimit 2" Description="Y-Axis strokelimit of second corner" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Z-Axis" Description="Axis register in z direction" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Z-Axis offset" Description="Axis offset register in z direction" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Z-Axis strokelimit 1" Description="Z-Axis strokelimit of first corner" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+    <Register Type="Number" Name="Z-Axis strokelimit 2" Description="Z-Axis strokelimit of second corner" ValueMin="-99999.9999" ValueMax="99999.9999" ValueInitial="0" />
+  </Registers>
+  <Rules>
+    <Rule Name="Arcs" Description="Rule containing all arc parameters">
+      <Element Type="Parameter" Name="MW_P_ArcRadius" />
+      <Element Type="Parameter" Name="MW_P_ArcI" />
+      <Element Type="Parameter" Name="MW_P_ArcJ" />
+      <Element Type="Parameter" Name="MW_P_ArcK" />
+    </Rule>
+    <Rule Name="ConstantSpeed">
+      <Element Type="Parameter" Name="MW_P_SpindleSpeed" />
+    </Rule>
+    <Rule Name="Coordinates" Description="Rule containing all coordinates">
+      <Element Type="Parameter" Name="MW_P_XCoordinate" />
+      <Element Type="Parameter" Name="MW_P_YCoordinate" />
+      <Element Type="Parameter" Name="MW_P_ZCoordinate" />
+      <Element Type="Parameter" Name="MW_P_ARotation" />
+      <Element Type="Parameter" Name="MW_P_BRotation" />
+      <Element Type="Parameter" Name="MW_P_CRotation" />
+    </Rule>
+    <Rule Name="Coordinates for Cycles" Description="Rule containing axis values for Cycles (XY plane)">
+      <Element Type="Parameter" Name="MW_P_XCoordinate" />
+      <Element Type="Parameter" Name="MW_P_YCoordinate" />
+    </Rule>
+    <Rule Name="Cycle (K)Q" Description="Rule with optional K and required Q">
+      <Element Type="Parameter" Name="MW_P_CycleMinimumPeckDepth" />
+      <Element Type="Parameter" Name="MW_P_CycleConstantCutDepth" IsRequiredWithDefinition="True" />
+    </Rule>
+    <Rule Name="Cycle (K)Q OR IJK" Description="Parameters (K)Q OR IJK" Operator="OR">
+      <Element Type="Rule" Name="Cycle (K)Q" />
+      <Element Type="Rule" Name="Cycle IJK" />
+    </Rule>
+    <Rule Name="Cycle IJK" Description="Rule I and J and K. All parameters required.">
+      <Element Type="Parameter" Name="MW_P_CycleFirstPeckDepth" IsRequiredWithDefinition="True" />
+      <Element Type="Parameter" Name="MW_P_CycleReducePeckDepth" IsRequiredWithDefinition="True" />
+      <Element Type="Parameter" Name="MW_P_CycleMinimumPeckDepth" IsRequiredWithDefinition="True" />
+    </Rule>
+    <Rule Name="Cycle required parameters" Description="Rule for the required parameters in each Cycle">
+      <Element Type="Parameter" Name="MW_P_CycleFeedrate" IsRequiredWithDefinition="True" />
+      <Element Type="Parameter" Name="MW_P_CycleClearPlane" IsRequiredWithDefinition="True" />
+      <Element Type="Parameter" Name="MW_P_CycleDrillHoleDepth" IsRequiredWithDefinition="True" />
+    </Rule>
+    <Rule Name="G04">
+      <Element Type="Parameter" Name="MW_P_DwellTime" />
+    </Rule>
+    <Rule Name="G154">
+      <Element Type="Parameter" Name="MW_P_SelectSpecificOffset" IsRequiredWithDefinition="True" />
+    </Rule>
+    <Rule Name="G22">
+      <Element Type="Parameter" Name="MW_P_StrokeLimitXMin" />
+      <Element Type="Parameter" Name="MW_P_StrokeLimitYMin" />
+      <Element Type="Parameter" Name="MW_P_StrokeLimitZMin" />
+      <Element Type="Parameter" Name="MW_P_StrokeLimitXMax" />
+      <Element Type="Parameter" Name="MW_P_StrokeLimitYMax" />
+      <Element Type="Parameter" Name="MW_P_StrokeLimitZMax" />
+    </Rule>
+    <Rule Name="G30">
+      <Element Type="Rule" Name="Coordinates" />
+      <Element Type="Parameter" Name="MW_P_MachineHomePosition#2" IsRequiredWithDefinition="True" />
+    </Rule>
+    <Rule Name="G31">
+      <Element Type="Rule" Name="Coordinates" />
+      <Element Type="Parameter" Name="MW_P_FeedrateProbing" />
+    </Rule>
+    <Rule Name="G51">
+      <Element Type="Parameter" Name="MW_P_ScalingFactor" />
+      <Element Type="Parameter" Name="MW_P_ScalingCenterX" />
+      <Element Type="Parameter" Name="MW_P_ScalingCenterY" />
+      <Element Type="Parameter" Name="MW_P_ScalingCenterZ" />
+    </Rule>
+    <Rule Name="G68">
+      <Element Type="Parameter" Name="MW_P_RotationAngle" />
+      <Element Type="Parameter" Name="MW_P_WorkPlaneX" />
+      <Element Type="Parameter" Name="MW_P_WorkPlaneY" />
+      <Element Type="Parameter" Name="MW_P_WorkPlaneZ" />
+    </Rule>
+    <Rule Name="G76/77 IJ/Q">
+      <Element Type="Rule" Name="G76/G77 IJ" />
+      <Element Type="Parameter" Name="MW_P_CycleShiftAmount" />
+    </Rule>
+    <Rule Name="G76/G77 IJ">
+      <Element Type="Parameter" Name="MW_P_CycleXShift" />
+      <Element Type="Parameter" Name="MW_P_CycleYShift" />
+    </Rule>
+    <Rule Name="Offsets" Description="Rule containing the offsets">
+      <Element Type="Parameter" Name="MW_P_WorkPlaneXOffset" />
+      <Element Type="Parameter" Name="MW_P_WorkPlaneYOffset" />
+      <Element Type="Parameter" Name="MW_P_WorkPlaneZOffset" />
+    </Rule>
+    <Rule Name="position register">
+      <Element Type="Rule" Name="Offsets" />
+    </Rule>
+    <Rule Name="Program call, program number required, L(oop) optional">
+      <Element Type="Parameter" Name="MW_P_SubProgramNumber" IsRequiredWithDefinition="True" />
+      <Element Type="Parameter" Name="MW_P_ProgramRepetitions" />
+    </Rule>
+    <Rule Name="program_call_alternatives" Description="Program call with either Plllloooo or Pooo [Lllll], with oooo being the program number and llll being the repetitions" Operator="OR">
+      <Element Type="Parameter" Name="MW_P_ProgramRepetitionsAndNumber" IsRequiredWithDefinition="True" />
+      <Element Type="Rule" Name="Program call, program number required, L(oop) optional" />
+    </Rule>
+    <Rule Name="Program_Definition">
+      <Element Type="Parameter" Name="MW_P_ProgramNumber" IsRequiredWithDefinition="True" />
+    </Rule>
+    <Rule Name="RTCP" Description="Rule for RTCP parameters">
+      <Element Type="Rule" Name="Coordinates" />
+    </Rule>
+    <Rule Name="Rule for Data Setting command">
+      <Element Type="Parameter" Name="MW_P_OffsetCategory" IsRequiredWithDefinition="True" />
+      <Element Type="Parameter" Name="MW_P_SelectSpecificOffset" IsRequiredWithDefinition="True" />
+      <Element Type="Parameter" Name="MW_P_ZCoordinate" />
+      <Element Type="Rule" Name="rule_xy_or_registerValue" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillBackBoreCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+      <Element Type="Rule" Name="G76/77 IJ/Q" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillBoreAndStopCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillBoreInAndManualRetractCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillBoreInDwellBoreOutCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleDwellBottom" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillBoreInDwellManualRetractCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleDwellBottom" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillBoringCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillFineBoringCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+      <Element Type="Parameter" Name="MW_P_CycleDwellBottom" />
+      <Element Type="Rule" Name="G76/77 IJ/Q" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillHighSpeedPeckCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+      <Element Type="Parameter" Name="MW_P_CycleDwellBottom" />
+      <Element Type="Rule" Name="Cycle (K)Q OR IJK" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillPeckDrillingCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleDwellBottom" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+      <Element Type="Rule" Name="Cycle (K)Q OR IJK" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillReverseTapCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+      <Element Type="Parameter" Name="MW_P_CycleRetractMultiple" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillSpotDrillCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleDwellBottom" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+    </Rule>
+    <Rule Name="Rule for MW_CMD_DrillTappingCycle">
+      <Element Type="Rule" Name="Cycle required parameters" />
+      <Element Type="Rule" Name="Coordinates for Cycles" />
+      <Element Type="Parameter" Name="MW_P_CycleRetractMultiple" />
+      <Element Type="Parameter" Name="MW_P_CycleRepeats" />
+    </Rule>
+    <Rule Name="Rule for Tilted Working Plane ">
+      <Element Type="Parameter" Name="MW_P_WorkPlaneX" />
+      <Element Type="Parameter" Name="MW_P_WorkPlaneY" />
+      <Element Type="Parameter" Name="MW_P_WorkPlaneZ" />
+      <Element Type="Parameter" Name="MW_P_WorkPlaneA" />
+      <Element Type="Parameter" Name="MW_P_WorkPlaneB" />
+      <Element Type="Parameter" Name="MW_P_WorkPlaneC" />
+    </Rule>
+    <Rule Name="rule_arc_cmd">
+      <Element Type="Rule" Name="Coordinates" />
+      <Element Type="Parameter" Name="MW_P_Feedrate" />
+      <Element Type="Rule" Name="Arcs" />
+    </Rule>
+    <Rule Name="rule_CutterComp" />
+    <Rule Name="rule_G53">
+      <Element Type="Parameter" Name="MW_P_XCoordinate" />
+      <Element Type="Parameter" Name="MW_P_YCoordinate" />
+      <Element Type="Parameter" Name="MW_P_ZCoordinate" />
+    </Rule>
+    <Rule Name="rule_LengthComp" />
+    <Rule Name="rule_linear">
+      <Element Type="Rule" Name="Coordinates" />
+    </Rule>
+    <Rule Name="rule_linear_feedrate">
+      <Element Type="Rule" Name="rule_linear" />
+      <Element Type="Parameter" Name="MW_P_Feedrate" />
+    </Rule>
+    <Rule Name="rule_RefReturn">
+      <Element Type="Rule" Name="Coordinates" />
+    </Rule>
+    <Rule Name="rule_xy" Description="XY is required for G10 to work">
+      <Element Type="Parameter" Name="MW_P_XCoordinate" IsRequiredWithDefinition="True" />
+      <Element Type="Parameter" Name="MW_P_YCoordinate" IsRequiredWithDefinition="True" />
+    </Rule>
+    <Rule Name="rule_xy_or_registerValue" Description="Either XY or R is required for G10 to work" Operator="OR">
+      <Element Type="Rule" Name="rule_xy" />
+      <Element Type="Parameter" Name="MW_P_RegisterValue" IsRequiredWithDefinition="True" />
+    </Rule>
+    <Rule Name="ruleBlockNumber">
+      <Element Type="Parameter" Name="MW_P_LineNumber" IsRequiredWithDefinition="True" />
+    </Rule>
+    <Rule Name="Tool_Number">
+      <Element Type="Parameter" Name="MW_P_ToolNumber" IsRequiredWithDefinition="True" />
+    </Rule>
+  </Rules>
+  <TextStyles>
+    <TextStyle Name="ABC" Description="TextStyle" FontStyle="Bold" ForeColor="#030071" />
+    <TextStyle Name="Comment" Description="TextStyle" ForeColor="Green" />
+    <TextStyle Name="DHLOP" Description="TextStyle" BackColor="LightGrey" FontStyle="Bold" />
+    <TextStyle Name="FS" Description="TextStyle" BackColor="#C6E9FF" FontStyle="Bold" />
+    <TextStyle Name="IJKRQ" Description="TextStyle" FontStyle="Bold" ForeColor="#6E00FF" />
+    <TextStyle Name="MW_TextStyleGroupedCommands" Description="TextStyle" BackColor="#EDFFB5" FontStyle="Bold" />
+    <TextStyle Name="MW_TextStyleUngroupedCommands" Description="TextStyle" BackColor="#FFE387" FontStyle="Bold" />
+    <TextStyle Name="N" Description="TextStyle" ForeColor="DarkGoldenrod" />
+    <TextStyle Name="T" Description="TextStyle" BackColor="LightGrey" FontStyle="Bold" />
+    <TextStyle Name="X" Description="TextStyle" FontStyle="Bold" ForeColor="#000078" />
+    <TextStyle Name="Y" Description="TextStyle" FontStyle="Bold" ForeColor="#3200FF" />
+    <TextStyle Name="Z" Description="TextStyle" FontStyle="Bold" ForeColor="#FF6411" />
+  </TextStyles>
+</NcController>

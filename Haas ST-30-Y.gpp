@@ -1,0 +1,152 @@
+@init_post
+	;locals
+	local integer trace_level ;tracing level of Gcode 0 to 5
+	;formats
+	global logical log_used_macs<<99>> ;array of printed in @plane_data MACs, used to avoid multiple printing of same MAC
+	global string tool_position_in_turret_f tool_offset_number_f tool_position_f xonext_f yonext_f zonext_f
+	global string xocenter_rel_f yocenter_rel_f zocenter_rel_f spin_f max_spin_f 
+	global integer int_working_plane
+	tool_position_in_turret_f = '<T>z2/2.0(p)'
+	tool_offset_number_f = 'z2/2.0(p)'
+	tool_position_f = 'z2/2.0(p)'
+	xonext_f = '< X>5.3(*2)'
+	yonext_f = '< Y>5.3'
+	zonext_f = '< Z>5.3'
+	gcode_f = '<G>3.0(p)'
+	feed_f = '< F>5.3(p)'
+	xopos_f = '< X>5.3(*2)'
+	yopos_f = '< Y>5.3'
+	zopos_f = '< Z>5.3'
+	xocenter_rel_f = '< I>5.3'
+	yocenter_rel_f = '< J>5.3'
+	zocenter_rel_f = '< K>5.3'
+	spin_f = '< S>3.0(p)'
+	mcode_f = '<M>3.1(p)'
+	max_spin_f = '< S>3.0(p)'
+	;debugging
+	Input "Trace level : 0-None ; 5-All", trace_level
+	trace "all":trace_level
+endp
+
+@plane_data
+	if log_used_macs<<mac_ID>> ne true
+		log_used_macs<<mac_ID>> = true
+		{nb,'(MAC NUMBER:'mac_number,')'}
+		{nb,'  G90 G10 L2 P'mac_number,' X',shift_Mac_m_x,' Y',shift_Mac_m_y,' Z'shift_Mac_m_z}
+	endif
+endp
+
+@start_of_file
+	{'%'}
+	{nl,'O',program_number}
+endp
+
+@turn_change_tool
+	{nb,'G0 U0 W0'}
+	{nb,tool_position_in_turret,tool_offset_number,tool_position}
+endp
+
+@change_tool
+	{nb,'G0 U0 W0'}
+	{nb,tool_position_in_turret,tool_offset_number,tool_position}
+endp
+
+@start_of_job
+	gcode = 53 + mac_number
+	{nb,gcode}
+	if job_machine_type eq turning
+		gcode = 18
+		{' ',gcode}
+		int_working_plane = gcode
+	else
+		if abs(round(spindle_direction_x,5)) eq 1
+			gcode = 19
+		endif
+		if abs(round(spindle_direction_y,5)) eq 1
+			gcode = 18
+		endif
+		if abs(round(spindle_direction_z,5)) eq 1
+			gcode = 17
+		endif
+		{' ',gcode}
+		int_working_plane = gcode
+	endif
+endp
+
+@rapid_move
+	gcode = 0
+	{nb,[gcode],[xopos],[yopos],[zopos]}
+endp
+
+@line
+	gcode = 1
+	{nb,[gcode],[xopos],[yopos],[zopos],[feed]}
+endp
+
+@arc
+	call @udr_arc_plane
+	gcode = 2 + arc_odirection
+	{nb,[gcode],[xopos],[yopos],[zopos],xocenter_rel,yocenter_rel,zocenter_rel,[feed]}
+endp
+
+@compensation
+	gcode = 42-side_o
+	{nb,gcode,' '}
+	skipline = false
+endp
+
+@end_of_file
+	{nb,'M30'}
+	{nl,'%'}
+endp
+
+@feed_spin
+	if feed_unit eq mm_rev
+		gcode = 99
+	else
+		gcode = 98
+	endif
+	{nb,gcode,' '}
+	if spin_unit eq rpm
+		gcode = 97
+	else
+		gcode = 96
+	endif
+	{gcode,' '}
+	if spin_direction eq cw
+		mcode = 3
+	else
+		mcode = 4
+	endif
+	{mcode,spin}
+	if spin_unit ne rpm
+		gcode = 50
+		{nb,gcode,max_spin}
+	endif
+endp
+
+@m_feed_spin
+	if spin_direction eq cw
+		mcode = 3
+	else
+		mcode = 4
+	endif
+	{nb,mcode,spin}
+endp
+
+@udr_arc_plane
+	if arc_plane_m eq YZ
+		gcode = 19
+	endif
+	if arc_plane_m eq ZX
+		gcode = 18
+	endif
+	if arc_plane_m eq XY
+		gcode = 17
+	endif
+	if int_working_plane ne gcode
+		{nb,gcode,' '}
+		skipline = false
+		int_working_plane = gcode
+	endif
+endp

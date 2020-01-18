@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<machsim_data name="W508MT" units="metric" version="1.0">
+  <cam_part path="D:\customers cases\FlaySpray\FS#30845\#30845\">
+    <machine_options></machine_options>
+  </cam_part>
+  <operations count="2">
+    <operation index="1" name="MACHINE_CTRL" submachineID="3" type="machine control operation">
+      <mac home_user_name="面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面面��4)" mac_number="-858993460" position="-858993460">
+        <machine_offset_x>0</machine_offset_x>
+        <machine_offset_y>0</machine_offset_y>
+        <machine_offset_z>0</machine_offset_z>
+        <normal_to_plane_x>0</normal_to_plane_x>
+        <normal_to_plane_y>0</normal_to_plane_y>
+        <normal_to_plane_z>0</normal_to_plane_z>
+        <x_vector_x>0</x_vector_x>
+        <x_vector_y>0</x_vector_y>
+        <x_vector_z>0</x_vector_z>
+        <y_vector_x>0</y_vector_x>
+        <y_vector_y>0</y_vector_y>
+        <y_vector_z>0</y_vector_z>
+        <shift_x>0</shift_x>
+        <shift_y>0</shift_y>
+        <shift_z>0</shift_z>
+        <tool_z_level>-9.25596e+061</tool_z_level>
+      </mac>
+      <tool name="" number="0">
+        <hlength>0</hlength>
+      </tool>
+      <parameters_list></parameters_list>
+      <first_move>
+        <axis id="U" value="270.000000"/>
+        <axis id="C" value="0.000000"/>
+        <axis id="B1" value="0.000000"/>
+      </first_move>
+      <last_move>
+        <axis id="U" value="170.000000"/>
+        <axis id="C" value="0.000000"/>
+        <axis id="B1" value="0.000000"/>
+      </last_move>
+    </operation>
+    <operation index="2" name="TR_contour11" submachineID="3" type="turn">
+      <mac home_user_name="" mac_number="3" position="1">
+        <machine_offset_x>0</machine_offset_x>
+        <machine_offset_y>0</machine_offset_y>
+        <machine_offset_z>0</machine_offset_z>
+        <normal_to_plane_x>1</normal_to_plane_x>
+        <normal_to_plane_y>0</normal_to_plane_y>
+        <normal_to_plane_z>0</normal_to_plane_z>
+        <x_vector_x>1</x_vector_x>
+        <x_vector_y>0</x_vector_y>
+        <x_vector_z>0</x_vector_z>
+        <y_vector_x>0</y_vector_x>
+        <y_vector_y>1</y_vector_y>
+        <y_vector_z>0</y_vector_z>
+        <shift_x>-0</shift_x>
+        <shift_y>-0</shift_y>
+        <shift_z>-0</shift_z>
+        <tool_z_level>0</tool_z_level>
+      </mac>
+      <tool name="1;Spindle;1;A" number="1">
+        <hlength>0</hlength>
+      </tool>
+      <parameters_list></parameters_list>
+      <first_move>
+        <axis id="Z" value="-115.359001"/>
+        <axis id="Y" value="-94.300003"/>
+        <axis id="X" value="-708.640015"/>
+        <axis id="B" value="0.000000"/>
+      </first_move>
+      <last_move>
+        <axis id="Z" value="-129.660004"/>
+        <axis id="Y" value="-94.300003"/>
+        <axis id="X" value="-703.679993"/>
+        <axis id="B" value="0.000000"/>
+      </last_move>
+    </operation>
+  </operations>
+</machsim_data>

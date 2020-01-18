@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<machine_definition>
+    <machine_data name="W508MT" version="1.9" units="metric" controller="">
+        <view_transform initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+    </machine_data>
+    <preprocessor fileName="preprocessor.py" instance="out_Sub_Machines" />
+    <axis id="A" type="rotation" x="-1.00000000" y="0.00000000" z="0.00000000" minvalue="-100000.000000" maxvalue="100000.000000" valuetype="cont" initial_value="0.000000" rzx="-500.00000000" rzy="-92.94000244" rzz="-306.14999390">
+        <geometry name="MS_chuck45" geo="w508mt - m20031_-1 019341-1.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="MS_chuck46" geo="w508mt - m20031_-1 019348-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="MS_chuck47" geo="w508mt - m20031_-1 019350-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="MS_chuck48" geo="w508mt - m20031_-1 032169-1.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="MS_chuck49" geo="w508mt - m20031_-1 vis 6 pc din_912_din_912_m6x70-1.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="MS_chuck50" geo="w508mt - m20031_-1 vis 6 pc din_912_din_912_m6x70-2.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="MS_chuck51" geo="w508mt - m20031_-1 vis 6 pc din_912_din_912_m6x70-3.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="MS_chuck52" geo="w508mt - m20031_-1 vis 6 pc din_912_din_912_m6x70-4.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="MS_chuck53" geo="w508mt - m20031_-1 vis 6 pc din_912_din_912_m6x70-5.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="MS_chuck54" geo="w508mt - m20031_-1 vis 6 pc din_912_din_912_m6x70-6.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="MS_fixture" geo="ms_fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <transform id="fixture_transform1" initialvalue="1.00000000,0.00000000,0.00000000,-367.82000732,0.00000000,1.00000000,0.00000000,-92.94000244,0.00000000,0.00000000,1.00000000,-306.14999390,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="fixture_adaptor1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+        </transform>
+        <geometry name="ms_chuck138" geo="w508mt - m20031_-1 032118_-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="ms_chuck139" geo="w508mt - m20031_-1 032162-1.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <transform id="workpiece_transform1" initialvalue="1.00000000,0.00000000,0.00000000,-367.82000732,0.00000000,1.00000000,0.00000000,-92.94000244,0.00000000,0.00000000,1.00000000,-306.14999390,0.00000000,0.00000000,0.00000000,1.00000000">
+            <transform id="wcs1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+            <transform id="workpiece_adaptor1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+        </transform>
+    </axis>
+    <axis id="Door" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-550.000000" maxvalue="0.000000" valuetype="cont" initial_value="0.000000">
+        <geometry name="mh_door141" geo="w508mt - cabine_ass-1 door-3.stl" clrr="0.39215687" clrg="0.58431375" clrb="0.92941177" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    </axis>
+    <axis id="Jaws" type="translation" x="0.00000000" y="1.00000000" z="0.00000000" minvalue="0.000000" maxvalue="50.000000" valuetype="cont" initial_value="0.000000">
+        <transform id="Custom Device 1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+    </axis>
+    <geometry name="LT_cover_base100" geo="w508mt - imported48-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="LT_cover_base104" geo="w508mt - imported56-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="LT_cover_base105" geo="w508mt - imported58-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="LT_cover_base109" geo="w508mt - imported64-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="LT_cover_base77" geo="w508mt - imported3-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="LT_cover_base80" geo="w508mt - imported7-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="LT_cover_base88" geo="w508mt - imported24-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="LT_cover_base91" geo="w508mt - imported31-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="LT_cover_base93" geo="w508mt - imported37-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="LT_cover_base97" geo="w508mt - imported45-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="MS_base110" geo="w508mt - m05181b_-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="MS_base295" geo="w508mt - mh_spindle_base-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <axis id="U" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="0.000000" maxvalue="270.000000" valuetype="cont" initial_value="270.000000">
+        <axis id="V" type="rotation" x="0.00000000" y="1.00000000" z="0.00000000" minvalue="0.000000" maxvalue="360.000000" valuetype="cont" initial_value="180.000000" rzx="-337.59899902" rzy="-92.94000244" rzz="-504.14999390">
+            <geometry name="B1_70" geo="w508mt - qwill and lower device-1 qwill-1 body22-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body55" geo="w508mt - qwill and lower device-1 body13-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body56" geo="w508mt - qwill and lower device-1 body15-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body57" geo="w508mt - qwill and lower device-1 body17-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body58" geo="w508mt - qwill and lower device-1 body18-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body59" geo="w508mt - qwill and lower device-1 qwill-1 body2-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body60" geo="w508mt - qwill and lower device-1 qwill-1 body3-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body61" geo="w508mt - qwill and lower device-1 qwill-1 body4-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body62" geo="w508mt - qwill and lower device-1 qwill-1 body5-1.stl" clrr="0.54509807" clrg="0.27058825" clrb="0.07450981" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body63" geo="w508mt - qwill and lower device-1 qwill-1 body6-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body64" geo="w508mt - qwill and lower device-1 qwill-1 body7-1.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body65" geo="w508mt - qwill and lower device-1 qwill-1 body10-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body66" geo="w508mt - qwill and lower device-1 qwill-1 body11-1.stl" clrr="0.82745099" clrg="0.82745099" clrb="0.82745099" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body67" geo="w508mt - qwill and lower device-1 qwill-1 body12-1.stl" clrr="0.82745099" clrg="0.82745099" clrb="0.82745099" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body68" geo="w508mt - qwill and lower device-1 qwill-1 body16-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body69" geo="w508mt - qwill and lower device-1 qwill-1 body20-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body71" geo="w508mt - qwill and lower device-1 qwill-1 body24-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="B1_body72" geo="w508mt - qwill and lower device-1 qwill-1 body25-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body" geo="w508mt - b_s-1 bs_budy-1 body64-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="1.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body1" geo="w508mt - b_s-1 bs_budy-1 body69-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body10" geo="w508mt - b_s-1 bs_budy-1 body92-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body11" geo="w508mt - b_s-1 bs_budy-1 body93-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="1.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body12" geo="w508mt - b_s-1 bs_budy-1 body97-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body13" geo="w508mt - b_s-1 bs_budy-1 body98-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="1.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body14" geo="w508mt - b_s-1 bs_budy-1 body100-1.stl" clrr="0.41568628" clrg="0.35294119" clrb="0.80392158" alpha="1.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body15" geo="w508mt - b_s-1 bs_budy-1 body103-1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body16" geo="w508mt - b_s-1 bs_budy-1 body105-1.stl" clrr="0.82745099" clrg="0.82745099" clrb="0.82745099" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body17" geo="w508mt - b_s-1 bs_budy-1 body106-1.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body18" geo="w508mt - b_s-1 bs_budy-1 body107-1.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body19" geo="w508mt - b_s-1 bs_budy-1 body108-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body2" geo="w508mt - b_s-1 bs_budy-1 body71-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body20" geo="w508mt - b_s-1 bs_budy-1 body109-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body21" geo="w508mt - b_s-1 bs_budy-1 body111-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body22" geo="w508mt - b_s-1 bs_budy-1 body112-1.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body23" geo="w508mt - b_s-1 bs_budy-1 body114-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body24" geo="w508mt - b_s-1 bs_budy-1 body115-1.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body25" geo="w508mt - b_s-1 bs_budy-1 body116-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body26" geo="w508mt - b_s-1 bs_budy-1 body117-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body27" geo="w508mt - b_s-1 bs_budy-1 body118-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body28" geo="w508mt - b_s-1 bs_budy-1 body120-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body29" geo="w508mt - b_s-1 bs_budy-1 body121-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body3" geo="w508mt - b_s-1 bs_budy-1 body73-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body30" geo="w508mt - b_s-1 bs_budy-1 body125-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="1.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body31" geo="w508mt - b_s-1 bs_budy-1 body129-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body32" geo="w508mt - b_s-1 bs_budy-1 body130-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body33" geo="w508mt - b_s-1 bs_budy-1 body131-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body34" geo="w508mt - b_s-1 bs_budy-1 body132-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="1.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body4" geo="w508mt - b_s-1 bs_budy-1 body76-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body5" geo="w508mt - b_s-1 bs_budy-1 body77-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body6" geo="w508mt - b_s-1 bs_budy-1 body78-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body7" geo="w508mt - b_s-1 bs_budy-1 body81-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body8" geo="w508mt - b_s-1 bs_budy-1 body82-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="BS_body9" geo="w508mt - b_s-1 bs_budy-1 body90-1.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="1.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <axis id="C" type="rotation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-100000.000000" maxvalue="100000.000000" valuetype="cont" initial_value="0.000000" rzx="-337.39898682" rzy="-92.94000244" rzz="-306.14999390">
+                <geometry name="BS_chuck35" geo="w508mt - b_s-1 bs_chuck-1 body88-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="BS_chuck36" geo="w508mt - b_s-1 bs_chuck-1 body110-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="BS_chuck37" geo="w508mt - b_s-1 bs_chuck-1 body113-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="BS_chuck38" geo="w508mt - b_s-1 bs_chuck-1 body119-1.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="BS_chuck39" geo="w508mt - b_s-1 bs_chuck-1 body122-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="BS_chuck40" geo="w508mt - b_s-1 bs_chuck-1 body123-1.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="BS_chuck41" geo="w508mt - b_s-1 bs_chuck-1 body124-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="BS_chuck42" geo="w508mt - b_s-1 bs_chuck-1 body126-1.stl" clrr="0.18039216" clrg="0.54509807" clrb="0.34117648" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="BS_chuck43" geo="w508mt - b_s-1 bs_chuck-1 body127-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="BS_chuck44" geo="w508mt - b_s-1 bs_chuck-1 body128-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="BS_fixture" geo="bs_fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <transform id="fixture_transform2" initialvalue="1.00000000,0.00000000,0.00000000,-444.13900757,0.00000000,1.00000000,0.00000000,-92.94000244,0.00000000,0.00000000,1.00000000,-306.14999390,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="fixture_adaptor2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+                </transform>
+                <transform id="workpiece_transform2" initialvalue="1.00000000,0.00000000,0.00000000,-444.13900757,0.00000000,1.00000000,0.00000000,-92.94000244,0.00000000,0.00000000,1.00000000,-306.14999390,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <transform id="wcs2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+                    <transform id="workpiece_adaptor2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+                </transform>
+            </axis>
+            <geometry name="WISE_fixture" geo="wise_fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <axis id="Y1" type="translation" x="0.00000000" y="1.00000000" z="0.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+                <transform id="transform" initialvalue="1.00000000,0.00000000,0.00000000,-506.71701050,0.00000000,1.00000000,0.00000000,-92.94000244,0.00000000,0.00000000,1.00000000,-468.19500732,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="geometry4" geo="jaws - jaw-2.stl" clrr="0.00000000" clrg="0.39215687" clrb="0.00000000" alpha="1.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                </transform>
+                <geometry name="wise_L115" geo="w508mt - m13061-1 028092-1 028092-02-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_L117" geo="w508mt - m13061-1 028092-1 028092-04-1.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_L125" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-7.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_L126" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-8.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_L127" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-9.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_L128" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-10.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_L129" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-11.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_L130" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-12.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            </axis>
+            <axis id="Y2" type="translation" x="0.00000000" y="-1.00000000" z="0.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+                <transform id="transform1" initialvalue="1.00000000,0.00000000,0.00000000,-506.71701050,0.00000000,1.00000000,0.00000000,-92.94000244,0.00000000,0.00000000,1.00000000,-468.19500732,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="geometry5" geo="jaws - jaw-1.stl" clrr="0.00000000" clrg="0.39215687" clrb="0.00000000" alpha="1.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                </transform>
+                <geometry name="wise_R116" geo="w508mt - m13061-1 028092-1 028092-02-2.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_R118" geo="w508mt - m13061-1 028092-1 028092-04-2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_R119" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_R120" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-2.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_R121" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-3.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_R122" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-4.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_R123" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-5.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="wise_R124" geo="w508mt - m13061-1 028092-1 vis 6 pc din_912_din_912_m6x35-6.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            </axis>
+            <transform id="fixture_transform3" initialvalue="0.17364818,0.00000000,0.98480773,-537.46398926,0.00000000,1.00000000,0.00000000,-92.94000244,-0.98480803,0.00000000,0.17364818,-497.41400146,0.00000000,0.00000000,0.00000000,1.00000000">
+                <transform id="fixture_adaptor3" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+            </transform>
+            <geometry name="wise131" geo="w508mt - m13061-1 028092-1 vstim10x1ed_-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="wise132" geo="w508mt - m13061-1 028092-1 vstim10x1ed_-2.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="wise134" geo="w508mt - m13061-1 vis 6 pc din_912_din_912_m10x60-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="wise135" geo="w508mt - m13061-1 vis 6 pc din_912_din_912_m10x60-2.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="wise1351" geo="w508mt - m13061-1 031886_plaque ajustגe-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="wise136" geo="w508mt - m13061-1 vis 6 pc din_912_din_912_m10x60-3.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="wise137" geo="w508mt - m13061-1 vis 6 pc din_912_din_912_m10x60-4.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="wise_base114" geo="w508mt - m13061-1 028092-1 028092-01-1.stl" clrr="0.33333334" clrg="0.41960785" clrb="0.18431373" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <transform id="workpiece_transform3" initialvalue="0.17364818,0.00000000,0.98480773,-537.46398926,0.00000000,1.00000000,0.00000000,-92.94000244,-0.98480773,0.00000000,0.17364818,-497.41400146,0.00000000,0.00000000,0.00000000,1.00000000">
+                <transform id="wcs3" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+                <transform id="workpiece_adaptor3" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+            </transform>
+        </axis>
+        <geometry name="axis_u140" geo="w508mt - axis_u-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="axis_u82" geo="w508mt - imported13-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="axis_u83" geo="w508mt - imported14-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="axis_u89" geo="w508mt - imported29-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="axis_u92" geo="w508mt - imported32-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="axis_u94" geo="w508mt - imported38-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="axis_u99" geo="w508mt - imported47-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    </axis>
+    <axis id="U1" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+        <geometry name="U1_79" geo="w508mt - imported5-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U1_87" geo="w508mt - imported23-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U1_95" geo="w508mt - imported42-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U1_96" geo="w508mt - imported44-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U1_98" geo="w508mt - imported46-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    </axis>
+    <axis id="U2" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+        <geometry name="U2_106" geo="w508mt - imported59-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U2_107" geo="w508mt - imported60-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U2_108" geo="w508mt - imported62-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U2_84" geo="w508mt - imported15-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U2_90" geo="w508mt - imported30-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    </axis>
+    <axis id="U3" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+        <geometry name="U3_101" geo="w508mt - imported51-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U3_103" geo="w508mt - imported55-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U3_78" geo="w508mt - imported4-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U3_81" geo="w508mt - imported12-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U3_85" geo="w508mt - imported17-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="U3_86" geo="w508mt - imported19-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    </axis>
+    <axis id="X" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-450.000000" maxvalue="0.000000" valuetype="cont" initial_value="0.000000">
+        <axis id="Y" type="translation" x="0.00000000" y="1.00000000" z="0.00000000" minvalue="-200.000000" maxvalue="0.000000" valuetype="cont" initial_value="0.000000">
+            <axis id="Z" type="translation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-425.000000" maxvalue="0.000000" valuetype="cont" initial_value="0.000000">
+                <axis id="B" type="rotation" x="0.00000000" y="1.00000000" z="0.00000000" minvalue="-15.000000" maxvalue="100.000000" valuetype="cont" initial_value="0.000000" rzx="0.00000000" rzy="0.00000000" rzz="79.49700165">
+                    <geometry name="Stopper" geo="w508mt - b18.3.1m - 6 x 1.0 x 10 hex shcs -- 10nhx-1.stl" clrr="1.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                    <geometry name="axis_b112" geo="w508mt - m05182-mobile_-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                    <geometry name="axis_b113" geo="w508mt - m07050d_-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                    <transform id="turret_transform1" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,79.49700165,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <transform id="station_transform1101" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,-79.49700165,0.00000000,0.00000000,0.00000000,1.00000000">
+                            <transform id="adaptor_transform1101" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                <transform id="holder_transform1A01" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                                    <geometry name="tool1A01" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.00000000" noncuttg="0.00000000" noncuttb="0.00000000" arborr="0.00000000" arborg="0.00000000" arborb="0.00000000" holderr="0.00000000" holderg="0.00000000" holderb="0.00000000" />
+                                </transform>
+                                <transform id="tool_adaptor" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+                            </transform>
+                            <transform id="station_mnt_pnt1101" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" objtype="mountadapter" />
+                        </transform>
+                    </transform>
+                </axis>
+                <geometry name="axis_Y111" geo="w508mt - m05182-base_-1.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <geometry name="axis_Y290" geo="w508mt - mh_axis_x-2.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            </axis>
+            <geometry name="axis_Y291" geo="w508mt - mh_axis_y-1.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        </axis>
+        <axis id="Z1" type="translation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+            <geometry name="Z5_230" geo="w508mt - mh_slider_wall-1 030944_layout-1 030944-1 030944_1-1.stl" clrr="0.66274512" clrg="0.66274512" clrb="0.66274512" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        </axis>
+        <axis id="Z2" type="translation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+            <geometry name="Z4_229" geo="w508mt - mh_slider_wall-1 030943_layout-1 030943-1 030943_1-1.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        </axis>
+        <axis id="Z3" type="translation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+            <geometry name="Z3_216" geo="w508mt - mh_slider_wall-1 030942_layout-1 030942-1 030942_1-1.stl" clrr="0.82745099" clrg="0.82745099" clrb="0.82745099" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        </axis>
+        <axis id="Z4" type="translation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+            <geometry name="Z2_203" geo="w508mt - mh_slider_wall-1 030941_layout-1 030941-1 030941_1-1.stl" clrr="0.96078432" clrg="0.96078432" clrb="0.96078432" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        </axis>
+        <axis id="Z5" type="translation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+            <geometry name="Z1_202" geo="w508mt - mh_slider_wall-1 030940_layout-1 030940-1 030940_1-1.stl" clrr="1.00000000" clrg="1.00000000" clrb="1.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        </axis>
+        <axis id="Z6" type="translation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+            <geometry name="Z6_239" geo="w508mt - mh_slider_wall-1 030945_layout-1 030945-1 030945_1-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="ring254" geo="w508mt - mh_slider_wall-1 030945_layout-1 ring1-1 030947-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="ring255" geo="w508mt - mh_slider_wall-1 030945_layout-1 ring1-1 030947-2.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+            <geometry name="ring256" geo="w508mt - mh_slider_wall-1 030945_layout-1 ringg2-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        </axis>
+        <geometry name="axis_Z292" geo="w508mt - mh_axis_z-1.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    </axis>
+    <axis id="X1" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+        <geometry name="X1_166" geo="w508mt - mh_slider_wall-1 030938_layout-1 030938-1 030938_1-1.stl" clrr="0.66274512" clrg="0.66274512" clrb="0.66274512" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    </axis>
+    <axis id="X10" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" initial_value="0.000000" />
+    <axis id="X2" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-1000.000000" maxvalue="1000.000000" valuetype="cont" show_slider="false" initial_value="0.000000">
+        <geometry name="X2_187" geo="w508mt - mh_slider_wall-1 030939_layout-1 030939-1 030939_1-1.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="X2_197" geo="w508mt - mh_slider_wall-1 030939_layout-1 slidersheld1-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+        <geometry name="x2_196" geo="w508mt - mh_slider_wall-1 030939_layout-1 slider_sheld2-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    </axis>
+    <geometry name="axis_U102" geo="w508mt - imported54-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="frame142" geo="w508mt - mh_back_door-1.stl" clrr="0.82745099" clrg="0.82745099" clrb="0.82745099" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="frame150" geo="w508mt - mh_cover1-1.stl" clrr="0.82745099" clrg="0.82745099" clrb="0.82745099" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="frame152" geo="w508mt - mh_shkapff-1.stl" clrr="0.82745099" clrg="0.82745099" clrb="0.82745099" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="frame153" geo="w508mt - mh_slider_wall-1 030934_layout-1 030934-1 030934_1-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="frame154" geo="w508mt - mh_slider_wall-1 030934_layout-1 030934-1 030934_2-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="frame155" geo="w508mt - mh_slider_wall-1 030934_layout-1 030934-1 030934_3-1.stl" clrr="0.82745099" clrg="0.82745099" clrb="0.82745099" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="frame156" geo="w508mt - mh_slider_wall-1 030934_layout-1 030934-1 030934_3-2.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="frame157" geo="w508mt - mh_slider_wall-1 030934_layout-1 030936_-1 030936_1_ecrou-1.stl" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="frame294" geo="w508mt - mh_frame-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="geometry198" geo="w508mt - mh_slider_wall-1 030939_layout-1 vis t?te conique 6 pc din_7991_din_7991_m4x12-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="geometry199" geo="w508mt - mh_slider_wall-1 030939_layout-1 vis t?te conique 6 pc din_7991_din_7991_m4x12-2.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="geometry200" geo="w508mt - mh_slider_wall-1 030939_layout-1 vis t?te conique 6 pc din_7991_din_7991_m4x12-3.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="geometry201" geo="w508mt - mh_slider_wall-1 030939_layout-1 vis t?te conique 6 pc din_7991_din_7991_m4x12-4.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="machine_base293" geo="w508mt - mh_base-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="mh_PC73" geo="w508mt - cabine_ass-1 pc-2.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="mh_cabinet74" geo="w508mt - cabine_ass-1 sheld-2.stl" clrr="0.86274511" clrg="0.86274511" clrb="0.86274511" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="mh_cool145" geo="w508mt - mh_coolant_bath-1 033009-1 033009_m1-1.stl" clrr="0.18431373" clrg="0.30980393" clrb="0.30980393" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="mh_cool146" geo="w508mt - mh_coolant_bath-1 033009-1 sonde de niveau lk8123_-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="mh_cool_144" geo="w508mt - mh_coolant_bath-1 033009-1 031365-1.stl" clrr="0.41568628" clrg="0.35294119" clrb="0.80392158" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="mh_cool_148" geo="w508mt - mh_coolant_bath-1 pompe plongeante ta 302-320_-1.stl" clrr="0.41568628" clrg="0.35294119" clrb="0.80392158" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="mh_floor76" geo="w508mt - floor-1.stl" clrr="0.56078434" clrg="0.73725492" clrb="0.56078434" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="mh_frame151" geo="w508mt - mh_cover2-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="mh_side75" geo="w508mt - cabine_ass-1 side-1.stl" clrr="0.82745099" clrg="0.82745099" clrb="0.82745099" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw277" geo="w508mt - renishaw-1.stl" clrr="1.00000000" clrg="0.89411765" clrb="0.88235295" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw278" geo="w508mt - renishaw1-1 035771_-1.stl" clrr="1.00000000" clrg="0.89411765" clrb="0.88235295" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw279" geo="w508mt - renishaw1-1 035961_usinage-1 035961-01_-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw280" geo="w508mt - renishaw1-1 035961_usinage-1 035961-02_-1.stl" clrr="0.41176471" clrg="0.41176471" clrb="0.41176471" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw281" geo="w508mt - renishaw1-1 035961_usinage-1 035961-03_-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw282" geo="w508mt - renishaw1-1 035961_usinage-1 035961-04_-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw283" geo="w508mt - renishaw1-1 038938_-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw284" geo="w508mt - renishaw1-1 038939_-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw285" geo="w508mt - renishaw1-1 vis 6 pc din_912_din_912_m6x20-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw286" geo="w508mt - renishaw1-1 vis 6 pc din_912_din_912_m8x25-1.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <geometry name="renishaw287" geo="w508mt - renishaw1-1 vis 6 pc din_912_din_912_m8x25-2.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+    <magazine>
+        <head name="TH_FX1">
+            <geometry name="TH_adaptor1" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX10">
+            <geometry name="TH_adaptor10" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX11">
+            <geometry name="TH_adaptor11" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX12">
+            <geometry name="TH_adaptor12" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX13">
+            <geometry name="TH_adaptor13" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX14">
+            <geometry name="TH_adaptor14" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX15">
+            <geometry name="TH_adaptor15" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX16">
+            <geometry name="TH_adaptor16" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX17">
+            <geometry name="TH_adaptor17" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX18">
+            <geometry name="TH_adaptor18" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX19">
+            <geometry name="TH_adaptor19" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX2">
+            <geometry name="TH_adaptor2" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX20">
+            <geometry name="TH_adaptor20" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX21">
+            <geometry name="TH_adaptor21" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX22">
+            <geometry name="TH_adaptor22" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX23">
+            <geometry name="TH_adaptor23" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX24">
+            <geometry name="TH_adaptor24" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX25">
+            <geometry name="TH_adaptor25" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX26">
+            <geometry name="TH_adaptor26" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX27">
+            <geometry name="TH_adaptor27" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX28">
+            <geometry name="TH_adaptor28" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX29">
+            <geometry name="TH_adaptor29" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX3">
+            <geometry name="TH_adaptor3" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX30">
+            <geometry name="TH_adaptor30" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX4">
+            <geometry name="TH_adaptor4" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX5">
+            <geometry name="TH_adaptor5" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX6">
+            <geometry name="TH_adaptor6" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX7">
+            <geometry name="TH_adaptor7" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX8">
+            <geometry name="TH_adaptor8" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="TH_FX9">
+            <geometry name="TH_adaptor9" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="fixture" />
+        </head>
+        <head name="Target_Stock1">
+            <geometry name="workpiece1" geo="workpiece1.stl" clrr="0.65098041" clrg="0.79215688" clrb="0.94117647" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock1" geo="stock1.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath" geo="toolpath.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock1" geo="stock1.stl" clrr="0.43137255" clrg="0.65882355" clrb="1.00000000" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="Target_Stock2">
+            <geometry name="workpiece2" geo="workpiece2.stl" clrr="0.65098041" clrg="0.79215688" clrb="0.94117647" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock2" geo="stock2.stl" clrr="0.90196079" clrg="0.90196079" clrb="0.98039216" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath2" geo="toolpath2.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock2" geo="stock2.stl" clrr="0.43137255" clrg="0.65882355" clrb="1.00000000" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="Target_Stock3">
+            <geometry name="workpiece3" geo="workpiece2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock3" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath3" geo="toolpath2.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock3" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="Target_Stock4">
+            <geometry name="workpiece4" geo="workpiece2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock4" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath4" geo="toolpath2.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock4" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="Target_Stock5">
+            <geometry name="workpiece5" geo="workpiece2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+            <geometry name="stock5" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.00" reflectivity="0.40" reflectivityBitmapFileName="" objtype="stock" />
+            <geometry name="toolpath5" geo="toolpath2.asc" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="toolpath" />
+            <geometry name="initialstock5" geo="stock2.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.80" reflectivity="0.00" reflectivityBitmapFileName="" objtype="initialstock" />
+        </head>
+        <head name="fxt1">
+            <geometry name="fixture1" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt10">
+            <geometry name="fixture10" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt2">
+            <geometry name="fixture2" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt3">
+            <geometry name="fixture3" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt4">
+            <geometry name="fixture4" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt5">
+            <geometry name="fixture5" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt6">
+            <geometry name="fixture6" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt7">
+            <geometry name="fixture7" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt8">
+            <geometry name="fixture8" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="fxt9">
+            <geometry name="fixture9" geo="fixture.stl" clrr="0.11764706" clrg="0.11764706" clrb="0.11764706" alpha="0.00" reflectivity="0.10" reflectivityBitmapFileName="tablereflection.bmp" objtype="fixture" />
+        </head>
+        <head name="tool_item_cmpTool--|id:1">
+            <transform id="transform_cmpHSK E40 SEM 16X50--|id:2" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="geom_cmpHSK E40 SEM 16X50--|id:2" geo="geometry.stl" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <transform id="transform_cmpBULL NOSE MILL--|id:4" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool_cmpBULL NOSE MILL--|id:4" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="0.50196081" noncuttb="0.50196081" arborr="0.00000000" arborg="0.80784315" arborb="0.81960785" holderr="0.41960785" holderg="0.55686277" holderb="0.13725491" />
+                </transform>
+            </transform>
+        </head>
+        <head name="tool_item_cmpTool--|id:5">
+            <transform id="transform_cmpHSK A40 ER16X80--|id:6" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                <geometry name="geom_cmpHSK A40 ER16X80--|id:6" geo="geometry.stl" clrr="0.80000001" clrg="0.80000001" clrb="0.80000001" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="geometry" />
+                <transform id="transform_cmpCENTER DRILL--|id:8" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                    <geometry name="tool_cmpCENTER DRILL--|id:8" geo="tool.stl" alpha="0.00" reflectivity="0.00" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="1.00000000" cuttb="0.00000000" noncuttr="0.50196081" noncuttg="0.50196081" noncuttb="0.50196081" arborr="0.00000000" arborg="0.80784315" arborb="0.81960785" holderr="0.41960785" holderg="0.55686277" holderb="0.13725491" />
+                </transform>
+            </transform>
+        </head>
+    </magazine>
+</machine_definition>
